@@ -21,9 +21,9 @@ Lookahead:
 
 Information
 
-[Chapter 1 - LLVM Basics](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-1-llvm-basics.md)  -- Incomplete
+[Chapter 1 - Compiler Basics](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-1-compiler-basics.md)  -- Incomplete
 
-[Chapter 2 - Compiler Basics](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-2-compiler-basics.md)  -- Incomplete
+[Chapter 2 - LLVM Basics](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-2-llvm-basics.md)  -- Incomplete
 
 Basic Architecture
 
