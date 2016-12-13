@@ -16,7 +16,7 @@ Here are some gross simplications that should help you get started with LLVM. Fi
 
 
 Further Reading and References:
-[LLVM for Grad Students by Adrian Sampson](https://www.cs.cornell.edu/~asampson/blog/llvm.html)
-[How to get started with the LLVM C API by Paul Smith](https://pauladamsmith.com/blog/2015/01/how-to-get-started-with-llvm-c-api.html)
-[Create a working compiler with the LLVM framework, Part 1 by Arpen Sen](https://www.ibm.com/developerworks/library/os-createcompilerllvm1/)
-[My First LLVM Compiler by Wilfred Hughes](http://www.wilfred.me.uk/blog/2015/02/21/my-first-llvm-compiler/)
+1. [LLVM for Grad Students by Adrian Sampson](https://www.cs.cornell.edu/~asampson/blog/llvm.html)
+2. [How to get started with the LLVM C API by Paul Smith](https://pauladamsmith.com/blog/2015/01/how-to-get-started-with-llvm-c-api.html)
+3. [Create a working compiler with the LLVM framework, Part 1 by Arpen Sen](https://www.ibm.com/developerworks/library/os-createcompilerllvm1/)
+4. [My First LLVM Compiler by Wilfred Hughes](http://www.wilfred.me.uk/blog/2015/02/21/my-first-llvm-compiler/)
