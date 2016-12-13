@@ -7,7 +7,7 @@ We are going to write the compiler using Crystal. There are a few reasons for th
 The language will be imperative, statically typed, and compile to object code callable from C. It will discourage punction usage and strive to be explicit while terse. We will start by parsing everything at the top level, and gradually build in control flow and nested expressions expanding the initially sparse syntax.
 
 We will call our toy language Emerald as a nod to both Crystal and Ruby. Further, the syntax will also be a major nod to both languages. Here is a snippet of our initial goal, showing some of the basic syntax elements.
-```
+```ruby
 # I am a comment!
 four = 2 + 2
 puts four
@@ -20,16 +20,23 @@ While the above example may look simple, it is going to require us to cover some
 Lookahead:
 
 Information
+
 Chapter 1 - LLVM Basics
+
 Chapter 2 - Compiler Basics
 
 Basic Architecture
+
 Chapter 3 - Lexer
+
 Chapter 4 - Parser
+
 Chapter 5 - Code Generator
+
 Chapter 6 - Summary
 
 Advanced Architecture
+
 Chapter 7 - TBD
 
 
