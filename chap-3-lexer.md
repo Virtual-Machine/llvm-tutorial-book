@@ -176,7 +176,7 @@ end
 
 Finally we add the last few functions our Lexer needs, which helps to close out and generate the tokens.
 
-```
+```crystal
 class Lexer
     def closeToken : Nil
         if @currentToken.strip != ""
