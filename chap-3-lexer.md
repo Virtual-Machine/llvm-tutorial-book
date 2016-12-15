@@ -148,7 +148,7 @@ class Lexer
             @current != '"'
             @currentToken += @next
             moveIndex
-            elsif @current != '"'
+        elsif @current != '"'
             @currentToken += @current
         else
             generateToken TokenType::String, @currentToken.strip
@@ -158,7 +158,7 @@ class Lexer
     def parseNumber : Nil
         if @current.ascii_number? || @current == '.'
             @currentToken += @current
-            elsif @current == '_'
+        elsif @current == '_'
         else
             closeNumberToken
         end
