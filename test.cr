@@ -37,9 +37,9 @@ class Lexer
         @index = 0
         @position = 1
         @line = 1
-        @currentToken = ""
-        @currentTLine = 0
-        @currentTPosition = 0
+        @current_token = ""
+        @current_t_line = 0
+        @current_t_position = 0
         @context = Context::TopLevel
         @current = ' '
         @next = ' '
@@ -48,167 +48,167 @@ class Lexer
         @tokens = [] of Token
     end
 
-    def nextLine : Nil
+    def next_line : Nil
       @line += 1
       @position = 0
     end
 
-    def moveIndex : Nil
+    def move_index : Nil
       @index += 1
       @position += 1
     end
 
-    def setPosition : Nil
-      @currentTLine = @line
-      @currentTPosition = @position
+    def set_position : Nil
+      @current_t_line = @line
+      @current_t_position = @position
     end
 
-    def enterMode(context : Context) : Nil
+    def enter_mode(context : Context) : Nil
       @context = context
-      setPosition
+      set_position
     end
 
-    def enterModeGet(context : Context) : Nil
+    def enter_mode_get(context : Context) : Nil
       @context = context
-      setPosition
-      @currentToken += @current
+      set_position
+      @current_token += @current
     end
 
     def generate : Nil
         while @index <= @max
             @current = @content[@index]
             if @current == "\n"[0]
-                nextLine
+                next_line
             end
             if @index < @max
                 @next = @content[@index + 1]
             else
                 @next = '\u{4}'
             end
-            parseCurrentChar
-            moveIndex
+            lex_current_char
+            move_index
         end
-        closeToken
+        close_token
         @tokens << Token.new TokenType::Delimiter, :endf, @line, @position
     end
 
-    def parseCurrentChar : Nil
+    def lex_current_char : Nil
         case @context
         when Context::TopLevel
-            parseTopLevel
+            lex_top_level
         when Context::Comment
-            parseComment
+            lex_comment
         when Context::Identifier
-            parseIdentifier
+            lex_identifier
         when Context::String
-            parseString
+            lex_string
         when Context::Number
-            parseNumber
+            lex_number
         when Context::Operator
-            parseOperator
+            lex_operator
         end
     end
 
-    def parseComment : Nil
+    def lex_comment : Nil
         if @current != '\n'
-            @currentToken += @current
+            @current_token += @current
         else
-            generateToken TokenType::Comment, @currentToken.strip
+            generate_token TokenType::Comment, @current_token.strip
         end
     end
 
-    def parseIdentifier : Nil
+    def lex_identifier : Nil
         if !@current.ascii_whitespace?
-            @currentToken += @current
+            @current_token += @current
         else
-            closeIdentifierToken
+            close_identifier_token
         end
     end
 
-    def parseString : Nil
+    def lex_string : Nil
         if @current == "\\"[0]
             @current != '"'
-            @currentToken += @next
-            moveIndex
+            @current_token += @next
+            move_index
         elsif @current != '"'
-            @currentToken += @current
+            @current_token += @current
         else
-            generateToken TokenType::String, @currentToken.strip
+            generate_token TokenType::String, @current_token.strip
         end
     end
 
-    def parseNumber : Nil
+    def lex_number : Nil
         if @current.ascii_number? || @current == '.'
-            @currentToken += @current
+            @current_token += @current
         elsif @current == '_'
         else
-            closeNumberToken
+            close_number_token
         end
     end
 
-    def parseOperator : Nil
+    def lex_operator : Nil
         if !@current.ascii_whitespace?
-            @currentToken += @current
+            @current_token += @current
         else
-            generateToken TokenType::Operator, @currentToken.strip
+            generate_token TokenType::Operator, @current_token.strip
         end
     end
 
-    def parseTopLevel : Nil
+    def lex_top_level : Nil
         case
         when @current == "\n"[0]
             @tokens << Token.new TokenType::Delimiter, :endl, @line, @position
         when @current == '"'
-            enterMode(Context::String)
+            enter_mode(Context::String)
         when @current == '#'
-            enterMode(Context::Comment)
+            enter_mode(Context::Comment)
         when @current.ascii_letter?
-            enterModeGet(Context::Identifier)
+            enter_mode_get(Context::Identifier)
         when @current.ascii_number?
-            enterModeGet(Context::Number)
+            enter_mode_get(Context::Number)
         when !@current.ascii_whitespace?
-            enterModeGet(Context::Operator)
+            enter_mode_get(Context::Operator)
         end
     end
 
-    def closeToken : Nil
-        if @currentToken.strip != ""
+    def close_token : Nil
+        if @current_token.strip != ""
             case @context
             when Context::Number
-                closeNumberToken
+                close_number_token
             when Context::Identifier
-                closeIdentifierToken
+                close_identifier_token
             when Context::Comment
-                generateToken TokenType::Comment, @currentToken.strip
+                generate_token TokenType::Comment, @current_token.strip
             end
         end
     end
 
-    def closeNumberToken : Nil
-        number = @currentToken.strip
+    def close_number_token : Nil
+        number = @current_token.strip
         if number.includes? "."
-            generateToken TokenType::Float, number.to_f
+            generate_token TokenType::Float, number.to_f
         else
-            generateToken TokenType::Int, number.to_i
+            generate_token TokenType::Int, number.to_i
         end
     end
 
-    def closeIdentifierToken : Nil
-        identifier = @currentToken.strip
+    def close_identifier_token : Nil
+        identifier = @current_token.strip
         if @keywords.any? { |word| word.to_s == identifier }
             @keywords.each do |keyword|
                 if keyword.to_s == identifier
-                    generateToken TokenType::Keyword, keyword
+                    generate_token TokenType::Keyword, keyword
                 end
             end
         else
-            generateToken TokenType::Identifier, identifier
+            generate_token TokenType::Identifier, identifier
         end
     end
 
-    def generateToken(typeVal : TokenType, value : ValueType) : Nil
-        @tokens << Token.new typeVal, value, @currentTLine, @currentTPosition
-        @currentToken = ""
+    def generate_token(typeVal : TokenType, value : ValueType) : Nil
+        @tokens << Token.new typeVal, value, @current_t_line, @current_t_position
+        @current_token = ""
         @context = Context::TopLevel
     end
 end
