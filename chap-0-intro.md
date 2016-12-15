@@ -21,15 +21,15 @@ Lookahead:
 
 Information
 
-[Chapter 1 - Compiler Basics](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-1-compiler-basics.md)  -- Incomplete
+[Chapter 1 - Compiler Basics](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-1-compiler-basics.md)  -- Partial
 
-[Chapter 2 - LLVM Basics](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-2-llvm-basics.md)  -- Incomplete
+[Chapter 2 - LLVM Basics](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-2-llvm-basics.md)  -- Partial
 
 Basic Architecture
 
-[Chapter 3 - Lexer](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-3-lexer.md)  -- Incomplete
+[Chapter 3 - Lexer](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-3-lexer.md)  -- Partial
 
-[Chapter 4 - Parser](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-4-parser.md)  -- Incomplete
+[Chapter 4 - Parser](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-4-parser.md)  -- Partial
 
 [Chapter 5 - Code Generator](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-5-code-generator.md)  -- Incomplete
 
