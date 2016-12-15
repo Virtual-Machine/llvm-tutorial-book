@@ -128,7 +128,7 @@ class Lexer
             else
                 @next = '\u{4}'
             end
-            parse_current_char
+            lex_current_char
             move_index
         end
         close_token
