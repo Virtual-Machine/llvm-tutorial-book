@@ -260,7 +260,7 @@ end
 ```
 
 Here is a full listing of the compiler so far:
-```
+```crystal
 alias ValueType = String | Int32 | Float64 | Symbol | Nil
 
 enum Context
