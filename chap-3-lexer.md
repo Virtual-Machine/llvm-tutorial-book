@@ -45,7 +45,7 @@ class Token
 end
 ```
 
-And here is our actual Lexer
+And here is our actual Lexer:
 
 ```crystal
 class Lexer
@@ -492,3 +492,5 @@ token # => #<Token:0x103aeff00 @typeT=Keyword, @value=:puts, @line=1, @column=1>
 token # => #<Token:0x103aefed0 @typeT=String, @value="Hello World!", @line=1, @column=6>
 token # => #<Token:0x103aefea0 @typeT=Delimiter, @value=:endf, @line=1, @column=20>
 ```
+
+Congratulations. You have successfully made a lexer. Yes it is pretty basic right now but it will serve our purposes. We can easily graft on more language features as needed to the lexer. For example new keywords can be added to Lexer@keywords, or new Contexts could be created with correlating parse logic added in the relevant places. The important thing is we are easily able to inject strings into the lexer and visually inspect the array of tokens. This will be an important debugging tool when developing new syntax features. We are now ready to begin building our parser to transform the Token array into an AST.
