@@ -37,6 +37,7 @@ Expressions Node : [four = 2 + 2, puts four, puts 10 < 6, puts 11 != 10]
 |-----> Number Literal : 2
 [1]
 |-> Call Expression Node : puts four
+|---> Variable Lookup Expression : four
 [2]
 |-> Call Expression Node : puts 10 < 6
 |---> Binary Expression Node : 10 < 6
