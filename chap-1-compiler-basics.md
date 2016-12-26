@@ -25,4 +25,10 @@ This is a gross simplification however it still introduces some potential foreig
 
 **Code Generator**: The code generator takes the AST as input and produces intermediate or machine code. The code generator "walks" the nodes of the AST, using the references it has to other nodes to generate the necessary instructions in the output code. Depending on the compiler architecture you may need to assemble your output ir to machine code prior to the final execution.
 
+If we want to get a little more fancy we can add two more stages to this process. The first advanced stage would be an AST simplifying step. This step occurs between parsing and the code-generation. The job of the AST simplification stage is to walk the nodes of the AST and look for expressions that can be evaluated at compile time to single nodes. The more nodes that can be collapsed during this stage, the less work required for the code-generation to perform and the fewer calculations required at run-time. This can definitely be viewed as a code optimization.
+
+The second advanced stage is an actual optimization step. Primarily these optimizations are run during or after code-generation and are sometimes also performed at link-time. The job of this step is to look for patterns in the generated machine or assembly code that will allow simplifications to the code without affecting the final result. Depending on your needs, this step can be tuned between compile-time or run-time speed and between performance and safety.
+
+In our toy example we will not be implementing these two advanced phases explicitly, but we will be tapping in a few optimizations through our LLVM bindings. Feel free to use the toy example as a means to experiment with LLVM's optimizations and better understand how they manipulate the code to improve performance. If you compare source code to generated LLVM ir with optimizations, you will notice that the optimizations can be quite effective at turning function bodies into inline values and removing unnecessary calculations from statements.
+
 
