@@ -5,6 +5,9 @@ require "./node"
 require "./parser"
 require "./generator"
 
+# Toggle debug information
+debug = true
+
 # Emerald expression as input
 input = "puts \"Hello World!\""
 
@@ -12,20 +15,20 @@ input = "puts \"Hello World!\""
 lexer = Lexer.new input
 lexer.lex
 
-lexer.inspect
+lexer.inspect if debug
 
 # Parse token array into AST
 parser = Parser.new lexer.tokens
 parser.parse
 
-parser.inspect
+parser.inspect if debug
 
 # Use AST to generate LLVM IR
 generator = Generator.new parser.ast
 generator.generate
 
-generator.inspect
+generator.inspect if debug
 
 # Print output
 output = generator.output
-pp output
+puts output
