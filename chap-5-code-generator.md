@@ -105,7 +105,7 @@ If we ignore all the variable allocations and loads, we can simply this IR furth
 ```
 %9 = mul nsw i32 %7, %8                 ; Multiply 3 by 4 = 12
 %10 = add nsw i32 %6, %9                ; Add 2 to 12 = 14
-%12 = icmp slt i32 %10, %11             ; If 14 < 3 = false
+%12 = icmp slt i32 %10, %11             ; If 14 < 3 == false
 br i1 %12, label %13, label %15         ; If true goto label %13, else label %15
 
 ; <label>:13:                           ; If block
