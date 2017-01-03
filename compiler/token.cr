@@ -1,5 +1,5 @@
 class Token
-  getter typeT, value
+  getter typeT, value, line, column
 
   def initialize(@typeT : TokenType,
                  @value : ValueType,

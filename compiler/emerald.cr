@@ -2,6 +2,7 @@ require "./types"
 require "./token"
 require "./lexer"
 require "./node"
+require "./nodes/*"
 require "./parser"
 require "./generator"
 

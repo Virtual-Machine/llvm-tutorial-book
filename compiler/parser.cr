@@ -19,6 +19,7 @@ class Parser
   end
 
   def parse : Nil
+    @ast.push ExpressionsNode.new @current_token.line, @current_token.column
     while @current_index < @max
       @current_token = @tokens[@current_index]
       case @current_token.typeT
@@ -31,14 +32,17 @@ class Parser
         end
       else
       end
-      # pp @current_token
       @current_index += 1
     end
   end
 
   def parseCallExpression : Nil
+    statement = @current_token.value.to_s
+    @look_ahead = 1
     while @tokens[@current_index + @look_ahead].typeT != TokenType::Delimiter
+      statement += " #{@tokens[@current_index + @look_ahead].value.to_s}"
       @look_ahead += 1
     end
+    puts statement
   end
 end
