@@ -1,11 +1,5 @@
 require "llvm"
 
-count = -1
-
-def get_pad(count : Int32)
-  "\t" * count
-end
-
 class Node
   getter children
   @children = [] of Node
@@ -14,10 +8,10 @@ class Node
     @children.push(node)
   end
 
-  def walk(count : Int32)
-    count += 1
+  def walk(bb : LLVM::BasicBlock)
     @children.each do |node|
-      node.walk count
+      pp node
+      node.walk bb
     end
   end
 end
@@ -27,20 +21,12 @@ class StringLiteralNode < Node
 
   def initialize(@value : String)
   end
-
-  def walk(count : Int32)
-    puts "#{get_pad count}#{value}"
-  end
 end
 
 class IntegerLiteralNode < Node
   getter value
 
   def initialize(@value : Int32)
-  end
-
-  def walk(count : Int32)
-    puts "#{get_pad count}#{value}"
   end
 end
 
@@ -49,10 +35,6 @@ class DoubleLiteralNode < Node
 
   def initialize(@value : Float64)
   end
-
-  def walk(count : Int32)
-    puts "#{get_pad count}#{value}"
-  end
 end
 
 class BooleanLiteralNode < Node
@@ -60,88 +42,43 @@ class BooleanLiteralNode < Node
 
   def initialize(@value : Bool)
   end
-
-  def walk(count : Int32)
-    puts "#{get_pad count}#{value}"
-  end
 end
 
 class FunctionDeclarationNode < Node
   def initialize(@name : String, @signature : String)
   end
-
-  def walk(count : Int32)
-    puts "#{get_pad count}#{@name}, #{@signature}"
-    super count
-  end
 end
 
 class CompoundStatementNode < Node
-  def walk(count : Int32)
-    puts "#{get_pad count}Compound"
-    super count
-  end
 end
 
 class DeclarationStatementNode < Node
-  def walk(count : Int32)
-    puts "#{get_pad count}Declaration"
-    super count
-  end
 end
 
 class VariableDeclarationNode < Node
   def initialize(@name : String, @type : String)
   end
-
-  def walk(count : Int32)
-    puts "#{get_pad count}Declare: #{@name}, #{@type}"
-    super count
-  end
 end
 
 class IfStatementNode < Node
-  def walk(count : Int32)
-    puts "#{get_pad count}If"
-    super count
-  end
 end
 
 class BinaryOperatorNode < Node
   def initialize(@operator : String)
-  end
-
-  def walk(count : Int32)
-    puts "#{get_pad count}#{@operator}"
-    super count
   end
 end
 
 class ImplicitCastExpressionNode < Node
   def initialize(@type : String)
   end
-
-  def walk(count : Int32)
-    puts "#{get_pad count}#{@type}"
-    super count
-  end
 end
 
 class DeclarationReferenceExpressionNode < Node
   def initialize(@name : String)
   end
-
-  def walk(count : Int32)
-    puts "#{get_pad count}#{@name}"
-    super count
-  end
 end
 
 class ReturnStatementNode < Node
-  def walk(count : Int32)
-    puts "#{get_pad count}Return"
-    super count
-  end
 end
 
 ast = Node.new
@@ -230,15 +167,46 @@ class Program
   end
 
   def compile
-    bb = func.basic_blocks.append "entry"
-    # Walk ast and code generate to bb
+    # Set up blocks for function
+    bb = func.basic_blocks.append "main_body"
+    if_block = func.basic_blocks.append "if_block"
+    else_block = func.basic_blocks.append "else_block"
+    return_block = func.basic_blocks.append "return_block"
+
+    builder.position_at_end bb
+    # Variable to store number value
+    number_ptr = builder.alloca LLVM::Int32, "number"
+    # LLVM friendly integers
+    zero = LLVM.int(LLVM::Int32, 0)
+    two = LLVM.int(LLVM::Int32, 2)
+    three = LLVM.int(LLVM::Int32, 3)
+    four = LLVM.int(LLVM::Int32, 4)
+    five = LLVM.int(LLVM::Int32, 5)
+
+    # Calculate equation and perform comparison
+    multiple = builder.mul three, four, "multiple"
+    sum = builder.add two, multiple, "sum"
+    less_than = LLVM::IntPredicate::SGT
+    comparison = builder.icmp less_than, sum, four, "comparison"
+    builder.cond comparison, if_block, else_block
+    # If 2 + 3 * 4 < 3
+    builder.position_at_end if_block
+    builder.store two, number_ptr
+    builder.br return_block
+    # Else
+    builder.position_at_end else_block
+    builder.store five, number_ptr
+    builder.br return_block
+    # Return
+    builder.position_at_end return_block
+    ret_value = builder.load number_ptr, "ret_value"
+    builder.ret ret_value
+
     File.open("output.ll", "w") do |file|
       mod.to_s(file)
     end
   end
 end
 
-ast.walk count
-
-# program = Program.new ast
-# program.compile
+program = Program.new ast
+program.compile
