@@ -36,7 +36,7 @@ puts 11 != 10"
 								20 => [TokenType::Delimiter, :endf, 5, 14]}
 
 		test_data.each do |index, array|
-			it "should build expected AST #{index}" do
+			it "should build expected token array #{index}" do
 				program.token_array[index].typeT.should eq array[0]
 				program.token_array[index].value.should eq array[1]
 				program.token_array[index].line.should eq array[2]
