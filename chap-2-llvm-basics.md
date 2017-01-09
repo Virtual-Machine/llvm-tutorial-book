@@ -19,6 +19,58 @@ Here are some gross simplications that should help you get started with LLVM. Fi
 7. Finally once you are finished compiling the instructions into your module, you will want to dump the output to LLVM IR ll files. The resultant [name_of_file].ll can now be treated like any LLVM IR as if it were just compiled straight from C. This includes all the optimizations and plugins available in the LLVM architecture. It is also ready to be compiled to object code and linked with any other object code compiled from other sources. The file.ll theoretically can be compiled to any target architecture so long as the LLVM IR is not doing anything machine specific.
 8. Because our example is compiling instructions into a main function, if we execute the compiled and linked version of our output, it should immediately invoke the main function and we should see the results of our instructions.
 
+To get you started quickly here is a quick glossary of some LLVM ir instructions and what they do:
+
+```
+alloca - reserve space in memory for typed variable
+
+    %fourp = alloca i32
+
+store - put value into allocated memory
+
+    store i32 4, i32* %fourp
+
+load - get value stored in allocated memory
+
+    %value = load i32, i32* %fourp
+
+getelementptr - get a pointer to a subelement, 
+- useful for converting a char buffer into a const char*
+
+    %buffer = alloca [79 x i8]
+    %bpointer = getelementptr [79 x i8], [79 x i8]* %buffer, i32 0, i32 0
+
+call - call a named function with return type and params
+
+    call i32 @puts( i8* %bufferp )
+
+br - jumps to a code block based on the provided value or unconditionally jumps
+
+    br i1 false, label %if_block, label %else_block ;conditional jump
+    br label %code_block ;unconditional jump
+
+icmp - compare two values with a given operator
+- eq, ne, ult, ugt, uge, ule, slt, sgt, sge, sle
+- equals, not equal, signed and unsigned less than, greater than, less than or equal, greater than or equal
+- returns i1
+
+    %comparison = icmp eq i32 2, 0
+
+ret - return a value from the active function
+
+    ret i32 0
+
+sext & zext - extend an integer to a larger bit size
+- sext is sign extended, zext is zero extended
+    
+    %result = zext i1 %value to i32
+    %result = sext i1 %value to i32
+
+trunc - reduce an integer size to a smaller bit size
+
+    %result = trunc i32 %value to i1
+```
+
 
 Further Reading and References:
 
