@@ -19,4 +19,6 @@ enum TokenType
   Int
   Operator
   Delimiter
+  ParenOpen
+  ParenClose
 end
