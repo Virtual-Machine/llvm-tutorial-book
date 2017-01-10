@@ -8,6 +8,8 @@ So what do I mean by us taking a lazy approach? What I mean is we are going to l
 
 So what do I mean by us taking a naive approach? Full disclaimer, I am very much still a student of compilers and LLVM, I am probably doing many things that a compiler/LLVM expert would consider naive or ignorant. Also in the interest of enlightening people without adding unnecessary confusion I will be trying to keep things extremely simplistic. This means I will try to avoid using lots of indirection, complex abstractions, inheritance, and implicit behaviour in the compiler even if the end result is more verbose code. The code may not follow all the best practices but it will be easy to read and understand.
 
+### General LLVM Information
+
 Here are some gross simplications that should help you get started with LLVM. Fill your knowledge in with more details as it becomes necessary.
 
 1. The main unit of grouping in LLVM is the module. You can have several modules in a program, and each module will contain functions, global variables and an externalized interface. In our simplistic, naive approach we will never use more than one module but know that it is possible.
@@ -18,6 +20,8 @@ Here are some gross simplications that should help you get started with LLVM. Fi
 6. The LLVM builder api has the notion of position. A given builder has to be directed where it will be appending new instructions. In the case of our initial simplified approach we will be appending all our instructions to the BasicBlock of the main function. As you can imagine this sets up the primary means of constructing function bodies across multiple functions in a module.
 7. Finally once you are finished compiling the instructions into your module, you will want to dump the output to LLVM IR ll files. The resultant [name_of_file].ll can now be treated like any LLVM IR as if it were just compiled straight from C. This includes all the optimizations and plugins available in the LLVM architecture. It is also ready to be compiled to object code and linked with any other object code compiled from other sources. The file.ll theoretically can be compiled to any target architecture so long as the LLVM IR is not doing anything machine specific.
 8. Because our example is compiling instructions into a main function, if we execute the compiled and linked version of our output, it should immediately invoke the main function and we should see the results of our instructions.
+
+### LLVM IR instructions
 
 To get you started quickly here is a quick glossary of some LLVM ir instructions and what they do:
 
@@ -70,6 +74,8 @@ To get you started quickly here is a quick glossary of some LLVM ir instructions
 
     %result = trunc i32 %value to i1
 ```
+
+### Crystal LLVM Builder API Bindings
 
 We are using Crystal's builder API bindings to LLVM and as such we also need to have an idea of how to use the builder API to assemble modules. Below is a generic program class that demonstrates how to use the builder api in a simplistic way. Once you grasp this, you should be able to see how you can direct the builder api into different blocks and functions throughout your module as needed.
 
@@ -125,6 +131,8 @@ program.code_generate
 ```
 
 It is the relationship between your AST nodes and your code generation functions that the final module will get built. Therefore you should spend time walking the nodes of your AST and thinking about what builder api calls you will need to accomplish the functionality you desire in LLVM IR.
+
+### Builder API Usage
 
 Below is a list of builder methods with short descriptions. A few of the ones you'll find especially useful have demonstration usages provided.
 ```crystal
