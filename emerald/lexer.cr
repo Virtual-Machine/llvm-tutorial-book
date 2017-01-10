@@ -63,19 +63,32 @@ class Lexer
   end
 
   def lex_current_char : Nil
-    case @context
-    when Context::TopLevel
-      lex_top_level
-    when Context::Comment
-      lex_comment
-    when Context::Identifier
-      lex_identifier
-    when Context::String
-      lex_string
-    when Context::Number
-      lex_number
-    when Context::Operator
-      lex_operator
+    if @current == '(' || @current == ')'
+      lex_parens
+    else
+      case @context
+      when Context::TopLevel
+        lex_top_level
+      when Context::Comment
+        lex_comment
+      when Context::Identifier
+        lex_identifier
+      when Context::String
+        lex_string
+      when Context::Number
+        lex_number
+      when Context::Operator
+        lex_operator
+      end
+    end
+  end
+
+  def lex_parens : Nil
+    if @current == '('
+      @tokens << Token.new TokenType::ParenOpen, "(", @line, @position
+    elsif @current == ')'
+      close_token
+      @tokens << Token.new TokenType::ParenClose, ")", @line, @position
     end
   end
 
@@ -96,7 +109,7 @@ class Lexer
   end
 
   def lex_string : Nil
-    if @current == "\\"[0]
+    if @current == '\\'
       @current != '"'
       @current_token += @next
       move_index
@@ -126,7 +139,7 @@ class Lexer
 
   def lex_top_level : Nil
     case
-    when @current == "\n"[0]
+    when @current == '\n'
       @tokens << Token.new TokenType::Delimiter, :endl, @line, @position
     when @current == '"'
       enter_mode(Context::String)
