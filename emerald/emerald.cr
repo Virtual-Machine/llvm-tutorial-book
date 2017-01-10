@@ -34,13 +34,13 @@ class EmeraldProgram
   end
 end
 
-input = "# I am a comment!
-four = 2 + 2
-puts four
-puts 10 < 6
-puts 11 != 10
-"
+# input = "# I am a comment!
+# four = 2 + 2
+# puts four
+# puts 10 < 6
+# puts 11 != 10
+# "
 
-program = EmeraldProgram.new input
-program.compile
-puts program.output
+# program = EmeraldProgram.new input
+# program.compile
+# puts program.output
