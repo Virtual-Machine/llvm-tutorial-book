@@ -1,6 +1,2 @@
 .DS_Store
 note.cr
-emerald/*
-!emerald/types.cr
-!emerald/token.cr
-!emerald/lexer.cr
