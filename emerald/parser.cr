@@ -2,35 +2,37 @@ class Parser
   getter ast
   property active_node
 
-  @max : Int32
+  @active_node : Node
   @current_token : Token
   @next_token : Token?
-  @active_node : Node
 
   def initialize(@tokens : Array(Token))
     @ast = [] of Node
-    @current_index = 0
-    @max = @tokens.size - 1
-    @current_token = @tokens[0]
-    @look_ahead = 0
     ast.push RootNode.new
     @active_node = @ast[0]
+    @current_token = @tokens[0]
   end
 
   def parse : Array(Node)
-    while @current_index < @max
-      @current_token = @tokens[@current_index]
-      @next_token = @tokens[@current_index + 1]
-      
-      parse_top_level
+    while @tokens.size > 0
+    	@current_token = @tokens[0]
+    	if @tokens.size > 1
+    		@next_token = @tokens[1]
+    	end
 
-      @current_index += 1
+    	parse_top_level
+
+    	@tokens.shift
+    	@active_node = @ast[0]
     end
     @ast
   end
 
   def parse_top_level
     case @current_token.typeT
+    when TokenType::Int
+      parsed_expression = parse_expression (isolate_expression 0)
+      @active_node.add_child parsed_expression
     when TokenType::Identifier
       if @next_token.not_nil!.typeT == TokenType::Operator && @next_token.not_nil!.value == "="
         parse_identifier_declaration
@@ -43,8 +45,6 @@ class Parser
         parsed_expression = parse_expression (isolate_expression 1)
         @active_node.add_child parsed_expression
       end
-    when TokenType::Delimiter
-      @active_node = @ast[0]
     end
   end
 
