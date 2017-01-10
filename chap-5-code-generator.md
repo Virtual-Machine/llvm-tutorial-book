@@ -5,6 +5,8 @@ While the parser's job was to convert an array of tokens into a structured AST, 
 It can be helpful to have an idea of what a given AST will translate into IR code, even if you do not plan to write that IR yourself. Merely the structure of that IR will be informative as how to walk the AST and generate the required builder calls via LLVM's IR Builder API. Just as in the last chapter, we can use clang to emit the AST and the LLVM IR for simple C examples to better understand how an AST translates to LLVM IR. Forgive this ugly C example, I am using variables to prevent Clang from outputting optimized LLVM IR that is non-informative. If you know how to output raw LLVM IR without collapsing number literals please let me know.
 
 ```c
+// example_clang/main2.c
+
 int main(){
     int number;
     int two = 2, three = 3, four = 4;
