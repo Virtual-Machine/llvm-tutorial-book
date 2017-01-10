@@ -1,4 +1,4 @@
-alias ValueType = String | Int32 | Float64 | Symbol | Nil
+alias ValueType = String | Int32 | Symbol | Nil
 alias AST = Array(Node)
 
 enum Context
@@ -15,7 +15,6 @@ enum TokenType
   Keyword
   String
   Identifier
-  Float
   Int
   Operator
   Delimiter
