@@ -16,10 +16,15 @@ If anyone notices anything out of date or that is not factually correct, I welco
 ###Todo
 
 ☐ Write node walking algorithm
+
 ☐ Write code generation for node types
+
 ☐ Clean and refactor code
+
 ☐ Integrate code into chapter texts
+
 ☐ Add diagrams for program behaviour
+
 ☐ Add more specs
 
 ###Working
