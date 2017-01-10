@@ -1,9 +1,10 @@
 class Node
 	getter value
-	property parent, children
+	property parent, children, depth
 
 	@value : ValueType
 	@parent : Node?
+	@depth = 0
   def initialize(@line : Int32, @position : Int32)
   	@children = [] of Node
   	@value = nil
@@ -12,6 +13,7 @@ class Node
   def add_child(node : Node)
   	@children.push node
   	node.parent = self
+  	node.depth = self.depth + 1
 	end
 
 	def promote(node : Node)
