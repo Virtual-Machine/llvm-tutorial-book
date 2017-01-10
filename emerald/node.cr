@@ -29,13 +29,17 @@ class Node
 
 	def get_binary_insertion_point(node : Node) : Node
 		active_parent = self.parent
-		# Check if insertion point is a binary operator
-		if active_parent.class == BinaryOperatorNode && node.precedence < active_parent.as(BinaryOperatorNode).precedence
-			# If so keep checking parent of active insertion point
-			while active_parent.not_nil!.parent.class == BinaryOperatorNode && 
-				node.precedence < active_parent.not_nil!.parent.as(BinaryOperatorNode).precedence
-				# Set insertion point to parent of insertion point
-				active_parent = active_parent.not_nil!.parent
+		while true
+			# Check if insertion point is a binary operator
+			if active_parent.class == BinaryOperatorNode && node.precedence < active_parent.as(BinaryOperatorNode).precedence
+				# If active_parent.parent is a node
+				if !active_parent.not_nil!.parent.nil?
+					active_parent = active_parent.not_nil!.parent
+				else
+					break
+				end
+			else
+				break
 			end
 		end
 		# We know active parent is not nil because there should 
