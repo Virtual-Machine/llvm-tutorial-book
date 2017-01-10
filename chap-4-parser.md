@@ -132,3 +132,27 @@ Root Node
         Literal Node 5
 ```
 
+```
+parsing : 2 * 3 + (4 * (5 + 6) * 7) + 8 * 9
+Root
+  Expression Node
+    Operator Node +
+      Operator Node +
+        Expression Node (4 * (5 + 6) * 7)
+          Operator Node *
+            Operator Node *
+              Expression Node (5 + 6)
+                Operator Node 5
+                  Literal Node 5
+                  Literal Node 6
+              Literal Node 7
+            Literal Node 4
+        Operator Node *
+          Literal Node 8
+          Literal Node 9
+      Operator Node *
+        Literal Node 2
+        Literal Node 3
+
+
+```
