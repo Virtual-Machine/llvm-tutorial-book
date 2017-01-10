@@ -2,3 +2,4 @@
 note.cr
 emerald/*
 !emerald/types.cr
+!emerald/token.cr
