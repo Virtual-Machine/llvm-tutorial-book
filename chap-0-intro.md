@@ -17,7 +17,7 @@ puts 11 != 10
 
 While the above example may look simple, it is going to require us to cover some serious ground in our understanding of the LLVM api.  Already our simple syntax is going to require variables, a builtin puts command, and binary operators. We are going to have to be able to parse the structure of input files, understanding order of operations and expression context. But do not be discouraged. We are going to tackle this in easily digestable pieces. Once we have this much working, we will have a great base to begin extending our language with more powerful features.
 
-Lookahead:
+###Lookahead
 
 Information
 
@@ -40,5 +40,9 @@ Advanced Architecture
 Chapter 7 - TBD
 
 
+### Diagrams
+
+Emerald Architecture
+![Emerald Architecture](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/Emerald_Architecture.png)
 
 
