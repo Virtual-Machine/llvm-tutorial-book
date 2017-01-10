@@ -45,4 +45,5 @@ Chapter 7 - TBD
 Emerald Architecture
 ![Emerald Architecture](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/Emerald_Architecture.png)
 
-
+LLVM Architecture
+![LLVM Architecture](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/LLVM_Architecture.png)
