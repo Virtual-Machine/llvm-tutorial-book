@@ -89,3 +89,46 @@ If we scrape out some of the extraneous information we can see Clang's AST for t
 
 ```
 
+Our parser is going to parse binary operations by taking a somewhat novel yet simple approach. In basic terms, when our parser reaches an expression, it will append the number literal nodes and make it the active node in anticipation of an impending binary node, if a binary node is reached, it then seeks the suitable insertion point in the AST and then promotes itself to that node, assuming that nodes children, and itself becoming the new active node in the parse tree.
+
+If you are like me the above words might sound pretty confusing so a picture is worth a 1000 words:
+
+```
+watch as it parses the expression 2 * 5 + 3 in sequence
+
+step 1 Expression node is added with first token value - literal value 2 active
+Root Node
+  Expression Node
+    Literal Node 2 (Active)
+
+step 2 A binary operator is reached, promoted, inherits literal as its child, and is now the active node
+Root Node
+  Expression Node
+    Operator Node * (Active)
+      Literal Node 2
+
+step 3 Next literal is appended to active node and then itself becomes active
+Root Node
+  Expression Node
+    Operator Node *
+      Literal Node 2
+      Literal Node 5 (Active)
+
+step 4 New operator is reached, is lower precedence than * operator so is therefore promoted twice, and is new active node
+Root Node
+  Expression Node
+    Operator Node + (Active)
+      Operator Node *
+        Literal Node 2
+        Literal Node 5
+
+step 5 Final token is reached and appended to active node, resolving expression AST
+Root Node
+  Expression Node
+    Operator Node +
+      Literal Node 3
+      Operator Node *
+        Literal Node 2
+        Literal Node 5
+```
+
