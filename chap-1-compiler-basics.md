@@ -4,7 +4,7 @@ This chapter serves as a very basic crash course in compilers. This is going to 
 
 Here is the basics of what you need to know.
 
-Steps of Standard Compiler Usage
+###Steps of Standard Compiler Usage
 
 1. User has a file with some source code the compiler understands. 
 2. User runs the compiler executable on the source code file.
@@ -24,6 +24,8 @@ This is a gross simplification however it still introduces some potential foreig
 **AST (Abstract Syntax Tree)**: The AST is a tree like representation of the program code structured in such a way that the code generator can walk through the nodes to eventually produce runnable machine code. The AST nodes hold references to other nodes, making it possible to walk the syntax of the language. These nodes typically also carry the locational information to make error messages useful to developers in the event of syntax errors.
 
 **Code Generator**: The code generator takes the AST as input and produces intermediate or machine code. The code generator "walks" the nodes of the AST, using the references it has to other nodes to generate the necessary instructions in the output code. Depending on the compiler architecture you may need to assemble your output ir to machine code prior to the final execution.
+
+### Advanced Compiler Stages
 
 If we want to get a little more fancy we can add two more stages to this process. The first advanced stage would be an AST simplifying step. This step occurs between parsing and the code-generation. The job of the AST simplification stage is to walk the nodes of the AST and look for expressions that can be evaluated at compile time to single nodes. The more nodes that can be collapsed during this stage, the less work required for the code-generation to perform and the fewer calculations required at run-time. This can definitely be viewed as a code optimization.
 
