@@ -59,18 +59,21 @@ class Parser
 
 
   def isolate_expression(look_ahead : Int32) : Array(Token)
-    initial_index = look_ahead + @current_index
-    while @tokens[@current_index + look_ahead].typeT != TokenType::Delimiter
-      look_ahead += 1
+    look_ahead.times do
+    	@tokens.shift
     end
-    range = look_ahead + @current_index - initial_index
-    @tokens[initial_index, range]
+    expression = [] of Token
+    until @tokens[0].typeT == TokenType::Delimiter
+
+    	expression.push @tokens.shift
+    end
+    expression
   end
 
-  def parse_expression(tokens : Array(Token)) : Node
+  def parse_expression(tokens_exp : Array(Token)) : Node
     root = ExpressionNode.new @current_token.line, @current_token.column
     active = root
-    tokens.each do |token|
+    tokens_exp.each do |token|
       case token.typeT
       when TokenType::Int
         int_node = IntegerLiteralNode.new token.value, token.line, token.column
