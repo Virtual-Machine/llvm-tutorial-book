@@ -10,10 +10,13 @@ class Node
   end
 
   def walk(prog : Program)
+    puts "Walking #{self.class}"
     @children.each do |node|
-      puts node
+      puts "Pre #{node.class}"
       node.pre_walk prog
+      puts "Walk #{node.class}"
       node.walk prog
+      puts "Post #{node.class}"
       node.post_walk prog
     end
   end

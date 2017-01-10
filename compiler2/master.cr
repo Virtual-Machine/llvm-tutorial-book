@@ -20,7 +20,7 @@ class Program
   def compile
     nodes.walk self
 
-    pp state
+    # pp state
 
     # # Calculate equation and perform comparison
     # multiple = builder.mul three, four, "multiple"
