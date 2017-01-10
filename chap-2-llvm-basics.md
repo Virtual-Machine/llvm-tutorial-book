@@ -126,6 +126,107 @@ program.code_generate
 
 It is the relationship between your AST nodes and your code generation functions that the final module will get built. Therefore you should spend time walking the nodes of your AST and thinking about what builder api calls you will need to accomplish the functionality you desire in LLVM IR.
 
+Below is a list of builder methods with short descriptions. A few of the ones you'll find especially useful have demonstration usages provided.
+```crystal
+#add(lhs, rhs, name = "") add two values together and return sum value
+
+    value = builder.add(four_val, five_val, "4_plus_5")
+
+#alloca(type, name = "") allocate space for given variable type
+
+    value = builder.alloca(LLVM::Int32, "number")
+
+#and(lhs, rhs, name = "") perform bitwise and operation
+#array_malloc(type, value, name = "")
+#ashr(lhs, rhs, name = "") perform bitwise right hand shift
+#atomicrmw(op, ptr, val, ordering, singlethread) atomically modify memory
+#bit_cast(value, type, name = "") convert value to type2 without changing bits
+#br(block) unconditional branch to block
+
+    builder.br(block_ref)
+
+#call(func, args : Array(LLVM::Value), name : String = "") call a multi parameter function
+#call(func, arg : LLVM::Value, name : String = "") call a single param function
+
+    ret_value = builder.call mod.functions["puts"], str_ptr, "puts_call"
+
+#call(func, name : String = "") call a no parameter function
+#cmpxchg(pointer, cmp, new, success_ordering, failure_ordering) atomically modify memory based on comparison
+#cond(cond, then_block, else_block) conditional branch to block
+
+    builder.cond if_value, then_block_ref, else_block_ref
+
+#exact_sdiv(lhs, rhs, name = "") performs division using exact keyword, result is poison value if rounding would occur
+#extract_value(value, index, name = "") extracts value from aggregate object
+#fadd(lhs, rhs, name = "") floating point and vector addition
+#fcmp(op, lhs, rhs, name = "") floating point comparison
+#fdiv(lhs, rhs, name = "") floating point division
+#fence(ordering, singlethread, name = "") introduces edges between operations
+#fmul(lhs, rhs, name = "") floating point multiplication
+#fp2si(value, type, name = "") floating point to signed int
+#fp2ui(value, type, name = "") floating point to unsigned int
+#fpext(value, type, name = "") floating point extension
+#fptrunc(value, type, name = "") floating point truncation
+#fsub(lhs, rhs, name = "") floating point subtraction
+#gep(value, index1 : LLVM::Value, index2 : LLVM::Value, name = "") get element pointer returns a subelement of a container using start, end indices
+#gep(value, index : LLVM::Value, name = "") get element pointer returns a subelement of a container using a start index
+#gep(value, indices : Array(LLVM::ValueRef), name = "") get element pointer returns a sub element using an indices array
+#global_string_pointer(string, name = "") generate global string constant pointer
+    
+    string_ptr = builder.global_string_pointer("Hello World", "example")
+
+#icmp(op, lhs, rhs, name = "") integer comparison operation
+    
+    result = builder.icmp(LLVM::IntPredicate::ULT, ten_val, nine_val, "comparison")
+
+#inbounds_gep(value, indices : Array(LLVM::ValueRef), name = "") gep with inbounds keyword
+#inbounds_gep(value, index1 : LLVM::Value, index2 : LLVM::Value, name = "") gep with inbounds keyword
+#inbounds_gep(value, index : LLVM::Value, name = "") gep with inbounds keyword
+#int2ptr(value, type, name = "") convert integer to pointer type
+#invoke(fn, args : Array(LLVM::Value), a_then, a_catch, name = "") allows exception handling by returning to then block unless exception is detected and then instead returns to catch block
+#landing_pad(type, personality, clauses, name = "") designates a basic block as where an exception is handled inside a catch routine
+#load(ptr, name = "") get the value stored in a pointer
+
+    value = builder.load(ptr_to_value, "value_in_ptr")
+
+#lshr(lhs, rhs, name = "") performs a logical right hand shift operation
+#mul(lhs, rhs, name = "") perform multiplication
+#not(value, name = "")
+#or(lhs, rhs, name = "") performs bitwise or operation
+
+#phi(type, table : LLVM::PhiTable, name = "") setup phi node based on preexisting table data
+
+#NOTE a phi node is simply a variable that takes on a value based on the preceding block that passed control to the phi node.
+
+#phi(type, incoming_blocks : Array(LLVM::BasicBlock), incoming_values : Array(LLVM::Value), name = "") setup phi node based on array of basic blocks and an array of the values it should take in each case
+
+#position_at_end(block) position builder at end of a given block
+#ptr2int(value, type, name = "") resolve integer pointer to int
+#ret(value) return a specified value
+
+    builder.ret (LLVM.int LLVM::Int32, 0)
+
+#ret return void
+#sdiv(lhs, rhs, name = "") signed integer division
+#select(cond, a_then, a_else, name = "") select a value based on a condition
+#sext(value, type, name = "") signed extension
+#shl(lhs, rhs, name = "") shift left expression
+#si2fp(value, type, name = "") cast signed integer to floating point
+#srem(lhs, rhs, name = "") return remainder of signed integer division
+#store(value, ptr) store value into pointer
+
+    builder.store four_val number_ptr
+
+#sub(lhs, rhs, name = "") integer subtraction
+#switch(value, otherwise, cases) allow branching to one of several branches based on value
+#trunc(value, type, name = "") truncating integer
+#udiv(lhs, rhs, name = "") unsigned division
+#ui2fp(value, type, name = "") unsigned integer to floating point
+#urem(lhs, rhs, name = "") unsigned division remainder
+#xor(lhs, rhs, name = "") bitwise logical xor operation
+#zext(value, type, name = "") zero extension
+```
+
 Further Reading and References:
 
 1. [LLVM for Grad Students by Adrian Sampson](https://www.cs.cornell.edu/~asampson/blog/llvm.html)
