@@ -2,10 +2,7 @@
 
 This is the main repository for my LLVM tutorial.
 
-*WARNING* all source code in this project is currently experimental and subject to changes on a whim. It may not even work correctly at this point. This project will remove this warning when the final compiler implmentation is completed.
-
-Directories of the form compiler[x] are experimental.
-The emerald directory will contain the reference implementation.
+*WARNING* This project is in progress. The lexer and parser are functional, though subject to refactoring and possible bugs. The code generator is not yet complete. Until this warning is removed, source code is subject to change and/or be incomplete.
 
 The project intention is to create a user friendly introduction to llvm, compilers, and programming language creation in general.
 
