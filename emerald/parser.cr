@@ -75,6 +75,12 @@ class Parser
     active = root
     tokens_exp.each do |token|
       case token.typeT
+      when TokenType::ParenOpen
+      	new_root = ExpressionNode.new @current_token.line, @current_token.column
+      	active.add_child new_root
+      	active = new_root
+    	when TokenType::ParenClose
+    		active = active.get_first_expression_node
       when TokenType::Int
         int_node = IntegerLiteralNode.new token.value, token.line, token.column
         active.add_child int_node

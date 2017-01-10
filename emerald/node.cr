@@ -46,6 +46,19 @@ class Node
 		# always be the root node at the top to kill the ast chain
 		active_parent.not_nil!
 	end
+
+	def get_first_expression_node : Node
+		active_parent = self.parent
+		while true
+			# if active parent is an expression, we are done
+			if active_parent.class == ExpressionNode
+				return active_parent.not_nil!
+			else
+				# Otherwise we need to keep looking upwards
+				active_parent = active_parent.not_nil!.parent
+			end
+		end
+	end
 end
 
 
