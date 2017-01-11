@@ -74,27 +74,30 @@ class Node
     end
   end
 
-  def walk : Nil
+  def walk(state : State) : State
     # Print AST in walk order with depth
     # puts "#{"\t" * depth}#{self.class} #{self.value}"
     @children.each do |child|
       child.pre_walk
-      child.walk
-      child.post_walk
+      state = child.walk state
+      state = child.post_walk state
     end
+    state
   end
 
   def pre_walk : Nil
     # Ready for initialization calls
   end
 
-  def post_walk : Nil
-    resolve_value
+  def post_walk(state : State) : State
+    state = resolve_value state
     # Print AST resolutions
     # puts "#{self.class} resolved #{@resolved_value}"
+    state
   end
 
-  def resolve_value : Nil
+  def resolve_value(state : State) : State
+    state
   end
 end
 
@@ -105,8 +108,9 @@ class RootNode < Node
     @parent = nil
   end
 
-  def resolve_value : Nil
+  def resolve_value(state : State) : State
     @resolved_value = @children[-1].resolved_value
+    state
   end
 end
 
@@ -115,19 +119,26 @@ class CallExpressionNode < Node
     @children = [] of Node
   end
 
-  def resolve_value : Nil
+  def resolve_value(state : State) : State
     @resolved_value = @children[0].resolved_value
+    state
   end
 end
 
 class VariableDeclarationNode < Node
-  def initialize(@value : ValueType, @line : Int32, @position : Int32)
+  def initialize(@value : String, @line : Int32, @position : Int32)
     @children = [] of Node
+  end
+
+  def resolve_value(state : State) : State
+    @resolved_value = @children[0].resolved_value
+    state[@value.as(String)] = @resolved_value
+    state
   end
 end
 
 class BinaryOperatorNode < Node
-  def initialize(@value : ValueType, @line : Int32, @position : Int32)
+  def initialize(@value : String, @line : Int32, @position : Int32)
     @children = [] of Node
   end
 
@@ -146,7 +157,7 @@ class BinaryOperatorNode < Node
     end
   end
 
-  def resolve_value : Nil
+  def resolve_value(state : State) : State
     lhs = @children[0].resolved_value.as(Int32)
     rhs = @children[1].resolved_value.as(Int32)
     case @value
@@ -158,23 +169,42 @@ class BinaryOperatorNode < Node
       @resolved_value = lhs * rhs
     when "/"
       @resolved_value = lhs / rhs
+    when "=="
+      @resolved_value = lhs == rhs
+    when "!="
+      @resolved_value = lhs != rhs
+    when "<"
+      @resolved_value = lhs < rhs
+    when ">"
+      @resolved_value = lhs > rhs
+    when "<="
+      @resolved_value = lhs <= rhs
+    when ">="
+      @resolved_value = lhs >= rhs
     end
+    state
   end
 end
 
 class IntegerLiteralNode < Node
-  def initialize(@value : ValueType, @line : Int32, @position : Int32)
+  def initialize(@value : Int32, @line : Int32, @position : Int32)
     @children = [] of Node
   end
 
-  def resolve_value : Nil
+  def resolve_value(state : State) : State
     @resolved_value = value
+    state
   end
 end
 
 class DeclarationReferenceNode < Node
-  def initialize(@value : ValueType, @line : Int32, @position : Int32)
+  def initialize(@value : String, @line : Int32, @position : Int32)
     @children = [] of Node
+  end
+
+  def resolve_value(state : State) : State
+    @resolved_value = state[@value]
+    state
   end
 end
 
@@ -184,7 +214,8 @@ class ExpressionNode < Node
     @children = [] of Node
   end
 
-  def resolve_value : Nil
+  def resolve_value(state : State) : State
     @resolved_value = @children[0].resolved_value
+    state
   end
 end

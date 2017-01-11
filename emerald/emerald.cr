@@ -12,6 +12,7 @@ class EmeraldProgram
     @ast = [] of Node
     @output = ""
     @lexer = Lexer.new ""
+    @state = {} of String => ValueType
   end
 
   def lex
@@ -25,7 +26,7 @@ class EmeraldProgram
   end
 
   def generate
-    @ast[0].walk
+    @state = @ast[0].walk @state
   end
 
   def compile
