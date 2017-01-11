@@ -158,3 +158,37 @@ Root
 
 
 ```
+
+Here are some sketches of this process to help you visualize.
+
+In this example we are using the expression 
+
+```crystal
+2 * 3 + (4 * (5 + 6 * 7) + 8) * 9 - 1
+```
+
+Step 1 - Root node and main expression node generated.
+
+![BDMAS Parsing Stage 1](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_1.png)
+
+Step 2 - Begin parsing main expression, append 2 literal node.
+
+![BDMAS Parsing Stage 2](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_2.png)
+
+Step 3 - Multiplication operator is promoted, and literal 3 appended to it.
+
+![BDMAS Parsing Stage 3](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_3.png)
+
+Step 4 - Addition operator is promoted to top, the multiply operator becomes its child, and the parenthesis expression is also appended as its child
+
+![BDMAS Parsing Stage 4](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_4.png)
+
+Step 5 - First parenthesis expression is parsed. Initially 4 literal is added, then multiplication operator is promoted, then inner parenthesis expression is appended as multiplication operator's child, then addition operator is promoted to top and 8 literal is appended as its child.
+
+![BDMAS Parsing Stage 5](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_5.png)
+
+Step 6 - Finally inner parenthesis expression is parsed. 5 literal is appended, then addition operator is promoted, then 6 literal is appended, then multiplication operator is promoted, then 7 literal is appended.
+
+![BDMAS Parsing Stage 6](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_6.png)
+
+Visualize how the active node is changing as it parses the expressions and inner expressions.
