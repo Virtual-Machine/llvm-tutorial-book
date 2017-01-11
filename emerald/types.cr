@@ -1,5 +1,6 @@
-alias ValueType = String | Int32 | Float64 | Symbol | Nil
+alias ValueType = String | Int32 | Float64 | Symbol | Bool | Nil
 alias AST = Array(Node)
+alias State = Hash(String, ValueType)
 
 enum Context
   TopLevel
