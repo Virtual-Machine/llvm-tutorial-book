@@ -4,17 +4,17 @@ require "../emerald/emerald"
 describe "Parser" do
   describe "parse" do
     input = "
-four = (2 + 2) * 3 + 2 * (5 + (6 * 7))
-puts four - 3 * (four + 3)"
+var_106 = (2 + 2) * 3 + 2 * (5 + (6 * 7))
+puts var_106 - 3 * (var_106 + 3)"
 
     program = EmeraldProgram.new input
     program.lex
     program.parse
 
     root = program.ast[0]
-    four_decl = root.children[0]
+    decl_106 = root.children[0]
 
-    addition_1 = four_decl.children[0].children[0]
+    addition_1 = decl_106.children[0].children[0]
     multiply_1 = addition_1.children[0]
     addition_2 = multiply_1.children[0].children[0]
     multiply_2 = addition_1.children[1]
@@ -29,8 +29,8 @@ puts four - 3 * (four + 3)"
     int_6_1 = multiply_3.children[0]
     int_7_1 = multiply_3.children[1]
     it "parses first command as variable declaration receiving complex equation" do
-      four_decl.class.should eq VariableDeclarationNode
-      four_decl.value.should eq "four"
+      decl_106.class.should eq VariableDeclarationNode
+      decl_106.value.should eq "var_106"
       addition_1.class.should eq BinaryOperatorNode
       addition_1.value.should eq "+"
       addition_2.class.should eq BinaryOperatorNode
@@ -73,7 +73,7 @@ puts four - 3 * (four + 3)"
       subtract_1.class.should eq BinaryOperatorNode
       subtract_1.value.should eq "-"
       var_decl_1.class.should eq DeclarationReferenceNode
-      var_decl_1.value.should eq "four"
+      var_decl_1.value.should eq "var_106"
       multiply_4.class.should eq BinaryOperatorNode
       multiply_4.value.should eq "*"
       int_3_2.class.should eq IntegerLiteralNode
@@ -81,7 +81,7 @@ puts four - 3 * (four + 3)"
       addition_4.class.should eq BinaryOperatorNode
       addition_4.value.should eq "+"
       var_decl_2.class.should eq DeclarationReferenceNode
-      var_decl_2.value.should eq "four"
+      var_decl_2.value.should eq "var_106"
       int_3_3.class.should eq IntegerLiteralNode
       int_3_3.value.should eq 3
     end

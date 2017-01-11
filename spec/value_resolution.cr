@@ -4,8 +4,8 @@ require "../emerald/emerald"
 describe "Generator" do
   describe "value resolution" do
     input = "
-four = (2 + 2) * 3 + 2 * (5 + (6 * 7))
-puts four - 3 * (four + 3)"
+var_106 = (2 + 2) * 3 + 2 * (5 + (6 * 7))
+puts var_106 - 3 * (var_106 + 3)"
 
     program = EmeraldProgram.new input
     program.compile
@@ -13,7 +13,7 @@ puts four - 3 * (four + 3)"
     first_expression = program.ast[0].children[0]
     second_expression = program.ast[0].children[1]
 
-    it "resolves value of first expression as four = 106" do
+    it "resolves value of first expression as var_106 = 106" do
       first_expression.class.should eq VariableDeclarationNode
       first_expression.value.should eq "four"
       first_expression.resolved_value.should eq 106
@@ -28,8 +28,8 @@ puts four - 3 * (four + 3)"
 
   describe "value resolution_2" do
     input = "
-four = (2 + 2) * (3 + 2 * (2 - 5)) + 2 - 8 * 3 * (5 + (6 * 7))
-puts four + 8 * 2 < four - 8 * 2
+var_neg_1138 = (2 + 2) * (3 + 2 * (2 - 5)) + 2 - 8 * 3 * (5 + (6 * 7))
+puts var_neg_1138 + 8 * 2 < var_neg_1138 - 8 * 2
 "
 
     program2 = EmeraldProgram.new input
