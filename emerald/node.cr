@@ -17,35 +17,29 @@ class Node
     node.parent = self
   end
 
+  def delete_child(node : Node)
+    @children.delete node
+  end
+
   def promote(node : Node)
     insertion_point = get_binary_insertion_point node
 
-    held_children = insertion_point.not_nil!.children
-    insertion_point.not_nil!.children = [] of Node
-    insertion_point.not_nil!.add_child node
-    held_children.each do |child|
-      node.add_child child
-    end
+    root_node = insertion_point.parent.not_nil!
+    root_node.delete_child insertion_point
+    root_node.add_child node
+    node.add_child insertion_point
   end
 
   def get_binary_insertion_point(node : Node) : Node
-    active_parent = self.parent
+    insert_point = self
     while true
-      # Check if insertion point is a binary operator
-      if active_parent.class == BinaryOperatorNode && node.precedence < active_parent.as(BinaryOperatorNode).precedence
-        # If active_parent.parent is a node
-        if !active_parent.not_nil!.parent.nil?
-          active_parent = active_parent.not_nil!.parent
-        else
-          break
-        end
+      if insert_point.parent.class == BinaryOperatorNode && node.precedence < insert_point.parent.as(BinaryOperatorNode).precedence
+        insert_point = insert_point.parent.not_nil!
       else
         break
       end
     end
-    # We know active parent is not nil because there should
-    # always be the root node at the top to kill the ast chain
-    active_parent.not_nil!
+    insert_point
   end
 
   def get_first_expression_node : Node
