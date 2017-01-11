@@ -152,29 +152,32 @@ class BinaryOperatorNode < Node
   end
 
   def resolve_value(state : State) : State
-    lhs = @children[0].resolved_value.as(Int32)
-    rhs = @children[1].resolved_value.as(Int32)
-    case @value
-    when "+"
-      @resolved_value = lhs + rhs
-    when "-"
-      @resolved_value = lhs - rhs
-    when "*"
-      @resolved_value = lhs * rhs
-    when "/"
-      @resolved_value = lhs / rhs
-    when "=="
-      @resolved_value = lhs == rhs
-    when "!="
-      @resolved_value = lhs != rhs
-    when "<"
-      @resolved_value = lhs < rhs
-    when ">"
-      @resolved_value = lhs > rhs
-    when "<="
-      @resolved_value = lhs <= rhs
-    when ">="
-      @resolved_value = lhs >= rhs
+    # Currently only binary integer expressions are functional
+    lhs = @children[0].resolved_value
+    rhs = @children[1].resolved_value
+    if lhs.is_a?(Int32) && rhs.is_a?(Int32)
+      case @value
+      when "+"
+        @resolved_value = lhs + rhs
+      when "-"
+        @resolved_value = lhs - rhs
+      when "*"
+        @resolved_value = lhs * rhs
+      when "/"
+        @resolved_value = lhs / rhs
+      when "=="
+        @resolved_value = lhs == rhs
+      when "!="
+        @resolved_value = lhs != rhs
+      when "<"
+        @resolved_value = lhs < rhs
+      when ">"
+        @resolved_value = lhs > rhs
+      when "<="
+        @resolved_value = lhs <= rhs
+      when ">="
+        @resolved_value = lhs >= rhs
+      end
     end
     state
   end
