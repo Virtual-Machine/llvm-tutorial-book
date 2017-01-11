@@ -201,3 +201,6 @@ Our parser is going to work similarly to the one above, except rather than isola
 2. Expression nodes act as beacons, allowing the closing parenthesis to correctly activate the next required node in the parsing process.
 3. promote and add_child in accordance with the active node should always resolve to the correct place if there are no syntax errors.
 4. We likely can test for these syntax errors and provide user friendly messages if this situation is detected.
+
+
+Indeed, other than some possible changes in the order of children, our implementation of the parser's final output will be identical to a parser that specifically isolates and parses parenthesis expressions seperately.
