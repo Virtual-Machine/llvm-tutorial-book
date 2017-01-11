@@ -194,3 +194,10 @@ Step 6 - Finally inner parenthesis expression is parsed. 5 literal is appended, 
 ![BDMAS Parsing Stage 6](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_6.png)
 
 Visualize how the active node is changing as it parses the expressions and inner expressions.
+
+Our parser is going to work similarly to the one above, except rather than isolate parenthesis expressions and parse them seperately, its going to work its way left to right parsing each individual token in sequence during an expression, parenthesis included, and use predefined rules to determine when to generate AST nodes, and where to insert them. It will work out just fine for us because we can say the following is true in our implementation:
+
+1. Expression nodes act as gatekeepers, preventing operators from promotion beyond their borders.
+2. Expression nodes act as beacons, allowing the closing parenthesis to correctly activate the next required node in the parsing process.
+3. promote and add_child in accordance with the active node should always resolve to the correct place if there are no syntax errors.
+4. We likely can test for these syntax errors and provide user friendly messages if this situation is detected.
