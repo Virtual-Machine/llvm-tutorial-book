@@ -86,7 +86,7 @@ class Node
   def post_walk(state : State) : State
     state = resolve_value state
     # Print AST resolutions
-    # puts "#{self.class} resolved #{@resolved_value}"
+    # puts "#{"\t" * depth}#{self.class} resolved #{@resolved_value}"
     state
   end
 
