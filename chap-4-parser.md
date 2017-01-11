@@ -203,4 +203,12 @@ Our parser is going to work similarly to the one above, except rather than isola
 4. We likely can test for these syntax errors and provide user friendly messages if this situation is detected.
 
 
-Indeed, other than some possible changes in the order of children, our implementation of the parser's final output will be identical to a parser that specifically isolates and parses parenthesis expressions seperately.
+Indeed, other than some possible changes in the order of children, our implementation of the parser's final output will be identical to a parser that specifically isolates and parses parenthesis expressions seperately. Therefore the algorithm can be simply stated as follows:
+
+```
+Whenever a opening parenthesis is encounted, the active node appends an expression node which then becomes the new active node
+
+Whenever a closing parenthesis is encounted, the active node is recursively changed to its own parent node until the active node is an expression node.
+
+This process provides the boundary for the operator nodes and the designation for the active node once resolved.
+```
