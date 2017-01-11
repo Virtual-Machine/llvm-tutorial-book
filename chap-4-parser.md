@@ -185,25 +185,32 @@ Step 4 - Addition operator is promoted to top, the multiply operator becomes its
 
 ![BDMAS Parsing Stage 4](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_4.png)
 
-Step 5 - First parenthesis expression is parsed. Initially 4 literal is added, then multiplication operator is promoted, then inner parenthesis expression is appended as multiplication operator's child, then addition operator is promoted to top and 8 literal is appended as its child.
+Step 5 - First 4 literal is appended to expression node, then multiplication operator is promoted, and then expression node is appended to multiplication node as active node.
 
 ![BDMAS Parsing Stage 5](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_5.png)
 
-Step 6 - Finally inner parenthesis expression is parsed. 5 literal is appended, then addition operator is promoted, then 6 literal is appended, then multiplication operator is promoted, then 7 literal is appended.
+Step 6 - Inner parenthesis expression is parsed, 5 literal to expression node, addition is promoted, 6 literal to addition node, multiplication is promoted, 7 literal to multiplication node.
 
 ![BDMAS Parsing Stage 6](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_6.png)
 
+Step 7 - First parenthesis closes so active node jumps to closest expression node parent and then immediately promotes addition binary and appends 8 literal as its child.
+
+![BDMAS Parsing Stage 7](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_7.png)
+
+Step 8 - Second parenthesis closes so active node jumps to closest expression node parent and then immediately promotes multiplication, appends literal 9 to multiplication, double promotes subtraction, and then finally appends 1 literal to subtraction node.
+
+![BDMAS Parsing Stage 8](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/BDMAS_8.png)
+
 Visualize how the active node is changing as it parses the expressions and inner expressions.
 
-Our parser is going to work similarly to the one above, except rather than isolate parenthesis expressions and parse them seperately, its going to work its way left to right parsing each individual token in sequence during an expression, parenthesis included, and use predefined rules to determine when to generate AST nodes, and where to insert them. It will work out just fine for us because we can say the following is true in our implementation:
+The above approach allows us to parse each token in sequence and handle parenthesis scope because the following is true:
 
 1. Expression nodes act as gatekeepers, preventing operators from promotion beyond their borders.
 2. Expression nodes act as beacons, allowing the closing parenthesis to correctly activate the next required node in the parsing process.
 3. promote and add_child in accordance with the active node should always resolve to the correct place if there are no syntax errors.
 4. We likely can test for these syntax errors and provide user friendly messages if this situation is detected.
 
-
-Indeed, other than some possible changes in the order of children, our implementation of the parser's final output will be identical to a parser that specifically isolates and parses parenthesis expressions seperately. Therefore the algorithm can be simply stated as follows:
+The algorithm can be simply stated as follows:
 
 ```
 Whenever a opening parenthesis is encounted, 
