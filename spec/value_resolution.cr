@@ -1,8 +1,8 @@
 require "spec"
 require "../emerald/emerald"
 
-describe "Parser" do
-  describe "parse" do
+describe "Generator" do
+  describe "value resolution" do
     input = "
 four = (2 + 2) * 3 + 2 * (5 + (6 * 7))
 puts four - 3 * (four + 3)"
