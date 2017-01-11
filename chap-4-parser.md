@@ -161,7 +161,9 @@ Root
 
 Here are some sketches of this process to help you visualize.
 
-In this example we are using the expression 
+Blue means this node is new this step, red means its both new and the currently active node.
+
+In this example we are using the expression:
 
 ```crystal
 2 * 3 + (4 * (5 + 6 * 7) + 8) * 9 - 1
