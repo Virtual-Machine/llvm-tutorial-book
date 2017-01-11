@@ -25,6 +25,7 @@ class EmeraldProgram
   end
 
   def generate
+    @ast[0].walk
   end
 
   def compile
