@@ -6,6 +6,7 @@ full = false
 help = false
 
 options = {
+  "color"             => true,
   "supress"           => false,
   "printTokens"       => false,
   "printAST"          => false,
@@ -17,6 +18,9 @@ options = {
 
 OptionParser.parse! do |parser|
   parser.banner = "Usage: emeraldc [file_name] [flags]"
+
+  # No Colors
+  parser.on("-n", "--no_colors", "Turn off colourized output") { options["color"] = false }
 
   # Help
   parser.on("-h", "--help", "Print Help") { puts parser.to_s; help = true }

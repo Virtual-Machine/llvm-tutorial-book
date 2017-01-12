@@ -14,6 +14,7 @@ class EmeraldProgram
 
   def initialize(@input_code : String)
     @options = {
+      "color"             => true,
       "supress"           => false,
       "printTokens"       => false,
       "printAST"          => false,
@@ -54,7 +55,7 @@ class EmeraldProgram
     @lexer = Lexer.new input_code
     @token_array = lexer.lex
     if options["printTokens"]
-      puts "TOKENS"
+      puts options["color"] ? "\033[032mTOKENS\033[039m" : "TOKENS"
       @token_array.each do |token|
         puts token
       end
@@ -72,7 +73,7 @@ class EmeraldProgram
     state.printAST = options["printAST"].as(Bool)
     state.printResolutions = options["printResolutions"].as(Bool)
     if state.printAST || state.printResolutions
-      puts "AST / RESOLUTIONS"
+      puts options["color"] ? "\033[032mAST / RESOLUTIONS\033[039m" : "AST / RESOLUTIONS"
     end
 
     # Walk nodes to resolve values and generate state
@@ -95,7 +96,7 @@ class EmeraldProgram
     if state.instructions[-1].class != ReturnInstruction
       state.add_instruction ReturnInstruction.new 0, "Int32", "return"
     end
-    puts "INSTRUCTIONS" if options["printInstructions"]
+    puts options["color"] ? "\033[032mINSTRUCTIONS\033[039m" : "INSTRUCTIONS" if options["printInstructions"]
     state.instructions.each do |instruction|
       puts instruction if options["printInstructions"]
       instruction.build_instruction builder
@@ -110,7 +111,7 @@ class EmeraldProgram
       end
     end
     if options["printOutput"]
-      puts "OUTPUT"
+      puts options["color"] ? "\033[032mOUTPUT\033[039m" : "OUTPUT"
       puts mod.to_s
       puts
     end
