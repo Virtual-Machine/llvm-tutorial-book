@@ -10,13 +10,24 @@ Through the chapters of this tutorial we will create a working compiler for a to
 
 If anyone notices anything out of date or that is not factually correct, I welcome the knowledge. I am hoping to learn a lot from writing this.
 
+```bash
+#quick start
+crystal build emeraldc.cr #generates emerald compiler emeraldc
+# By default emeraldc targets test_file.cr
+emeraldc -h #show emeraldc help
+emeraldc -t -a -r -i -v #compile test_file.cr with all debug info
+emeraldc file_of_your_choice.cr #choose file to compile
+emeraldc -q #no generated output.ll
+emeraldc -f #full compilation to output binary
+emeraldc -c #clean all output files
+emeraldc -n #no color output
+```
+
 ###Todo
 
 ☐ Write code generation for more node types
 
 ☐ Clean and refactor code
-
-☐ Add wrapper to EmeraldProgram to facilitate debugging, code generation, and other functionality
 
 ☐ Integrate code into chapter texts
 
