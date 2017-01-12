@@ -51,6 +51,12 @@ class Parser
         parsed_expression = parse_expression (isolate_expression 1)
         @active_node.add_child parsed_expression
       end
+    when TokenType::Comment
+      # ignore
+    when TokenType::Delimiter
+      # ignore
+    else
+      raise "EMERALD PARSER ERROR  <#{@current_token.line}:#{@current_token.column}>: #{@current_token.typeT} is not currently supported at the top level"
     end
   end
 
