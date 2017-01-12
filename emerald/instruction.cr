@@ -27,6 +27,18 @@ Unable to resolve parameter into valid string"
       end
     end
   end
+
+  def to_s
+    if @func.name == "puts"
+      matches = @params.inspect.scan /c"(.*)\\00"\]/
+      found = matches[0][1]?
+      if found.is_a?(String)
+        "#{self.class} - #{@func.name} - #{found}"
+      end
+    else
+      "#{self.class} - #{@func.name}"
+    end
+  end
 end
 
 class ReturnInstruction < Instruction
@@ -40,5 +52,9 @@ class ReturnInstruction < Instruction
     when "Int32"
       builder.ret LLVM.int(LLVM::Int32, @value.as(Int32))
     end
+  end
+
+  def to_s
+    "#{self.class} - #{@value}"
   end
 end
