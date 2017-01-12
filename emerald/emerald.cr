@@ -54,6 +54,9 @@ class EmeraldProgram
     File.open("output.ll", "w") do |file|
       mod.to_s(file)
     end
+
+    # Store output for later inspection
+    @output = mod.to_s
   end
 
   def compile
