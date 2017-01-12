@@ -6,3 +6,6 @@ output
 emerald/output.ll
 emerald/output.s
 emerald/output
+spec/output.ll
+spec/output.s
+spec/output
