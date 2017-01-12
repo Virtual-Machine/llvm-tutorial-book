@@ -15,7 +15,7 @@ puts var_106 - 3 * (var_106 + 3)"
 
     it "resolves value of first expression as var_106 = 106" do
       first_expression.class.should eq VariableDeclarationNode
-      first_expression.value.should eq "four"
+      first_expression.value.should eq "var_106"
       first_expression.resolved_value.should eq 106
     end
 
