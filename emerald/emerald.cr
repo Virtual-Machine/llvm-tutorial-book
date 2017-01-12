@@ -57,7 +57,7 @@ class EmeraldProgram
     if options["printTokens"]
       puts options["color"] ? "\033[032mTOKENS\033[039m" : "TOKENS"
       @token_array.each do |token|
-        puts token
+        puts token.to_s
       end
       puts
     end

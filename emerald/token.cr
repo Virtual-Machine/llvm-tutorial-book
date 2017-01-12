@@ -6,4 +6,8 @@ class Token
                  @line : Int32,
                  @column : Int32)
   end
+
+  def to_s
+    "<#{@line}:#{@column}>\t- #{self.typeT}   \t- #{self.value}"
+  end
 end
