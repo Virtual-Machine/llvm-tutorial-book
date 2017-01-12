@@ -1,2 +1,8 @@
 .DS_Store
 note.cr
+output.ll
+output.s
+output
+emerald/output.ll
+emerald/output.s
+emerald/output
