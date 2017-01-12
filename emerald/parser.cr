@@ -44,6 +44,12 @@ class Parser
         @active_node = puts_node
         parsed_expression = parse_expression (isolate_expression 1)
         @active_node.add_child parsed_expression
+      elsif @current_token.value == :return
+        ret_node = ReturnNode.new @current_token.line, @current_token.column
+        @active_node.add_child ret_node
+        @active_node = ret_node
+        parsed_expression = parse_expression (isolate_expression 1)
+        @active_node.add_child parsed_expression
       end
     end
   end

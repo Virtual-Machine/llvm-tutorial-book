@@ -28,3 +28,17 @@ Unable to resolve parameter into valid string"
     end
   end
 end
+
+class ReturnInstruction < Instruction
+  def initialize(@value : ValueType, @return_type : String, @name : String)
+  end
+
+  def build_instruction(builder : LLVM::Builder)
+    case @return_type
+    when "Void"
+      builder.ret
+    when "Int32"
+      builder.ret LLVM.int(LLVM::Int32, @value.as(Int32))
+    end
+  end
+end

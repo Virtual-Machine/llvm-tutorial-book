@@ -106,7 +106,7 @@ class CallExpressionNode < Node
 
   def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
-    state.add_instruction CallInstruction.new state.functions[@value], [LLVM.string(@resolved_value.to_s)], "return_value_call"
+    state.add_instruction CallInstruction.new state.functions[@value], [LLVM.string(@resolved_value.to_s)], "call_expression"
   end
 end
 
@@ -200,5 +200,19 @@ class ExpressionNode < Node
 
   def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
+  end
+end
+
+class ReturnNode < Node
+  def initialize(@line : Int32, @position : Int32)
+    @value = nil
+    @children = [] of Node
+  end
+
+  def resolve_value(state : ProgramState)
+    @resolved_value = @children[0].resolved_value
+    if @resolved_value.is_a? Int32
+      state.add_instruction ReturnInstruction.new @resolved_value, "Int32", "return"
+    end
   end
 end
