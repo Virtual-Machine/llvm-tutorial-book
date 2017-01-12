@@ -3,6 +3,7 @@ require "./emerald/emerald"
 
 clean = false
 full = false
+help = false
 
 options = {
   "supress"           => false,
@@ -16,6 +17,9 @@ options = {
 
 OptionParser.parse! do |parser|
   parser.banner = "Usage: emeraldc [file_name] [flags]"
+
+  # Help
+  parser.on("-h", "--help", "Print Help") { puts parser.to_s; help = true }
 
   # Clean
   parser.on("-c", "--clean", "Cleans out all output files") { clean = true }
@@ -44,6 +48,7 @@ if clean
   File.delete("./output.ll") if File.file?("./output.ll")
   File.delete("./output.s") if File.file?("./output.s")
   File.delete("./output") if File.file?("./output")
+elsif help
 else
   # Compilation
   program = EmeraldProgram.new options
