@@ -2,7 +2,7 @@
 
 This is the main repository for my LLVM tutorial.
 
-*WARNING* This project is in progress. The lexer and parser are functional, though subject to refactoring and possible bugs. The code generator is not yet complete. Until this warning is removed, source code is subject to change and/or be incomplete.
+*WARNING* This project is in progress. The lexer, parser and code generator are functional, though subject to refactoring and possible bugs. Until this warning is removed, source code is subject to change and/or be incomplete.
 
 The project intention is to create a user friendly introduction to llvm, compilers, and programming language creation in general.
 
@@ -12,11 +12,11 @@ If anyone notices anything out of date or that is not factually correct, I welco
 
 ###Todo
 
-☐ Write node walking algorithm
-
-☐ Write code generation for node types
+☐ Write code generation for more node types
 
 ☐ Clean and refactor code
+
+☐ Add wrapper to EmeraldProgram to facilitate debugging, code generation, and other functionality
 
 ☐ Integrate code into chapter texts
 
@@ -33,6 +33,8 @@ Parser is able parse primary example, producing expected AST
 Furthermore Parser is able to parse numeric expressions containing parenthesis, and obeys order of BDMAS (no exponents yet).
 
 There are useful examples in /example_ir to see working LLVM IR and Crystal Builder API usage.
+
+Generator is able to walk nodes, declaring and referencing variables, resolving values and outputting a valid LLVM IR module complete with puts capability.
 
 ###Partial
 
