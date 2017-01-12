@@ -10,9 +10,9 @@ source_filename = \"Emerald\"
 
 define i32 @main() {
 main_body:
-  %return_value_call = call i32 @puts(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @puts_pointer, i32 0, i32 0))
-  %return_value_call1 = call i32 @puts(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @puts_pointer.1, i32 0, i32 0))
-  %return_value_call2 = call i32 @puts(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @puts_pointer.2, i32 0, i32 0))
+  %call_expression = call i32 @puts(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @puts_pointer, i32 0, i32 0))
+  %call_expression1 = call i32 @puts(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @puts_pointer.1, i32 0, i32 0))
+  %call_expression2 = call i32 @puts(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @puts_pointer.2, i32 0, i32 0))
   ret i32 0
 }
 
