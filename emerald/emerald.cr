@@ -27,39 +27,47 @@ class EmeraldProgram
     state.add_function "puts", mod.functions.add "puts", [LLVM::VoidPointer], LLVM::Int32
   end
 
-  def lex
+  def lex : Nil
     @lexer = Lexer.new input_code
     @token_array = lexer.lex
   end
 
-  def parse
+  def parse : Nil
     @parser = Parser.new token_array
     @ast = parser.not_nil!.parse
   end
 
-  def generate
+  def generate : Nil
+    # Walk nodes to resolve values and generate state
     @ast[0].walk state
 
-    builder.position_at_end main
+    # Use state instructions to generate LLVM IR
+    build_instructions
 
+    # Output LLVM IR to output.ll
+    output
+  end
+
+  def build_instructions : Nil
+    builder.position_at_end main
+    # If last instruction is not a return instruction, add ret i32 0 to close main
+    if state.instructions[-1].class != ReturnInstruction
+      state.add_instruction ReturnInstruction.new 0, "Int32", "return"
+    end
     state.instructions.each do |instruction|
       instruction.build_instruction builder
     end
+  end
 
-    # This should only be called if input source doesn't contain explicit return statement
-    # Requires a specific check during the ast walking stage to be implemented
-    builder.ret LLVM.int(LLVM::Int32, 0)
-
-    # To output an output.ll file ready to be converted to native assembly with llc
+  def output : String
     File.open("output.ll", "w") do |file|
       mod.to_s(file)
     end
 
-    # Store output for later inspection
     @output = mod.to_s
   end
 
-  def compile
+  def compile : Nil
     lex
     parse
     generate
