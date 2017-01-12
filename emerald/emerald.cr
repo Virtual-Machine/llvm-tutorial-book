@@ -9,7 +9,7 @@ require "./instruction"
 require "llvm"
 
 class EmeraldProgram
-  getter lexer, parser, input_code, token_array, ast, output, delimiters, state, mod, builder, main : LLVM::BasicBlock
+  getter lexer, parser, input_code, token_array, ast, output, delimiters, state, mod, builder, options, main : LLVM::BasicBlock
   getter! func : LLVM::Function
 
   def initialize(@input_code : String)
@@ -55,6 +55,13 @@ class EmeraldProgram
   def lex : Nil
     @lexer = Lexer.new input_code
     @token_array = lexer.lex
+    if options["printTokens"]
+      puts "TOKENS"
+      @token_array.each do |token|
+        puts token
+      end
+      puts
+    end
   end
 
   def parse : Nil
@@ -63,8 +70,19 @@ class EmeraldProgram
   end
 
   def generate : Nil
+    # Add debug values to state
+    state.printAST = options["printAST"].as(Bool)
+    state.printResolutions = options["printResolutions"].as(Bool)
+    if state.printAST || state.printResolutions
+      puts "AST / RESOLUTIONS"
+    end
+
     # Walk nodes to resolve values and generate state
     @ast[0].walk state
+
+    if state.printAST || state.printResolutions
+      puts
+    end
 
     # Use state instructions to generate LLVM IR
     build_instructions
@@ -79,16 +97,25 @@ class EmeraldProgram
     if state.instructions[-1].class != ReturnInstruction
       state.add_instruction ReturnInstruction.new 0, "Int32", "return"
     end
+    puts "INSTRUCTIONS" if options["printInstructions"]
     state.instructions.each do |instruction|
+      puts instruction if options["printInstructions"]
       instruction.build_instruction builder
     end
+    puts
   end
 
   def output : String
-    File.open("output.ll", "w") do |file|
-      mod.to_s(file)
+    if !options["supress"]
+      File.open("output.ll", "w") do |file|
+        mod.to_s(file)
+      end
     end
-
+    if options["printOutput"]
+      puts "OUTPUT"
+      puts mod.to_s
+      puts
+    end
     @output = mod.to_s
   end
 

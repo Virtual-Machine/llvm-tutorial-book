@@ -1,11 +1,14 @@
 class ProgramState
   getter variables, functions, blocks, instructions
+  property printAST, printResolutions
 
   def initialize
     @variables = {} of String => ValueType
     @functions = {} of String => LLVM::Function
     @blocks = {} of String => LLVM::BasicBlock
     @instructions = [] of Instruction
+    @printAST = false
+    @printResolutions = false
   end
 
   def add_variable(name : String, value : ValueType)

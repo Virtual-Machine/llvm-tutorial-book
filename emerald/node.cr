@@ -70,7 +70,7 @@ class Node
 
   def walk(state : ProgramState)
     # Print AST in walk order with depth
-    # puts "#{"\t" * depth}#{self.class} #{self.value}"
+    puts "#{"\t" * depth}#{self.class} #{self.value}" if state.printAST
     @children.each do |child|
       child.walk state
       child.post_walk state
@@ -80,7 +80,7 @@ class Node
   def post_walk(state : ProgramState)
     resolve_value state
     # Print AST resolutions
-    # puts "#{"\t" * depth}#{self.class} resolved #{@resolved_value}"
+    puts "#{"\t" * depth}#{self.class} resolved #{@resolved_value}" if state.printResolutions
   end
 
   def resolve_value(state : ProgramState)
