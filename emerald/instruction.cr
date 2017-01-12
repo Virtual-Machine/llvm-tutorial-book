@@ -14,7 +14,8 @@ class CallInstruction < Instruction
         string_ptr = builder.global_string_pointer found, "puts_pointer"
         builder.call @func, string_ptr, @name
       else
-        raise "String value not found for puts"
+        raise "EMERALD ERROR: There was an error building the instruction for Call Instruction puts
+Unable to resolve parameter into valid string"
       end
     else
       if @params.size == 0

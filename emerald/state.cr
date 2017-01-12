@@ -28,7 +28,7 @@ class ProgramState
     if variable_exists? name
       return @variables[name]
     else
-      raise "Undefined variable reference. Trying to lookup #{name}, but its declaration cannot be found."
+      raise "EMERALD ERROR: Undefined variable reference. Trying to lookup #{name}, but its declaration cannot be found."
     end
   end
 
