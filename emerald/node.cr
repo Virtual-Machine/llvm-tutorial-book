@@ -1,6 +1,7 @@
 class Node
   getter value
-  property parent, children, resolved_value
+  property children, resolved_value
+  property! parent
 
   @value : ValueType
   @resolved_value : ValueType
@@ -24,7 +25,7 @@ class Node
   def promote(node : Node)
     insertion_point = get_binary_insertion_point node
 
-    root_node = insertion_point.parent.not_nil!
+    root_node = insertion_point.parent
     root_node.delete_child insertion_point
     root_node.add_child node
     node.add_child insertion_point
@@ -34,7 +35,7 @@ class Node
     insert_point = self
     while true
       if insert_point.parent.class == BinaryOperatorNode && node.precedence < insert_point.parent.as(BinaryOperatorNode).precedence
-        insert_point = insert_point.parent.not_nil!
+        insert_point = insert_point.parent
       else
         break
       end
@@ -47,10 +48,10 @@ class Node
     while true
       # if active parent is an expression, we are done
       if active_parent.class == ExpressionNode
-        return active_parent.not_nil!
+        return active_parent
       else
         # Otherwise we need to keep looking upwards
-        active_parent = active_parent.not_nil!.parent
+        active_parent = active_parent.parent
       end
     end
   end
@@ -62,7 +63,7 @@ class Node
       if active_node.class == RootNode
         return count
       else
-        active_node = active_node.not_nil!.parent
+        active_node = active_node.parent
         count += 1
       end
     end
