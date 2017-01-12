@@ -99,7 +99,7 @@ class EmeraldProgram
     puts options["color"] ? "\033[032mINSTRUCTIONS\033[039m" : "INSTRUCTIONS" if options["printInstructions"]
     state.instructions.each do |instruction|
       puts instruction.to_s if options["printInstructions"]
-      instruction.build_instruction builder
+      instruction.build_instruction builder, state
     end
     puts if options["printInstructions"]
   end

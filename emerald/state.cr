@@ -1,14 +1,23 @@
 class ProgramState
-  getter variables, functions, blocks, instructions
+  getter variables, functions, blocks, instructions, globals
   property printAST, printResolutions
 
   def initialize
+    @globals = {} of String => LLVM::Value
     @variables = {} of String => ValueType
     @functions = {} of String => LLVM::Function
     @blocks = {} of String => LLVM::BasicBlock
     @instructions = [] of Instruction
     @printAST = false
     @printResolutions = false
+  end
+
+  def add_global(name : String, value : LLVM::Value)
+    @globals[name] = value
+  end
+
+  def has_global?(name : String) : Bool
+    @globals[name]? ? true : false
   end
 
   def add_variable(name : String, value : ValueType)

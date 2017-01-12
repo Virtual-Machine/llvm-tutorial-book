@@ -1,18 +1,24 @@
 abstract class Instruction
-  abstract def build_instruction(builder : LLVM::Builder)
+  abstract def build_instruction(builder : LLVM::Builder, state : ProgramState)
 end
 
 class CallInstruction < Instruction
   def initialize(@func : LLVM::Function, @params : Array(LLVM::Value), @name : String)
   end
 
-  def build_instruction(builder : LLVM::Builder)
+  def build_instruction(builder : LLVM::Builder, state : ProgramState)
     if @func.name == "puts" # Builtin puts command
       matches = @params.inspect.scan /c"(.*)\\00"\]/
       found = matches[0][1]?
       if found.is_a?(String)
-        string_ptr = builder.global_string_pointer found, "puts_pointer"
-        builder.call @func, string_ptr, @name
+        if state.has_global? found
+          string_ptr = state.globals[found]
+          builder.call @func, string_ptr, @name
+        else
+          string_ptr = builder.global_string_pointer found, "puts_pointer"
+          state.add_global found, string_ptr
+          builder.call @func, string_ptr, @name
+        end
       else
         raise "EMERALD ERROR: There was an error building the instruction for Call Instruction - puts
 Unable to resolve parameter into valid string"
@@ -45,7 +51,7 @@ class ReturnInstruction < Instruction
   def initialize(@value : ValueType, @return_type : String, @name : String)
   end
 
-  def build_instruction(builder : LLVM::Builder)
+  def build_instruction(builder : LLVM::Builder, state : ProgramState)
     case @return_type
     when "Void"
       builder.ret
