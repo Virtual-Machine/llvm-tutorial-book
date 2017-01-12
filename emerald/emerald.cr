@@ -101,7 +101,7 @@ class EmeraldProgram
       puts instruction.to_s if options["printInstructions"]
       instruction.build_instruction builder
     end
-    puts
+    puts if options["printInstructions"]
   end
 
   def output : String
