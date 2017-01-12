@@ -31,10 +31,19 @@ crystal build emeraldc.cr #generates emerald compiler emeraldc
 ☐ Clean and refactor code
 
 ☐ Integrate code into chapter texts
+ - Chapter 3
+ - Chapter 4
+ - Chapter 5
 
 ☐ Add diagrams for program behaviour
+ - lexer detail
+ - parser detail
+ - walk detail
+ - resolve_value detail
+ - ir generation detail
 
 ☐ Add more specs
+ - test bad syntax is caught with helpful error messages
 
 ###Working
 
