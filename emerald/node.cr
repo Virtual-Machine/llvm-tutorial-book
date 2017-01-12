@@ -68,30 +68,22 @@ class Node
     end
   end
 
-  def walk(state : State) : State
+  def walk(state : ProgramState)
     # Print AST in walk order with depth
     # puts "#{"\t" * depth}#{self.class} #{self.value}"
     @children.each do |child|
-      child.pre_walk
-      state = child.walk state
-      state = child.post_walk state
+      child.walk state
+      child.post_walk state
     end
-    state
   end
 
-  def pre_walk : Nil
-    # Ready for initialization calls
-  end
-
-  def post_walk(state : State) : State
-    state = resolve_value state
+  def post_walk(state : ProgramState)
+    resolve_value state
     # Print AST resolutions
     # puts "#{"\t" * depth}#{self.class} resolved #{@resolved_value}"
-    state
   end
 
-  def resolve_value(state : State) : State
-    state
+  def resolve_value(state : ProgramState)
   end
 end
 
@@ -102,9 +94,8 @@ class RootNode < Node
     @parent = nil
   end
 
-  def resolve_value(state : State) : State
+  def resolve_value(state : ProgramState)
     @resolved_value = @children[-1].resolved_value
-    state
   end
 end
 
@@ -113,9 +104,9 @@ class CallExpressionNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : State) : State
+  def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
-    state
+    state.add_instruction CallInstruction.new state.functions[@value], [LLVM.string(@resolved_value.to_s)], "return_value_call"
   end
 end
 
@@ -124,10 +115,9 @@ class VariableDeclarationNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : State) : State
+  def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
-    state[@value.as(String)] = @resolved_value
-    state
+    state.add_variable @value.as(String), @resolved_value
   end
 end
 
@@ -151,7 +141,7 @@ class BinaryOperatorNode < Node
     end
   end
 
-  def resolve_value(state : State) : State
+  def resolve_value(state : ProgramState)
     # Currently only binary integer expressions are functional
     lhs = @children[0].resolved_value
     rhs = @children[1].resolved_value
@@ -179,7 +169,6 @@ class BinaryOperatorNode < Node
         @resolved_value = lhs >= rhs
       end
     end
-    state
   end
 end
 
@@ -188,9 +177,8 @@ class IntegerLiteralNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : State) : State
+  def resolve_value(state : ProgramState)
     @resolved_value = value
-    state
   end
 end
 
@@ -199,9 +187,8 @@ class DeclarationReferenceNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : State) : State
-    @resolved_value = state[@value]
-    state
+  def resolve_value(state : ProgramState)
+    @resolved_value = state.reference_variable @value.as(String)
   end
 end
 
@@ -211,8 +198,7 @@ class ExpressionNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : State) : State
+  def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
-    state
   end
 end
