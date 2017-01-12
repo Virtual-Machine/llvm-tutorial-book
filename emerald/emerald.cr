@@ -13,6 +13,31 @@ class EmeraldProgram
   getter! func : LLVM::Function
 
   def initialize(@input_code : String)
+    @options = {
+      "supress"           => false,
+      "printTokens"       => false,
+      "printAST"          => false,
+      "printResolutions"  => false,
+      "printInstructions" => false,
+      "printOutput"       => false,
+      "filename"          => "",
+    }
+    @token_array = [] of Token
+    @ast = [] of Node
+    @output = ""
+    @lexer = Lexer.new ""
+    @state = ProgramState.new
+    @mod = LLVM::Module.new("Emerald")
+    @func = mod.functions.add "main", ([] of LLVM::Type), LLVM::Int32
+    func.linkage = LLVM::Linkage::External
+    @main = func.basic_blocks.append "main_body"
+    @builder = LLVM::Builder.new
+    state.add_function "main", func
+    state.add_function "puts", mod.functions.add "puts", [LLVM::VoidPointer], LLVM::Int32
+  end
+
+  def initialize(@options : Hash(String, (String | Bool)))
+    @input_code = File.read(@options["filename"].as(String))
     @token_array = [] of Token
     @ast = [] of Node
     @output = ""
