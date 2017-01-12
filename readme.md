@@ -14,13 +14,14 @@ If anyone notices anything out of date or that is not factually correct, I welco
 #quick start
 crystal build emeraldc.cr #generates emerald compiler emeraldc
 # By default emeraldc targets test_file.cr
-emeraldc -h #show emeraldc help
-emeraldc -t -a -r -i -v #compile test_file.cr with all debug info
-emeraldc file_of_your_choice.cr #choose file to compile
-emeraldc -q #no generated output.ll
-emeraldc -f #full compilation to output binary
-emeraldc -c #clean all output files
-emeraldc -n #no color output
+./emeraldc -h #show emeraldc help
+./emeraldc -t -a -r -i -v #compile test_file.cr with all debug info
+./emeraldc file_of_your_choice.cr #choose file to compile
+./emeraldc -q #no generated output.ll
+./emeraldc -f #full compilation to output binary
+./emeraldc -c #clean all output files
+./emeraldc -n #no color output
+./emeraldc -e #execute full compilation binary
 ```
 
 ###Todo

@@ -3,6 +3,7 @@ require "./emerald/emerald"
 
 clean = false
 full = false
+execute = false
 help = false
 
 options = {
@@ -30,6 +31,7 @@ OptionParser.parse! do |parser|
 
   # Full Build
   parser.on("-f", "--full", "Fully compile to runnable binary") { full = true }
+  parser.on("-e", "--execute", "Fully compile and execute runnable binary") { execute = true }
 
   # Output
   parser.on("-s", "--supress", "Supress output.ll generation") { options["supress"] = true }
@@ -57,8 +59,11 @@ else
   # Compilation
   program = EmeraldProgram.new options
   program.compile
-  if full
+  if full || execute
     system "llc output.ll"
     system "clang output.s -o output"
+    if execute
+      system "./output"
+    end
   end
 end
