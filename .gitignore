@@ -9,3 +9,4 @@ emerald/output
 spec/output.ll
 spec/output.s
 spec/output
+emeraldc
