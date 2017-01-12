@@ -9,8 +9,8 @@ require "./instruction"
 require "llvm"
 
 class EmeraldProgram
-  getter lexer, parser, input_code, token_array, ast, output, delimiters, state, mod, builder, options, main : LLVM::BasicBlock
-  getter! func : LLVM::Function
+  getter input_code, token_array, ast, output, delimiters, state, mod, builder, options, main : LLVM::BasicBlock
+  getter! lexer, parser, func : LLVM::Function
 
   def initialize(@input_code : String)
     @options = {
@@ -25,7 +25,6 @@ class EmeraldProgram
     @token_array = [] of Token
     @ast = [] of Node
     @output = ""
-    @lexer = Lexer.new ""
     @state = ProgramState.new
     @mod = LLVM::Module.new("Emerald")
     @func = mod.functions.add "main", ([] of LLVM::Type), LLVM::Int32
@@ -41,7 +40,6 @@ class EmeraldProgram
     @token_array = [] of Token
     @ast = [] of Node
     @output = ""
-    @lexer = Lexer.new ""
     @state = ProgramState.new
     @mod = LLVM::Module.new("Emerald")
     @func = mod.functions.add "main", ([] of LLVM::Type), LLVM::Int32
@@ -66,7 +64,7 @@ class EmeraldProgram
 
   def parse : Nil
     @parser = Parser.new token_array
-    @ast = parser.not_nil!.parse
+    @ast = parser.parse
   end
 
   def generate : Nil
