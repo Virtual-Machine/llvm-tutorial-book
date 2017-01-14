@@ -16,6 +16,8 @@ enum TokenType
   Keyword
   String
   Identifier
+  Bool
+  Symbol
   Float
   Int
   Operator
