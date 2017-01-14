@@ -146,7 +146,76 @@ class BinaryOperatorNode < Node
     # Currently only binary integer expressions are functional
     lhs = @children[0].resolved_value
     rhs = @children[1].resolved_value
-    if lhs.is_a?(Int32) && rhs.is_a?(Int32) 
+    if lhs.is_a?(Int32) && rhs.is_a?(Int32) # Integer and integer
+      case @value
+      when "+"
+        @resolved_value = lhs + rhs
+      when "-"
+        @resolved_value = lhs - rhs
+      when "*"
+        @resolved_value = lhs * rhs
+      when "/"
+        @resolved_value = lhs / rhs
+      when "=="
+        @resolved_value = lhs == rhs
+      when "!="
+        @resolved_value = lhs != rhs
+      when "<"
+        @resolved_value = lhs < rhs
+      when ">"
+        @resolved_value = lhs > rhs
+      when "<="
+        @resolved_value = lhs <= rhs
+      when ">="
+        @resolved_value = lhs >= rhs
+      end
+    elsif lhs.is_a?(Float64) && rhs.is_a?(Float64) # Float and float
+      case @value
+      when "+"
+        @resolved_value = lhs + rhs
+      when "-"
+        @resolved_value = lhs - rhs
+      when "*"
+        @resolved_value = lhs * rhs
+      when "/"
+        @resolved_value = lhs / rhs
+      when "=="
+        @resolved_value = lhs == rhs
+      when "!="
+        @resolved_value = lhs != rhs
+      when "<"
+        @resolved_value = lhs < rhs
+      when ">"
+        @resolved_value = lhs > rhs
+      when "<="
+        @resolved_value = lhs <= rhs
+      when ">="
+        @resolved_value = lhs >= rhs
+      end
+    elsif lhs.is_a?(Float64) && rhs.is_a?(Int32) # Float and integer
+      case @value
+      when "+"
+        @resolved_value = lhs + rhs
+      when "-"
+        @resolved_value = lhs - rhs
+      when "*"
+        @resolved_value = lhs * rhs
+      when "/"
+        @resolved_value = lhs / rhs
+      when "=="
+        @resolved_value = lhs == rhs
+      when "!="
+        @resolved_value = lhs != rhs
+      when "<"
+        @resolved_value = lhs < rhs
+      when ">"
+        @resolved_value = lhs > rhs
+      when "<="
+        @resolved_value = lhs <= rhs
+      when ">="
+        @resolved_value = lhs >= rhs
+      end
+    elsif lhs.is_a?(Int32) && rhs.is_a?(Float64) # Integer and float
       case @value
       when "+"
         @resolved_value = lhs + rhs
@@ -195,6 +264,16 @@ end
 
 class StringLiteralNode < Node
   def initialize(@value : String, @line : Int32, @position : Int32)
+    @children = [] of Node
+  end
+
+  def resolve_value(state : ProgramState)
+    @resolved_value = value
+  end
+end
+
+class FloatLiteralNode < Node
+  def initialize(@value : Float64, @line : Int32, @position : Int32)
     @children = [] of Node
   end
 

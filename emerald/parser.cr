@@ -95,6 +95,10 @@ class Parser
         int_node = IntegerLiteralNode.new token.value.as(Int32), token.line, token.column
         active.add_child int_node
         active = int_node
+      when TokenType::Float
+        float_node = FloatLiteralNode.new token.value.as(Float64), token.line, token.column
+        active.add_child float_node
+        active = float_node
       when TokenType::String
         str_node = StringLiteralNode.new token.value.as(String), token.line, token.column
         active.add_child str_node
