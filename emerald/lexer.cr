@@ -13,7 +13,7 @@ class Lexer
     @current = ' '
     @next = ' '
     @max = @content.size - 1
-    @keywords = [:puts, :return]
+    @keywords = [:puts, :return, :true, :false]
     @tokens = [] of Token
   end
 
@@ -182,7 +182,13 @@ class Lexer
     if @keywords.any? { |word| word.to_s == identifier }
       @keywords.each do |keyword|
         if keyword.to_s == identifier
-          generate_token TokenType::Keyword, keyword
+          if keyword == :true
+            generate_token TokenType::Bool, true
+          elsif keyword == :false
+            generate_token TokenType::Bool, false
+          else
+            generate_token TokenType::Keyword, keyword
+          end
         end
       end
     else

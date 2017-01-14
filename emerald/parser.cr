@@ -30,7 +30,7 @@ class Parser
 
   def parse_top_level
     case @current_token.typeT
-    when TokenType::Int
+    when TokenType::Int, TokenType::String, TokenType::Symbol, TokenType::Float, TokenType::Bool, TokenType::ParenOpen
       parsed_expression = parse_expression (isolate_expression 0)
       @active_node.add_child parsed_expression
     when TokenType::Identifier
@@ -103,6 +103,10 @@ class Parser
         str_node = StringLiteralNode.new token.value.as(String), token.line, token.column
         active.add_child str_node
         active = str_node
+      when TokenType::Bool
+        bool_node = BooleanLiteralNode.new token.value.as(Bool), token.line, token.column
+        active.add_child bool_node
+        active = bool_node
       when TokenType::Identifier
         ident_node = DeclarationReferenceNode.new token.value.as(String), token.line, token.column
         active.add_child ident_node

@@ -252,6 +252,13 @@ class BinaryOperatorNode < Node
       when "*"
         @resolved_value = lhs * rhs
       end
+    elsif lhs.is_a?(Bool) && rhs.is_a?(Bool)
+      case @value
+      when "=="
+        @resolved_value = lhs == rhs
+      when "!="
+        @resolved_value = lhs != rhs
+      end
     end
   end
 end
@@ -278,6 +285,16 @@ end
 
 class FloatLiteralNode < Node
   def initialize(@value : Float64, @line : Int32, @position : Int32)
+    @children = [] of Node
+  end
+
+  def resolve_value(state : ProgramState)
+    @resolved_value = value
+  end
+end
+
+class BooleanLiteralNode < Node
+  def initialize(@value : Bool, @line : Int32, @position : Int32)
     @children = [] of Node
   end
 
