@@ -174,6 +174,11 @@ class BinaryOperatorNode < Node
       when "+"
         @resolved_value = lhs + rhs
       end
+    elsif lhs.is_a?(String) && rhs.is_a?(Int32)
+      case @value
+      when "*"
+        @resolved_value = lhs * rhs
+      end
     end
   end
 end
