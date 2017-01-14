@@ -63,7 +63,7 @@ class Lexer
   end
 
   def lex_current_char : Nil
-    if @current == '(' || @current == ')'
+    if (@current == '(' || @current == ')') && @context != Context::Comment
       lex_parens
     else
       case @context
