@@ -68,12 +68,8 @@ if clean
   File.delete("./output") if File.file?("./output")
 elsif help
 elsif test_runner
-  files = Dir.open Dir.current + "/spec/"
-  files.each do |file|
-    if File.extname(file) == ".ll"
-      File.delete Dir.current + "/spec/#{file}"
-    end
-  end
+  path_to_file = Dir.current + "/spec/output.ll"
+  File.delete(path_to_file) if File.exist?(path_to_file) 
   system "crystal spec spec/*"
 else
   # Compilation
