@@ -34,7 +34,7 @@ class Node
   def get_binary_insertion_point(node : Node) : Node
     insert_point = self
     while true
-      if insert_point.parent.class == BinaryOperatorNode && node.precedence < insert_point.parent.as(BinaryOperatorNode).precedence
+      if insert_point.parent.class == BinaryOperatorNode && node.precedence <= insert_point.parent.as(BinaryOperatorNode).precedence
         insert_point = insert_point.parent
       else
         break
