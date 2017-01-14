@@ -1,7 +1,9 @@
 require "./types"
+require "./error"
 require "./token"
 require "./node"
 require "./lexer"
+require "./verifier"
 require "./parser"
 require "./state"
 require "./instruction"
@@ -9,7 +11,7 @@ require "./instruction"
 require "llvm"
 
 class EmeraldProgram
-  getter input_code, token_array, ast, output, delimiters, state, mod, builder, options, main : LLVM::BasicBlock
+  getter input_code, token_array, ast, output, delimiters, state, mod, builder, options, verifier, main : LLVM::BasicBlock
   getter! lexer, parser, func : LLVM::Function
 
   def initialize(@input_code : String)
@@ -26,6 +28,7 @@ class EmeraldProgram
     @token_array = [] of Token
     @ast = [] of Node
     @output = ""
+    @verifier = Verifier.new
     @state = ProgramState.new
     @mod = LLVM::Module.new("Emerald")
     @func = mod.functions.add "main", ([] of LLVM::Type), LLVM::Int32
@@ -41,6 +44,7 @@ class EmeraldProgram
     @token_array = [] of Token
     @ast = [] of Node
     @output = ""
+    @verifier = Verifier.new
     @state = ProgramState.new
     @mod = LLVM::Module.new("Emerald")
     @func = mod.functions.add "main", ([] of LLVM::Type), LLVM::Int32
@@ -60,6 +64,14 @@ class EmeraldProgram
         puts token.to_s
       end
       puts
+    end
+    begin
+      verifier.verify_token_array @token_array
+    rescue ex : EmeraldSyntaxException
+      puts ex.to_s
+      lines = @input_code.split("\n")
+      puts "Line #{ex.line} : #{lines[ex.line - 1]}"
+      exit 1
     end
   end
 
