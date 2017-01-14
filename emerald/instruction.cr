@@ -3,6 +3,7 @@ abstract class Instruction
 end
 
 class CallInstruction < Instruction
+  getter params
   def initialize(@func : LLVM::Function, @params : Array(LLVM::Value), @name : String)
   end
 
