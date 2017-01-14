@@ -14,12 +14,16 @@ puts 2.5 + 2 - 1.5 - 1
 puts 5 / 2 * 4 - 3 + 4
 
 puts 7.5 < 8
+
+puts 8.0 == 8
+
+puts 8 != 8.0
 "
 
   program = EmeraldProgram.new input
   program.compile
 
-  it "should resolve six puts calls with desired output" do
+  it "should resolve eight puts calls with desired output" do
     program.state.instructions[0].class.should eq CallInstruction
     program.state.instructions[0].as(CallInstruction).params[0].should eq LLVM.string("5.9")
     program.state.instructions[1].class.should eq CallInstruction
@@ -32,5 +36,9 @@ puts 7.5 < 8
     program.state.instructions[4].as(CallInstruction).params[0].should eq LLVM.string("9")
     program.state.instructions[5].class.should eq CallInstruction
     program.state.instructions[5].as(CallInstruction).params[0].should eq LLVM.string("true")
+    program.state.instructions[6].class.should eq CallInstruction
+    program.state.instructions[6].as(CallInstruction).params[0].should eq LLVM.string("true")
+    program.state.instructions[7].class.should eq CallInstruction
+    program.state.instructions[7].as(CallInstruction).params[0].should eq LLVM.string("false")
   end
 end
