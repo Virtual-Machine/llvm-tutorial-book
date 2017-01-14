@@ -69,7 +69,7 @@ if clean
 elsif help
 elsif test_runner
   path_to_file = Dir.current + "/spec/output.ll"
-  File.delete(path_to_file) if File.exist?(path_to_file) 
+  File.delete(path_to_file) if File.exists?(path_to_file) 
   system "crystal spec spec/*"
 else
   # Compilation
