@@ -43,6 +43,9 @@ class Lexer
     @current_token += @current
   end
 
+  def verify
+  end
+
   def lex : Array(Token)
     while @index <= @max
       @current = @content[@index]
@@ -59,6 +62,7 @@ class Lexer
       move_index
     end
     close_token
+    verify
     @tokens << Token.new TokenType::Delimiter, :endf, @line, @position
   end
 
