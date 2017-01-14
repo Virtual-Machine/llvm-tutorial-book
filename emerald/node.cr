@@ -146,7 +146,7 @@ class BinaryOperatorNode < Node
     # Currently only binary integer expressions are functional
     lhs = @children[0].resolved_value
     rhs = @children[1].resolved_value
-    if lhs.is_a?(Int32) && rhs.is_a?(Int32)
+    if lhs.is_a?(Int32) && rhs.is_a?(Int32) 
       case @value
       when "+"
         @resolved_value = lhs + rhs
@@ -168,6 +168,11 @@ class BinaryOperatorNode < Node
         @resolved_value = lhs <= rhs
       when ">="
         @resolved_value = lhs >= rhs
+      end
+    elsif lhs.is_a?(String) && rhs.is_a?(String)
+      case @value
+      when "+"
+        @resolved_value = lhs + rhs
       end
     end
   end

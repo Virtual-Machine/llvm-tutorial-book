@@ -114,13 +114,12 @@ class Lexer
 
   def lex_string : Nil
     if @current == '\\'
-      @current != '"'
       @current_token += @next
       move_index
     elsif @current != '"'
       @current_token += @current
     else
-      generate_token TokenType::String, @current_token.strip
+      generate_token TokenType::String, @current_token
     end
   end
 
