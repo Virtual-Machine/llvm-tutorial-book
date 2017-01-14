@@ -45,7 +45,7 @@ OptionParser.parse! do |parser|
   # Filename
   parser.unknown_args do |item|
     if item.size > 0
-      filename = item[0]
+      options["filename"] = item[0]
     end
   end
 end
