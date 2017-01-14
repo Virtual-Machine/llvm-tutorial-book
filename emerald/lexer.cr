@@ -129,7 +129,7 @@ class Lexer
   end
 
   def lex_operator : Nil
-    if !@current.ascii_whitespace?
+    if !@current.ascii_whitespace? && @current != '(' && @current != ')'
       @current_token += @current
     else
       generate_token TokenType::Operator, @current_token.strip
@@ -160,6 +160,8 @@ class Lexer
         close_number_token
       when Context::Identifier
         close_identifier_token
+      when Context::Operator
+        generate_token TokenType::Operator, @current_token.strip
       when Context::Comment
         generate_token TokenType::Comment, @current_token.strip
       end
