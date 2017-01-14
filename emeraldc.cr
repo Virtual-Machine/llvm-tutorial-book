@@ -1,6 +1,7 @@
 require "option_parser"
 require "./emerald/emerald"
 
+test_runner = false
 clean = false
 full = false
 execute = false
@@ -19,6 +20,10 @@ options = {
 
 OptionParser.parse! do |parser|
   parser.banner = "Usage: emeraldc [file_name] [flags]"
+  # acdefhinrstv options
+
+  # Test Runner
+  parser.on("-tr", "--test-runner", "Run all tests in spec") { test_runner = true }
 
   # No Colors
   parser.on("-n", "--no_colors", "Turn off colourized output") { options["color"] = false }
@@ -42,6 +47,13 @@ OptionParser.parse! do |parser|
   parser.on("-r", "--resolutions", "Prints AST resolutions to aid debugging") { options["printResolutions"] = true }
   parser.on("-i", "--instructions", "Prints instructions to aid debugging") { options["printInstructions"] = true }
   parser.on("-v", "--verbose", "Prints output to aid debugging") { options["printOutput"] = true }
+  parser.on("-d", "--debug", "Full debug output, = -t -a -r -i -v") { 
+    options["printTokens"] = true
+    options["printAST"] = true
+    options["printResolutions"] = true
+    options["printInstructions"] = true
+    options["printOutput"] = true
+  }
   # Filename
   parser.unknown_args do |item|
     if item.size > 0
@@ -55,6 +67,14 @@ if clean
   File.delete("./output.s") if File.file?("./output.s")
   File.delete("./output") if File.file?("./output")
 elsif help
+elsif test_runner
+  files = Dir.open Dir.current + "/spec/"
+  files.each do |file|
+    if File.extname(file) == ".ll"
+      File.delete Dir.current + "/spec/#{file}"
+    end
+  end
+  system "crystal spec spec/*"
 else
   # Compilation
   program = EmeraldProgram.new options
