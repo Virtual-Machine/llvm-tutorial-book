@@ -89,7 +89,14 @@ class EmeraldProgram
     end
 
     # Walk nodes to resolve values and generate state
-    @ast[0].walk state
+    begin
+      @ast[0].walk state
+    rescue ex : EmeraldSyntaxException
+      puts ex.to_s
+      lines = @input_code.split("\n")
+      puts "Line #{ex.line} : #{lines[ex.line - 1]}"
+      exit 1
+    end
 
     if state.printAST || state.printResolutions
       puts

@@ -168,6 +168,8 @@ class BinaryOperatorNode < Node
         @resolved_value = lhs <= rhs
       when ">="
         @resolved_value = lhs >= rhs
+      else
+        raise EmeraldSyntaxException.new "Undefined operation #{@value} on integer values #{lhs} #{rhs}", @line, @position
       end
     elsif lhs.is_a?(Float64) && rhs.is_a?(Float64) # Float and float
       case @value
@@ -191,6 +193,8 @@ class BinaryOperatorNode < Node
         @resolved_value = lhs <= rhs
       when ">="
         @resolved_value = lhs >= rhs
+      else
+        raise EmeraldSyntaxException.new "Undefined operation #{@value} on float values #{lhs} #{rhs}", @line, @position
       end
     elsif lhs.is_a?(Float64) && rhs.is_a?(Int32) # Float and integer
       case @value
@@ -214,6 +218,8 @@ class BinaryOperatorNode < Node
         @resolved_value = lhs <= rhs
       when ">="
         @resolved_value = lhs >= rhs
+      else
+        raise EmeraldSyntaxException.new "Undefined operation #{@value} on float64 #{lhs} and int32 #{rhs}", @line, @position
       end
     elsif lhs.is_a?(Int32) && rhs.is_a?(Float64) # Integer and float
       case @value
@@ -237,6 +243,8 @@ class BinaryOperatorNode < Node
         @resolved_value = lhs <= rhs
       when ">="
         @resolved_value = lhs >= rhs
+      else
+        raise EmeraldSyntaxException.new "Undefined operation #{@value} on int32 #{lhs} and float64 #{rhs}", @line, @position
       end
     elsif lhs.is_a?(String) && rhs.is_a?(String)
       case @value
@@ -246,11 +254,15 @@ class BinaryOperatorNode < Node
         @resolved_value = lhs == rhs
       when "!="
         @resolved_value = lhs != rhs
+      else
+        raise EmeraldSyntaxException.new "Undefined operation #{@value} on string values \"#{lhs}\" \"#{rhs}\"", @line, @position
       end
     elsif lhs.is_a?(String) && rhs.is_a?(Int32)
       case @value
       when "*"
         @resolved_value = lhs * rhs
+      else
+        raise EmeraldSyntaxException.new "Undefined operation #{@value} on string \"#{lhs}\" and int32 #{rhs}", @line, @position
       end
     elsif lhs.is_a?(Bool) && rhs.is_a?(Bool)
       case @value
@@ -258,7 +270,11 @@ class BinaryOperatorNode < Node
         @resolved_value = lhs == rhs
       when "!="
         @resolved_value = lhs != rhs
+      else
+        raise EmeraldSyntaxException.new "Undefined operation #{@value} on boolean values #{lhs} #{rhs}", @line, @position
       end
+    else
+      raise EmeraldSyntaxException.new "Undefined operation #{@value} based on types LHS -> #{lhs} RHS -> #{rhs}", @line, @position
     end
   end
 end
