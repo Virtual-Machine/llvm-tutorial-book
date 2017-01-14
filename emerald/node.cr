@@ -183,6 +183,16 @@ class IntegerLiteralNode < Node
   end
 end
 
+class StringLiteralNode < Node
+  def initialize(@value : String, @line : Int32, @position : Int32)
+    @children = [] of Node
+  end
+
+  def resolve_value(state : ProgramState)
+    @resolved_value = value
+  end
+end
+
 class DeclarationReferenceNode < Node
   def initialize(@value : String, @line : Int32, @position : Int32)
     @children = [] of Node
