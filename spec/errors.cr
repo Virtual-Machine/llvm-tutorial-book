@@ -27,7 +27,7 @@ describe "Errors" do
 				program.compile
 			end
 		end
-		
+
 		it "should catch bad combinations of tokens 4" do
 			expect_raises EmeraldTokenVerificationException do
 				program = EmeraldProgram.new "puts 2 ()", true
@@ -49,18 +49,35 @@ describe "Errors" do
 			end
 		end
 
-		it "should cause value resolution errors for undefined operators on known type combinations" do
+		it "should catch value resolution errors for undefined operators on known type combinations" do
 			expect_raises EmeraldValueResolutionException do
 				program = EmeraldProgram.new "puts 1 += 1", true
 				program.compile
 			end
 		end
 
-		it "should cause value resolution errors for undefined type combinations" do
+		it "should catch value resolution errors for undefined type combinations" do
 			expect_raises EmeraldValueResolutionException do
 				program = EmeraldProgram.new "puts true + 1", true
 				program.compile
 			end
 		end
+
+		it "should catch parsing exception for undefined top level tokens" do
+			expect_raises EmeraldParsingException do
+				program = EmeraldProgram.new "+ 2", true
+				program.compile
+			end
+		end
+
+		it "should catch variable reference exception for undefined variables" do
+			expect_raises EmeraldVariableReferenceException do
+				program = EmeraldProgram.new "puts hello", true
+				program.compile
+			end
+		end
+
+		# Currently unable to test for EmeraldInstructionException
+		# Not sure if there is possible input to generate error as of yet.
 	end
 end
