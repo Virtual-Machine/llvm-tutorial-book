@@ -14,7 +14,7 @@ class EmeraldProgram
   getter input_code, token_array, ast, output, delimiters, state, mod, builder, options, verifier, main : LLVM::BasicBlock
   getter! lexer, parser, func : LLVM::Function
 
-  def initialize(@input_code : String)
+  def initialize(@input_code : String, @test_mode : Bool = false)
     @options = {
       "color"             => true,
       "supress"           => false,
@@ -39,7 +39,7 @@ class EmeraldProgram
     state.add_function "puts", mod.functions.add "puts", [LLVM::VoidPointer], LLVM::Int32
   end
 
-  def initialize(@options : Hash(String, (String | Bool)))
+  def initialize(@options : Hash(String, (String | Bool)), @test_mode : Bool = false)
     @input_code = File.read(@options["filename"].as(String))
     @token_array = [] of Token
     @ast = [] of Node
@@ -68,7 +68,7 @@ class EmeraldProgram
     begin
       verifier.verify_token_array @token_array
     rescue ex : EmeraldSyntaxException
-      ex.full_error @input_code, @options["color"].as(Bool)
+      ex.full_error @input_code, @options["color"].as(Bool), @test_mode
     end
   end
 
@@ -89,7 +89,7 @@ class EmeraldProgram
     begin
       @ast[0].walk state
     rescue ex : EmeraldSyntaxException
-      ex.full_error @input_code, @options["color"].as(Bool)
+      ex.full_error @input_code, @options["color"].as(Bool), @test_mode
     end
 
     if state.printAST || state.printResolutions
