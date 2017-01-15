@@ -45,3 +45,21 @@ crystal build emeraldc.cr #generates emerald compiler emeraldc
  - ir generation detail
 
 ☐ Add more specs
+
+
+###Demo With Debug Output
+
+demo_file.cr
+```crystal
+four = 2 + 2
+puts four + 1
+puts 10 < 6 + 1 * 2
+```
+
+```bash
+./emeraldc demo_file.cr -d
+```
+
+output
+![Output](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/demo_output.png)
+
