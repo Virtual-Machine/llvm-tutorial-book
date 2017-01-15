@@ -68,10 +68,7 @@ class EmeraldProgram
     begin
       verifier.verify_token_array @token_array
     rescue ex : EmeraldSyntaxException
-      puts ex.to_s
-      lines = @input_code.split("\n")
-      puts "Line #{ex.line} : #{lines[ex.line - 1]}"
-      exit 1
+      ex.full_error @input_code, @options["color"].as(Bool)
     end
   end
 
@@ -92,10 +89,7 @@ class EmeraldProgram
     begin
       @ast[0].walk state
     rescue ex : EmeraldSyntaxException
-      puts ex.to_s
-      lines = @input_code.split("\n")
-      puts "Line #{ex.line} : #{lines[ex.line - 1]}"
-      exit 1
+      ex.full_error @input_code, @options["color"].as(Bool)
     end
 
     if state.printAST || state.printResolutions

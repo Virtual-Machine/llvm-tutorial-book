@@ -26,7 +26,7 @@ class Verifier
 				end
 
 				error_string = "Two tokens   #{token_value}   #{next_token_value}   were detected in sequence, this is not valid Emerald syntax"
-				error = EmeraldSyntaxException.new error_string, token.line, token.column
+				error = EmeraldTokenVerificationException.new error_string, token.line, token.column
 				case token.typeT
 				when TokenType::Operator
 					if next_token.typeT == TokenType::Operator || next_token.typeT == TokenType::ParenClose
