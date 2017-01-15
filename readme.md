@@ -2,7 +2,7 @@
 
 This is the main repository for my LLVM tutorial.
 
-*WARNING* This project is in progress. The lexer, parser and code generator are functional, though subject to refactoring and possible bugs. Until this warning is removed, source code is subject to change and/or be incomplete.
+**WARNING** This project is still in the early phase. The lexer, parser and code generator are functional, though subject to refactoring and possible bugs. Until this warning is removed, source code is subject to change. Chapter texts remain incomplete, yet useful at the moment. Compiler meets basic example requirements, but there are many more additions planned.
 
 The project intention is to create a user friendly introduction to llvm, compilers, and programming language creation in general.
 
@@ -16,12 +16,14 @@ crystal build emeraldc.cr #generates emerald compiler emeraldc
 # By default emeraldc targets test_file.cr
 ./emeraldc -h #show emeraldc help
 ./emeraldc -t -a -r -i -v #compile test_file.cr with all debug info
+./emeraldc -d #same as -t -a -r -i -v
 ./emeraldc file_of_your_choice.cr #choose file to compile
 ./emeraldc -q #no generated output.ll
 ./emeraldc -f #full compilation to output binary
 ./emeraldc -c #clean all output files
 ./emeraldc -n #no color output
 ./emeraldc -e #execute full compilation binary
+./emeraldc -tr #execute tests in spec/
 ```
 
 ###Todo
@@ -43,20 +45,3 @@ crystal build emeraldc.cr #generates emerald compiler emeraldc
  - ir generation detail
 
 ☐ Add more specs
- - test bad syntax is caught with helpful error messages
-
-###Working
-
-Lexer is able to lex primary example, producing expected token array
-
-Parser is able parse primary example, producing expected AST
-
-Furthermore Parser is able to parse numeric expressions containing parenthesis, and obeys order of BDMAS (no exponents yet).
-
-There are useful examples in /example_ir to see working LLVM IR and Crystal Builder API usage.
-
-Generator is able to walk nodes, declaring and referencing variables, resolving values and outputting a valid LLVM IR module complete with puts capability.
-
-###Partial
-
-Chapters 0-6 contains partial and somewhat scattered information. Despite this early rough stage, it is likely still very useful.
