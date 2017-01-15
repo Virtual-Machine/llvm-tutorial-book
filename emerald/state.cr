@@ -47,7 +47,7 @@ class ProgramState
   macro define_exists?(state_type)
   	{% for state in state_type %}
 	  	def {{state}}_exists?({{state}} : String) : Bool
-			  if @{{state}}s[{{state}}]
+			  if @{{state}}s[{{state}}]? != nil
 			    return true
 			  else
 			    return false
