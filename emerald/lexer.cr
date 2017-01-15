@@ -138,8 +138,6 @@ class Lexer
 
   def lex_top_level : Nil
     case
-    when @current == '\n'
-      @tokens << Token.new TokenType::Delimiter, :endl, @line, @position
     when @current == '"'
       enter_mode(Context::String)
     when @current == '#'

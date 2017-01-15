@@ -74,8 +74,21 @@ class Parser
       @tokens.shift
     end
     expression = [] of Token
-    until @tokens[0].typeT == TokenType::Delimiter
-      expression.push @tokens.shift
+    open_parens = 0
+    until @tokens[0].typeT == TokenType::Delimiter && open_parens == 0
+      if @tokens[0].typeT == TokenType::ParenOpen
+        open_parens += 1
+      elsif @tokens[0].typeT == TokenType::ParenClose
+        open_parens -= 1
+      end
+      if open_parens < 0
+        raise EmeraldParsingException.new "Closing parenthesis without corresponding opening parenthesis in expression", @tokens[0].line, @tokens[0].column
+      end
+      if @tokens[0].typeT == TokenType::Delimiter
+        @tokens.shift
+      else
+        expression.push @tokens.shift
+      end
     end
     expression
   end
