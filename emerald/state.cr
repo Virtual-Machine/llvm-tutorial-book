@@ -36,11 +36,11 @@ class ProgramState
     @instructions.push instruction
   end
 
-  def reference_variable(name : String) : ValueType
+  def reference_variable(name : String, line : Int32, column : Int32) : ValueType
     if variable_exists? name
       return @variables[name]
     else
-      raise "EMERALD ERROR: Undefined variable reference. Trying to lookup #{name}, but its declaration cannot be found."
+      raise EmeraldVariableReferenceException.new "Undefined variable reference. Trying to lookup #{name}, but its declaration cannot be found.", line, column
     end
   end
 

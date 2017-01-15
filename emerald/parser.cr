@@ -56,7 +56,7 @@ class Parser
     when TokenType::Delimiter
       # ignore
     else
-      raise "EMERALD PARSER ERROR  <#{@current_token.line}:#{@current_token.column}>: #{@current_token.typeT} is not currently supported at the top level"
+      raise EmeraldParsingException.new "#{@current_token.typeT} is not currently supported at the top level", @current_token.line, @current_token.column
     end
   end
 

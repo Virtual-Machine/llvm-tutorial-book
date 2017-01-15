@@ -74,7 +74,11 @@ class EmeraldProgram
 
   def parse : Nil
     @parser = Parser.new token_array
-    @ast = parser.parse
+    begin
+      @ast = parser.parse
+    rescue ex : EmeraldSyntaxException
+      ex.full_error @input_code, @options["color"].as(Bool), @test_mode
+    end
   end
 
   def generate : Nil
@@ -97,8 +101,11 @@ class EmeraldProgram
     end
 
     # Use state instructions to generate LLVM IR
-    build_instructions
-
+    begin
+      build_instructions
+    rescue ex : EmeraldSyntaxException
+      ex.full_error @input_code, @options["color"].as(Bool), @test_mode
+    end
     # Output LLVM IR to output.ll
     output
   end
@@ -107,7 +114,7 @@ class EmeraldProgram
     builder.position_at_end main
     # If last instruction is not a return instruction, add ret i32 0 to close main
     if state.instructions[-1].class != ReturnInstruction
-      state.add_instruction ReturnInstruction.new 0, "Int32", "return"
+      state.add_instruction ReturnInstruction.new 0, "Int32", "return", @input_code.split("\n").size, 1
     end
     puts options["color"] ? "\033[032mINSTRUCTIONS\033[039m" : "INSTRUCTIONS" if options["printInstructions"]
     state.instructions.each do |instruction|

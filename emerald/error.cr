@@ -52,3 +52,12 @@ end
 
 class EmeraldTokenVerificationException < EmeraldSyntaxException
 end
+
+class EmeraldParsingException < EmeraldSyntaxException
+end
+
+class EmeraldVariableReferenceException < EmeraldSyntaxException
+end
+
+class EmeraldInstructionException < EmeraldSyntaxException
+end

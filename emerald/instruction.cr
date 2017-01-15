@@ -4,7 +4,7 @@ end
 
 class CallInstruction < Instruction
   getter params
-  def initialize(@func : LLVM::Function, @params : Array(LLVM::Value), @name : String)
+  def initialize(@func : LLVM::Function, @params : Array(LLVM::Value), @name : String, @line : Int32, @position : Int32)
   end
 
   def build_instruction(builder : LLVM::Builder, state : ProgramState)
@@ -21,8 +21,8 @@ class CallInstruction < Instruction
           builder.call @func, string_ptr, @name
         end
       else
-        raise "EMERALD ERROR: There was an error building the instruction for Call Instruction - puts
-Unable to resolve parameter into valid string"
+        raise EmeraldInstructionException.new "There was an error building the instruction for Call Instruction - puts
+Unable to resolve parameter into valid string", @line, @position
       end
     else
       if @params.size == 0
@@ -49,7 +49,7 @@ Unable to resolve parameter into valid string"
 end
 
 class ReturnInstruction < Instruction
-  def initialize(@value : ValueType, @return_type : String, @name : String)
+  def initialize(@value : ValueType, @return_type : String, @name : String, @line : Int32, @position : Int32)
   end
 
   def build_instruction(builder : LLVM::Builder, state : ProgramState)

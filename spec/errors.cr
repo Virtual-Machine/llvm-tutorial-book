@@ -27,6 +27,7 @@ describe "Errors" do
 				program.compile
 			end
 		end
+		
 		it "should catch bad combinations of tokens 4" do
 			expect_raises EmeraldTokenVerificationException do
 				program = EmeraldProgram.new "puts 2 ()", true
