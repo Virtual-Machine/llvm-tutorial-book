@@ -46,4 +46,22 @@ puts var_neg_1138 + 8 * 2 < var_neg_1138 - 8 * 2
       second_expression.resolved_value.should eq false
     end
   end
+
+  describe "value resolution_3" do
+    input = "
+puts (4 +
+3
+*
+2)
+"
+
+    program3 = EmeraldProgram.new input
+    program3.compile
+
+    first_expression = program3.ast[0].children[0]
+
+    it "resolves multi-line expressions wrapped in parenthesis" do
+      first_expression.resolved_value.should eq 10
+    end
+  end
 end
