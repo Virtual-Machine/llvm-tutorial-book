@@ -70,6 +70,20 @@ describe "Errors" do
 			end
 		end
 
+		it "should catch parsing exception for closing unopened parenthesis" do
+			expect_raises EmeraldParsingException do
+				program = EmeraldProgram.new "2 + 2)", true
+				program.compile
+			end
+		end
+
+		it "should catch parsing exception for unclosed parenthesis" do
+			expect_raises EmeraldParsingException do
+				program = EmeraldProgram.new "(2 + 2", true
+				program.compile
+			end
+		end
+
 		it "should catch variable reference exception for undefined variables" do
 			expect_raises EmeraldVariableReferenceException do
 				program = EmeraldProgram.new "puts hello", true
