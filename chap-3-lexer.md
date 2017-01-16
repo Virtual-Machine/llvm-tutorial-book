@@ -7,3 +7,7 @@ The Lexer will begin by taking the array of characters and looping through them 
 Our Lexer will also have some additional properties to help it when parsing our language. One thing our Lexer will have is a context property. What this does is allow the Lexer to understand more complicated groupings of characters. For example we want our Lexer to recognize that the following grouping of characters: "Hello World!" is in fact one String token rather than two seperate tokens. An easy way to accomplish this is to use the context property to indicate when the Lexer has entered a String section so it knows to continue adding characters until the second quotation symbol is encountered. This context property can also be used to collate comments into a single Token.
 
 The only remaining requirement for our Lexer is for it to inject some whitespace tokens during its work to aid the Parser. In order for the Parser to be able to clearly know when a given expression ends and a new one begins, our Lexer should append a new line token on each new line escape sequence, and to be explicit we will also append an end of file token once Lexing is complete. This way our array of tokens will clearly indicate the linear order of all the semantics of our programming language including the effects of whitespace on expressions.
+
+Here is a high level view of what the lexer is doing to generate the token array from a given array of characters.
+
+![Lexer Basic](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/lexer_basic.png)
