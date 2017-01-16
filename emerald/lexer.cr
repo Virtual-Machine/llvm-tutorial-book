@@ -45,38 +45,33 @@ class Lexer
 
   def lex : Array(Token)
     while @index <= @max
-      @current = @content[@index]
-      if @index < @max
-        @next = @content[@index + 1]
-      else
-        @next = '\u{4}'
-      end
       lex_current_char
-      move_index
     end
     close_token
     @tokens << Token.new TokenType::Delimiter, :endf, @line, @position
   end
 
   def lex_current_char : Nil
+    set_current_and_next
     if (@current == '(' || @current == ')') && @context != Context::Comment
       lex_parens
     else
-      case @context
-      when Context::TopLevel
-        lex_top_level
-      when Context::Comment
-        lex_comment
-      when Context::Identifier
-        lex_identifier
-      when Context::String
-        lex_string
-      when Context::Number
-        lex_number
-      when Context::Operator
-        lex_operator
-      end
+      lex_by_context
     end
+    check_for_raw_delimiter
+    move_index
+  end
+
+  def set_current_and_next : Nil
+    @current = @content[@index]
+    if @index < @max
+      @next = @content[@index + 1]
+    else
+      @next = '\u{4}'
+    end
+  end
+
+  def check_for_raw_delimiter : Nil
     if @current == '\n' && @context != Context::String
       @tokens << Token.new TokenType::Delimiter, :endl, @line, @position
       next_line
@@ -89,6 +84,23 @@ class Lexer
     elsif @current == ')'
       close_token
       @tokens << Token.new TokenType::ParenClose, ")", @line, @position
+    end
+  end
+
+  def lex_by_context : Nil
+    case @context
+    when Context::TopLevel
+      lex_top_level
+    when Context::Comment
+      lex_comment
+    when Context::Identifier
+      lex_identifier
+    when Context::String
+      lex_string
+    when Context::Number
+      lex_number
+    when Context::Operator
+      lex_operator
     end
   end
 
@@ -110,19 +122,23 @@ class Lexer
 
   def lex_string : Nil
     if @current == '\\'
-      if @next == 'n'
-        @current_token += "\n"
-      elsif @next == 't'
-        @current_token += "\t"
-      else
-        @current_token += @next
-      end
-      move_index
+      handle_escape
     elsif @current != '"'
       @current_token += @current
     else
       generate_token TokenType::String, @current_token
     end
+  end
+
+  def handle_escape : Nil
+    if @next == 'n'
+      @current_token += "\n"
+    elsif @next == 't'
+      @current_token += "\t"
+    else
+      @current_token += @next
+    end
+    move_index
   end
 
   def lex_number : Nil
