@@ -12,6 +12,8 @@ class CallInstruction < Instruction
       matches = @params.inspect.scan /c"(.*)\\00"\]/
       found = matches[0][1]?
       if found.is_a?(String)
+        found = found.gsub(/\\09/, "\t")
+        found = found.gsub(/\\0A/, "\n")
         if state.has_global? found
           string_ptr = state.globals[found]
           builder.call @func, string_ptr, @name

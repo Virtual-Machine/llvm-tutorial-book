@@ -52,10 +52,6 @@ class Lexer
         @next = '\u{4}'
       end
       lex_current_char
-      if @current == '\n'
-        @tokens << Token.new TokenType::Delimiter, :endl, @line, @position
-        next_line
-      end
       move_index
     end
     close_token
@@ -80,6 +76,10 @@ class Lexer
       when Context::Operator
         lex_operator
       end
+    end
+    if @current == '\n' && @context != Context::String
+      @tokens << Token.new TokenType::Delimiter, :endl, @line, @position
+      next_line
     end
   end
 
@@ -110,7 +110,13 @@ class Lexer
 
   def lex_string : Nil
     if @current == '\\'
-      @current_token += @next
+      if @next == 'n'
+        @current_token += "\n"
+      elsif @next == 't'
+        @current_token += "\t"
+      else
+        @current_token += @next
+      end
       move_index
     elsif @current != '"'
       @current_token += @current
