@@ -10,7 +10,13 @@ class Parser
     @ast = [] of Node
     ast.push RootNode.new
     @active_node = @ast[0]
+    @context = [@ast[0]] of Node
     @current_token = @tokens[0]
+    @paren_nest = 0
+  end
+
+  def active_context : Node
+    @context[-1]
   end
 
   def parse : Array(Node)
@@ -19,123 +25,140 @@ class Parser
       if @tokens.size > 1
         @next_token = @tokens[1]
       end
-
-      parse_top_level
+      parse_token
 
       @tokens.shift
-      @active_node = @ast[0]
+    end
+    if @paren_nest > 0
+      raise EmeraldParsingException.new "Unclosed parenthesis expression", 0, 0
     end
     @ast
   end
 
-  def parse_top_level
+  def parse_token
     case @current_token.typeT
-    when TokenType::Int, TokenType::String, TokenType::Symbol, TokenType::Float, TokenType::Bool, TokenType::ParenOpen
-      parsed_expression = parse_expression (isolate_expression 0)
-      @active_node.add_child parsed_expression
+    when TokenType::Int
+      parse_int
+    when TokenType::String
+      parse_string
+    when TokenType::Float
+      parse_float
+    when TokenType::Bool
+      parse_bool
+    when TokenType::ParenOpen
+      parse_paren_open
+    when TokenType::ParenClose
+      parse_paren_close
+    when TokenType::Operator
+      parse_operator
     when TokenType::Identifier
       if @next_token.not_nil!.typeT == TokenType::Operator && @next_token.not_nil!.value == "="
-        parse_identifier_declaration
+        parse_variable_declaration
+      else
+        parse_declaration_reference
       end
     when TokenType::Keyword
       if @current_token.value == :puts
-        puts_node = CallExpressionNode.new "puts", @current_token.line, @current_token.column
-        @active_node.add_child puts_node
-        @active_node = puts_node
-        parsed_expression = parse_expression (isolate_expression 1)
-        @active_node.add_child parsed_expression
+        parse_builtin_puts
       elsif @current_token.value == :return
-        ret_node = ReturnNode.new @current_token.line, @current_token.column
-        @active_node.add_child ret_node
-        @active_node = ret_node
-        parsed_expression = parse_expression (isolate_expression 1)
-        @active_node.add_child parsed_expression
+        parse_return
       end
     when TokenType::Comment
-      # ignore
     when TokenType::Delimiter
-      # ignore
+      if @paren_nest == 0
+        @active_node = active_context
+      end
     else
       raise EmeraldParsingException.new "#{@current_token.typeT} is not currently supported at the top level", @current_token.line, @current_token.column
     end
   end
 
-  def parse_identifier_declaration
+  def add_and_activate(node : Node) : Nil
+    @active_node.add_child node
+    @active_node = node
+  end
+
+  def add_expression_node : Nil
+    node = ExpressionNode.new @current_token.line, @current_token.column
+    add_and_activate node
+  end
+
+  def parse_int
+    if @active_node == @ast[0]
+      add_expression_node
+    end
+    node = IntegerLiteralNode.new @current_token.value.as(Int32), @current_token.line, @current_token.column
+    add_and_activate node
+  end
+
+  def parse_string
+    if @active_node == @ast[0]
+      add_expression_node
+    end
+    node = StringLiteralNode.new @current_token.value.as(String), @current_token.line, @current_token.column
+    add_and_activate node
+  end
+
+  def parse_float
+    if @active_node == @ast[0]
+      add_expression_node
+    end
+    node = FloatLiteralNode.new @current_token.value.as(Float64), @current_token.line, @current_token.column
+    add_and_activate node
+  end
+
+  def parse_bool
+    if @active_node == @ast[0]
+      add_expression_node
+    end
+    node = BooleanLiteralNode.new @current_token.value.as(Bool), @current_token.line, @current_token.column
+    add_and_activate node
+  end
+
+  def parse_operator
+    if @active_node == @ast[0]
+      raise EmeraldParsingException.new "#{@current_token.typeT} is not currently supported at the top level", @current_token.line, @current_token.column
+    end
+    node = BinaryOperatorNode.new @current_token.value.as(String), @current_token.line, @current_token.column
+    @active_node.promote node
+    @active_node = node
+  end
+
+  def parse_paren_open
+    @paren_nest += 1
+    add_expression_node
+  end
+
+  def parse_paren_close
+    @paren_nest -= 1
+    if @paren_nest < 0
+      raise EmeraldParsingException.new "Closing parenthesis without corresponding opening parenthesis in expression", @tokens[0].line, @tokens[0].column
+    end
+    @active_node = @active_node.get_first_expression_node
+  end
+
+  def parse_variable_declaration
     identifier = @current_token.value
-    var_decl = VariableDeclarationNode.new identifier.as(String), @current_token.line, @current_token.column
-    @active_node.add_child var_decl
-    @active_node = var_decl
-    parsed_expression = parse_expression (isolate_expression 2)
-    @active_node.add_child parsed_expression
+    node = VariableDeclarationNode.new identifier.as(String), @current_token.line, @current_token.column
+    add_and_activate node
+    add_expression_node
+    @tokens.shift
   end
 
-  def isolate_expression(look_ahead : Int32) : Array(Token)
-    look_ahead.times do
-      @tokens.shift
-    end
-    expression = [] of Token
-    open_parens = 0
-    start_line = @tokens[0].line
-    start_column = @tokens[0].column
-    begin
-      until @tokens[0].typeT == TokenType::Delimiter && open_parens == 0
-        if @tokens[0].typeT == TokenType::ParenOpen
-          open_parens += 1
-        elsif @tokens[0].typeT == TokenType::ParenClose
-          open_parens -= 1
-        end
-        if open_parens < 0
-          raise EmeraldParsingException.new "Closing parenthesis without corresponding opening parenthesis in expression", @tokens[0].line, @tokens[0].column
-        end
-        if @tokens[0].typeT == TokenType::Delimiter
-          @tokens.shift
-        else
-          expression.push @tokens.shift
-        end
-      end
-    rescue ex : IndexError
-      raise EmeraldParsingException.new "Unclosed parenthesis expression", start_line, start_column
-    end
-    expression
+  def parse_declaration_reference
+    node = DeclarationReferenceNode.new @current_token.value.as(String), @current_token.line, @current_token.column
+    add_and_activate node
   end
 
-  def parse_expression(tokens_exp : Array(Token)) : Node
-    root = ExpressionNode.new @current_token.line, @current_token.column
-    active = root
-    tokens_exp.each do |token|
-      case token.typeT
-      when TokenType::ParenOpen
-        new_root = ExpressionNode.new @current_token.line, @current_token.column
-        active.add_child new_root
-        active = new_root
-      when TokenType::ParenClose
-        active = active.get_first_expression_node
-      when TokenType::Int
-        int_node = IntegerLiteralNode.new token.value.as(Int32), token.line, token.column
-        active.add_child int_node
-        active = int_node
-      when TokenType::Float
-        float_node = FloatLiteralNode.new token.value.as(Float64), token.line, token.column
-        active.add_child float_node
-        active = float_node
-      when TokenType::String
-        str_node = StringLiteralNode.new token.value.as(String), token.line, token.column
-        active.add_child str_node
-        active = str_node
-      when TokenType::Bool
-        bool_node = BooleanLiteralNode.new token.value.as(Bool), token.line, token.column
-        active.add_child bool_node
-        active = bool_node
-      when TokenType::Identifier
-        ident_node = DeclarationReferenceNode.new token.value.as(String), token.line, token.column
-        active.add_child ident_node
-        active = ident_node
-      when TokenType::Operator
-        operator = BinaryOperatorNode.new token.value.as(String), token.line, token.column
-        active.promote operator
-        active = operator
-      end
-    end
-    root
+  def parse_builtin_puts
+    node = CallExpressionNode.new "puts", @current_token.line, @current_token.column
+    add_and_activate node
+    add_expression_node
+  end
+
+  def parse_return
+    node = ReturnNode.new @current_token.line, @current_token.column
+    add_and_activate node
+    add_expression_node
   end
 end
