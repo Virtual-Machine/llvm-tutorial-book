@@ -15,7 +15,7 @@ If anyone notices anything out of date or that is not factually correct, I welco
 crystal build emeraldc.cr #generates emerald compiler emeraldc
 # By default emeraldc targets test_file.cr
 ./emeraldc -h #show emeraldc help
-./emeraldc -t -a -r -i -v #compile test_file.cr with all debug info
+./emeraldc -l -a -r -i -v #compile test_file.cr with all debug info
 ./emeraldc -d #same as -t -a -r -i -v
 ./emeraldc file_of_your_choice.cr #choose file to compile
 ./emeraldc -q #no generated output.ll
@@ -23,7 +23,7 @@ crystal build emeraldc.cr #generates emerald compiler emeraldc
 ./emeraldc -c #clean all output files
 ./emeraldc -n #no color output
 ./emeraldc -e #execute full compilation binary
-./emeraldc -tr #execute tests in spec/
+./emeraldc -t #execute tests in spec/
 ```
 
 ###Todo

@@ -23,7 +23,7 @@ OptionParser.parse! do |parser|
   # acdefhinrstv options
 
   # Test Runner
-  parser.on("-tr", "--test-runner", "Run all tests in spec") { test_runner = true }
+  parser.on("-t", "--test-runner", "Run all tests in spec") { test_runner = true }
 
   # No Colors
   parser.on("-n", "--no_colors", "Turn off colourized output") { options["color"] = false }
@@ -42,12 +42,12 @@ OptionParser.parse! do |parser|
   parser.on("-s", "--supress", "Supress output.ll generation") { options["supress"] = true }
 
   # Debug Verbosity
-  parser.on("-t", "--token_array", "Prints token array to aid debugging") { options["printTokens"] = true }
+  parser.on("-l", "--lexer_output", "Prints token array to aid debugging") { options["printTokens"] = true }
   parser.on("-a", "--ast", "Prints AST to aid debugging") { options["printAST"] = true }
   parser.on("-r", "--resolutions", "Prints AST resolutions to aid debugging") { options["printResolutions"] = true }
   parser.on("-i", "--instructions", "Prints instructions to aid debugging") { options["printInstructions"] = true }
   parser.on("-v", "--verbose", "Prints output to aid debugging") { options["printOutput"] = true }
-  parser.on("-d", "--debug", "Full debug output, = -t -a -r -i -v") { 
+  parser.on("-d", "--debug", "Full debug output, = -l -a -r -i -v") {
     options["printTokens"] = true
     options["printAST"] = true
     options["printResolutions"] = true
@@ -69,7 +69,7 @@ if clean
 elsif help
 elsif test_runner
   path_to_file = Dir.current + "/spec/output.ll"
-  File.delete(path_to_file) if File.exists?(path_to_file) 
+  File.delete(path_to_file) if File.exists?(path_to_file)
   system "crystal spec spec/*"
 else
   # Compilation
