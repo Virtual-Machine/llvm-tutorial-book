@@ -62,11 +62,27 @@ class Parser
         parse_builtin_puts
       elsif @current_token.value == :return
         parse_return
+      elsif @current_token.value == :if
+        parse_if
+      elsif @current_token.value == :else
+        parse_else
+      elsif @current_token.value == :end
+        parse_end
       end
     when TokenType::Comment
     when TokenType::Delimiter
       if @paren_nest == 0
         @active_node = active_context
+        if @active_node.class == IfExpressionNode
+          if @active_node.children.size == 1
+            node = BasicBlockNode.new @current_token.line, @current_token.column
+            add_and_activate node
+          elsif @active_node.children.size == 2
+            @active_node = @active_node.children[1]
+          elsif @active_node.children.size == 3
+            @active_node = @active_node.children[2]
+          end
+        end
       end
     else
       raise EmeraldParsingException.new "#{@current_token.typeT} is not currently supported at the top level", @current_token.line, @current_token.column
@@ -154,6 +170,24 @@ class Parser
     node = CallExpressionNode.new "puts", @current_token.line, @current_token.column
     add_and_activate node
     add_expression_node
+  end
+
+  def parse_if
+    node = IfExpressionNode.new @current_token.line, @current_token.column
+    add_and_activate node
+    @context.push node
+    add_expression_node
+  end
+
+  def parse_else
+    @active_node = @active_node.parent.not_nil!
+    node = BasicBlockNode.new @current_token.line, @current_token.column
+    add_and_activate node
+  end
+
+  def parse_end
+    @context.pop
+    @active_node = active_context
   end
 
   def parse_return

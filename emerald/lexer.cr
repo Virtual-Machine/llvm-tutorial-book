@@ -13,7 +13,7 @@ class Lexer
     @current = ' '
     @next = ' '
     @max = @content.size - 1
-    @keywords = [:puts, :return, :true, :false]
+    @keywords = [:puts, :return, :true, :false, :if, :else, :end]
     @tokens = [] of Token
   end
 

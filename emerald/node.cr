@@ -329,6 +329,34 @@ class DeclarationReferenceNode < Node
   end
 end
 
+class IfExpressionNode < Node
+  def initialize(@line : Int32, @position : Int32)
+    @value = nil
+    @children = [] of Node
+  end
+
+  def resolve_value(state : ProgramState)
+    if @children[0].resolved_value
+      @resolved_value = @children[1].resolved_value
+    else
+      if @children.size == 2
+        @resolved_value = @children[2].resolved_value
+      end
+    end
+  end
+end
+
+class BasicBlockNode < Node
+  def initialize(@line : Int32, @position : Int32)
+    @value = nil
+    @children = [] of Node
+  end
+
+  def resolve_value(state : ProgramState)
+    @resolved_value = @children[-1].resolved_value
+  end
+end
+
 class ExpressionNode < Node
   def initialize(@line : Int32, @position : Int32)
     @value = nil
