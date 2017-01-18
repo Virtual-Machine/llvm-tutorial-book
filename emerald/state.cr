@@ -1,6 +1,9 @@
 class ProgramState
   getter variables, functions, blocks, instructions, globals
+  property! active_block
   property printAST, printResolutions
+
+  @active_block : LLVM::BasicBlock?
 
   def initialize
     @globals = {} of String => LLVM::Value
@@ -10,6 +13,7 @@ class ProgramState
     @instructions = [] of Instruction
     @printAST = false
     @printResolutions = false
+    @active_block = nil
   end
 
   def add_global(name : String, value : LLVM::Value)

@@ -2,12 +2,44 @@ abstract class Instruction
   abstract def build_instruction(builder : LLVM::Builder, state : ProgramState)
 end
 
-class CallInstruction < Instruction
-  getter params
-  def initialize(@func : LLVM::Function, @params : Array(LLVM::Value), @name : String, @line : Int32, @position : Int32)
+class ComparisonInstruction < Instruction
+  getter block, comp, goto1, goto2
+
+  def initialize(@block : LLVM::BasicBlock, @comp : LLVM::Value, @goto1 : LLVM::BasicBlock, @goto2 : LLVM::BasicBlock, @line : Int32, @position : Int32)
   end
 
   def build_instruction(builder : LLVM::Builder, state : ProgramState)
+    builder.position_at_end block
+    builder.cond comp, goto1, goto2
+  end
+
+  def to_s
+  end
+end
+
+class JumpInstruction < Instruction
+  getter block, goto
+
+  def initialize(@block : LLVM::BasicBlock, @goto : LLVM::BasicBlock, @line : Int32, @position : Int32)
+  end
+
+  def build_instruction(builder : LLVM::Builder, state : ProgramState)
+    builder.position_at_end block
+    builder.br goto
+  end
+
+  def to_s
+  end
+end
+
+class CallInstruction < Instruction
+  getter params, block
+
+  def initialize(@block : LLVM::BasicBlock, @func : LLVM::Function, @params : Array(LLVM::Value), @name : String, @line : Int32, @position : Int32)
+  end
+
+  def build_instruction(builder : LLVM::Builder, state : ProgramState)
+    builder.position_at_end block
     if @func.name == "puts" # Builtin puts command
       matches = @params.inspect.scan /c"(.*)\\00"\]/
       found = matches[0][1]?
@@ -51,10 +83,13 @@ Unable to resolve parameter into valid string", @line, @position
 end
 
 class ReturnInstruction < Instruction
-  def initialize(@value : ValueType, @return_type : String, @name : String, @line : Int32, @position : Int32)
+  getter block
+
+  def initialize(@block : LLVM::BasicBlock, @value : ValueType, @return_type : String, @name : String, @line : Int32, @position : Int32)
   end
 
   def build_instruction(builder : LLVM::Builder, state : ProgramState)
+    builder.position_at_end block
     case @return_type
     when "Void"
       builder.ret

@@ -73,9 +73,13 @@ class Node
     # Print AST in walk order with depth
     puts "#{"\t" * depth}#{self.class} #{self.value}" if state.printAST
     @children.each do |child|
+      child.pre_walk state
       child.walk state
       child.post_walk state
     end
+  end
+
+  def pre_walk(state : ProgramState)
   end
 
   def post_walk(state : ProgramState)
@@ -107,7 +111,7 @@ class CallExpressionNode < Node
 
   def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
-    state.add_instruction CallInstruction.new state.functions[@value], [LLVM.string(@resolved_value.to_s)], "call_expression", @line, @position
+    state.add_instruction CallInstruction.new state.active_block, state.functions[@value], [LLVM.string(@resolved_value.to_s)], "call_expression", @line, @position
   end
 end
 
@@ -330,12 +334,32 @@ class DeclarationReferenceNode < Node
 end
 
 class IfExpressionNode < Node
+  property! exit_block, if_block, else_block, entry_block
+  @entry_block : LLVM::BasicBlock?
+  @exit_block : LLVM::BasicBlock?
+  @if_block : LLVM::BasicBlock?
+  @else_block : LLVM::BasicBlock?
+
   def initialize(@line : Int32, @position : Int32)
     @value = nil
     @children = [] of Node
   end
 
+  def pre_walk(state : ProgramState)
+    block_name = "eblock#{state.blocks.size + 1}"
+    exit_block = state.functions["main"].basic_blocks.append block_name
+    state.add_block block_name, exit_block
+    @entry_block = state.active_block
+    @exit_block = exit_block
+  end
+
   def resolve_value(state : ProgramState)
+    state.active_block = @exit_block
+    @if_block = @children[1].as(BasicBlockNode).block
+    if @children[2]?
+      @else_block = @children[2].as(BasicBlockNode).block
+    end
+
     if @children[0].resolved_value == true
       @resolved_value = @children[1].resolved_value
     else
@@ -343,17 +367,48 @@ class IfExpressionNode < Node
         @resolved_value = @children[2].resolved_value
       end
     end
+
+    comp_val = @children[0].resolved_value
+    if comp_val == true
+      comp_val = LLVM.int(LLVM::Int1, 1)
+    else
+      comp_val = LLVM.int(LLVM::Int1, 0)
+    end
+
+    if @children[2]?
+      state.add_instruction ComparisonInstruction.new entry_block, comp_val, if_block, else_block, @line, @position
+    else
+      state.add_instruction ComparisonInstruction.new entry_block, comp_val, if_block, exit_block, @line, @position
+    end
   end
 end
 
 class BasicBlockNode < Node
+  property! block
+  @block : LLVM::BasicBlock?
+
   def initialize(@line : Int32, @position : Int32)
     @value = nil
     @children = [] of Node
   end
 
+  def pre_walk(state : ProgramState)
+    block_name = "block#{state.blocks.size + 1}"
+    self_block = state.functions["main"].basic_blocks.append block_name
+    state.add_block block_name, self_block
+    state.active_block = self_block
+    @block = self_block
+  end
+
   def resolve_value(state : ProgramState)
     @resolved_value = @children[-1].resolved_value
+    scope = block
+    @children.each do |child|
+      if child.class == IfExpressionNode
+        scope = child.as(IfExpressionNode).exit_block
+      end
+    end
+    state.add_instruction JumpInstruction.new scope, parent.as(IfExpressionNode).exit_block, @line, @position
   end
 end
 
@@ -377,7 +432,7 @@ class ReturnNode < Node
   def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
     if @resolved_value.is_a? Int32
-      state.add_instruction ReturnInstruction.new @resolved_value, "Int32", "return", @line, @position
+      state.add_instruction ReturnInstruction.new state.active_block, @resolved_value, "Int32", "return", @line, @position
     end
   end
 end
