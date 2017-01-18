@@ -30,7 +30,7 @@ crystal build emeraldc.cr #generates emerald compiler emeraldc
 
 ☐ Write code generation for more node types
 
-☐ Clean and refactor code
+☐ Refactor code
 
 ☐ Integrate code into chapter texts
  - Chapter 3
