@@ -336,10 +336,10 @@ class IfExpressionNode < Node
   end
 
   def resolve_value(state : ProgramState)
-    if @children[0].resolved_value
+    if @children[0].resolved_value == true
       @resolved_value = @children[1].resolved_value
     else
-      if @children.size == 2
+      if @children[2]?
         @resolved_value = @children[2].resolved_value
       end
     end
