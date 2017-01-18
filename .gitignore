@@ -10,3 +10,4 @@ spec/output.ll
 spec/output.s
 spec/output
 emeraldc
+test_outputs/*
