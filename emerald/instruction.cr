@@ -14,6 +14,7 @@ class ComparisonInstruction < Instruction
   end
 
   def to_s
+    "#{self.class}"
   end
 end
 
@@ -29,6 +30,7 @@ class JumpInstruction < Instruction
   end
 
   def to_s
+    "#{self.class}"
   end
 end
 
