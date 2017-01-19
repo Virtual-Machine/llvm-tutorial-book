@@ -28,9 +28,13 @@ crystal build emeraldc.cr #generates emerald compiler emeraldc
 
 ###Todo
 
-☐ Write code generation for more node types
-
 ☐ Refactor code
+
+☐ Implement
+ - Function Declarations
+ - Variable Scope
+ - Runtime Variable Resolution
+ - Loops
 
 ☐ Integrate code into chapter texts
  - Chapter 3
@@ -43,8 +47,6 @@ crystal build emeraldc.cr #generates emerald compiler emeraldc
  - walk detail
  - resolve_value detail
  - ir generation detail
-
-☐ Add more specs
 
 
 ###Demo With Debug Output
