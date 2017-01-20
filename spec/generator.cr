@@ -4,19 +4,27 @@ require "../emerald/emerald"
 expected = %[; ModuleID = 'Emerald'
 source_filename = \"Emerald\"
 
-@puts_pointer = private unnamed_addr constant [2 x i8] c\"4\\00\"
-@puts_pointer.1 = private unnamed_addr constant [6 x i8] c\"false\\00\"
-@puts_pointer.2 = private unnamed_addr constant [5 x i8] c\"true\\00\"
+@0 = private unnamed_addr constant [6 x i8] c\"false\\00\"
+@1 = private unnamed_addr constant [5 x i8] c\"true\\00\"
 
 define i32 @main() {
 main_body:
-  %call_expression = call i32 @puts(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @puts_pointer, i32 0, i32 0))
-  %call_expression1 = call i32 @puts(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @puts_pointer.1, i32 0, i32 0))
-  %call_expression2 = call i32 @puts(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @puts_pointer.2, i32 0, i32 0))
+  %four = alloca i32
+  store i32 4, i32* %four
+  %0 = load i32, i32* %four
+  %puts = call i32 @\"puts:int\"(i32 %0)
+  %puts1 = call i32 @\"puts:str\"(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @0, i32 0, i32 0))
+  %puts2 = call i32 @\"puts:str\"(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @1, i32 0, i32 0))
   ret i32 0
 }
 
-declare i32 @puts(i8*)
+declare i32 @\"puts:int\"(i32)
+
+declare i32 @\"puts:bool\"(i1)
+
+declare i32 @\"puts:float\"(double)
+
+declare i32 @\"puts:str\"(i8*)
 ]
 
 describe "Generator" do
@@ -30,9 +38,8 @@ puts 11 != 10"
     program = EmeraldProgram.new input
     program.compile
 
-    # This needs fixing as module generation algorithm has changed
-    # it "should output exact LLVM IR for basic example input" do
-    #   program.mod.to_s.should eq expected
-    # end
+    it "should output exact LLVM IR for basic example input" do
+      program.mod.to_s.should eq expected
+    end
   end
 end
