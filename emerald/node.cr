@@ -187,79 +187,268 @@ class BinaryOperatorNode < Node
     if lhs.is_a?(LLVM::Value) && rhs.is_a?(LLVM::Value)
       case lhs.type
       when LLVM::Int32
-        case @value
-        when "*"
-          @resolved_value = state.builder.mul lhs, rhs
-        when "/"
-          @resolved_value = state.builder.sdiv lhs, rhs
-        when "-"
-          @resolved_value = state.builder.sub lhs, rhs
-        when "+"
-          @resolved_value = state.builder.add lhs, rhs
-        when "<"
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, rhs
-        when ">"
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, rhs
-        when "!="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs
-        when "=="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs
-        when "<="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, rhs
-        when ">="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, rhs
+        if rhs.type == LLVM::Int32
+          case @value
+          when "*"
+            @resolved_value = state.builder.mul lhs, rhs
+          when "/"
+            @resolved_value = state.builder.sdiv lhs, rhs
+          when "-"
+            @resolved_value = state.builder.sub lhs, rhs
+          when "+"
+            @resolved_value = state.builder.add lhs, rhs
+          when "<"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, rhs
+          when ">"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, rhs
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs
+          when "<="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, rhs
+          when ">="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, rhs
+          end
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (BOTH = LLVM::Value) #{lhs} #{rhs}", @line, @position
         end
+      when LLVM::Int1
+        if rhs.type == LLVM::Int1
+          case @value
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs
+          end
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (BOTH = LLVM::Value) #{lhs} #{rhs}", @line, @position
+        end
+      when LLVM::Int8.pointer
+        if rhs.type == LLVM::Int8.pointer
+          case @value
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs
+            # INCOMPLETE no string concatenation implementation in LLVM yet
+          end
+        elsif rhs.type == LLVM::Int32
+          # INCOMPLETE no string repetition implementation in LLVM yet
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (BOTH = LLVM::Value) #{lhs} #{rhs}", @line, @position
+        end
+      when LLVM::Double
+        if rhs.type == LLVM::Double
+          case @value
+          when "*"
+            @resolved_value = state.builder.mul lhs, rhs
+          when "/"
+            @resolved_value = state.builder.sdiv lhs, rhs
+          when "-"
+            @resolved_value = state.builder.sub lhs, rhs
+          when "+"
+            @resolved_value = state.builder.add lhs, rhs
+          when "<"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, rhs
+          when ">"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, rhs
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs
+          when "<="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, rhs
+          when ">="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, rhs
+          end
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (BOTH = LLVM::Value) #{lhs} #{rhs}", @line, @position
+        end
+      else
+        raise EmeraldValueResolutionException.new "Undefined operation #{@value} for lhs type (BOTH = LLVM::Value) #{lhs} #{rhs}", @line, @position
       end
     elsif lhs.is_a?(LLVM::Value)
       case lhs.type
       when LLVM::Int32
-        case @value
-        when "*"
-          @resolved_value = state.builder.mul lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
-        when "/"
-          @resolved_value = state.builder.sdiv lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
-        when "+"
-          @resolved_value = state.builder.add lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
-        when "-"
-          @resolved_value = state.builder.sub lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
-        when "<"
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
-        when ">"
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
-        when "!="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
-        when "=="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
-        when "<="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
-        when ">="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+        if rhs.is_a?(Int32)
+          case @value
+          when "*"
+            @resolved_value = state.builder.mul lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+          when "/"
+            @resolved_value = state.builder.sdiv lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+          when "+"
+            @resolved_value = state.builder.add lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+          when "-"
+            @resolved_value = state.builder.sub lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+          when "<"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+          when ">"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+          when "<="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+          when ">="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+          end
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (LHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
         end
+      when LLVM::Int1
+        if rhs.is_a?(Bool)
+          if rhs == true
+            rhs_val = LLVM.int(LLVM::Int1, 1)
+          else
+            rhs_val = LLVM.int(LLVM::Int1, 0)
+          end
+          case @value
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs_val
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs_val
+          end
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (LHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
+        end
+      when LLVM::Int8.pointer
+        if rhs.is_a?(String)
+          rhs_val = state.define_or_find_global rhs
+          case @value
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs_val
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs_val
+            # INCOMPLETE no string concatenation implementation in LLVM yet
+          end
+        elsif rhs.is_a?(Int32)
+          # INCOMPLETE no string repetition implementation in LLVM yet
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (LHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
+        end
+      when LLVM::Double
+        if rhs.is_a?(Float64)
+          rhs_val = LLVM.double(rhs)
+          case @value
+          when "*"
+            @resolved_value = state.builder.mul lhs, rhs_val
+          when "/"
+            @resolved_value = state.builder.sdiv lhs, rhs_val
+          when "-"
+            @resolved_value = state.builder.sub lhs, rhs_val
+          when "+"
+            @resolved_value = state.builder.add lhs, rhs_val
+          when "<"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, rhs_val
+          when ">"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, rhs_val
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs_val
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs_val
+          when "<="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, rhs_val
+          when ">="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, rhs_val
+          end
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (LHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
+        end
+      else
+        raise EmeraldValueResolutionException.new "Undefined operation #{@value} for lhs type (LHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
       end
     elsif rhs.is_a?(LLVM::Value)
       if lhs.is_a?(Int32)
-        case @value
-        when "*"
-          @resolved_value = state.builder.mul LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
-        when "/"
-          @resolved_value = state.builder.sdiv LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
-        when "+"
-          @resolved_value = state.builder.add LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
-        when "-"
-          @resolved_value = state.builder.sub LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
-        when "<"
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
-        when ">"
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
-        when "!="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
-        when "=="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
-        when "<="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
-        when ">="
-          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
+        if rhs.type == LLVM::Int32
+          lhs_val = LLVM.int(LLVM::Int32, lhs.as(Int32))
+          case @value
+          when "*"
+            @resolved_value = state.builder.mul lhs_val, rhs
+          when "/"
+            @resolved_value = state.builder.sdiv lhs_val, rhs
+          when "+"
+            @resolved_value = state.builder.add lhs_val, rhs
+          when "-"
+            @resolved_value = state.builder.sub lhs_val, rhs
+          when "<"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs_val, rhs
+          when ">"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs_val, rhs
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs_val, rhs
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs_val, rhs
+          when "<="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs_val, rhs
+          when ">="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs_val, rhs
+          end
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (RHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
         end
+      elsif lhs.is_a?(Bool)
+        if rhs.type == LLVM::Int1
+          if lhs == true
+            lhs_val = LLVM.int(LLVM::Int1, 1)
+          else
+            lhs_val = LLVM.int(LLVM::Int1, 0)
+          end
+          case @value
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs_val, rhs
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs_val, rhs
+          end
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (RHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
+        end
+      elsif lhs.is_a?(Float64)
+        if rhs.type == LLVM::Double
+          lhs_val = LLVM.double(lhs)
+          case @value
+          when "*"
+            @resolved_value = state.builder.mul lhs_val, rhs
+          when "/"
+            @resolved_value = state.builder.sdiv lhs_val, rhs
+          when "-"
+            @resolved_value = state.builder.sub lhs_val, rhs
+          when "+"
+            @resolved_value = state.builder.add lhs_val, rhs
+          when "<"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs_val, rhs
+          when ">"
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs_val, rhs
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs_val, rhs
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs_val, rhs
+          when "<="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs_val, rhs
+          when ">="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs_val, rhs
+          end
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (RHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
+        end
+      elsif lhs.is_a?(String)
+        if rhs.type == LLVM::Int8.pointer
+          lhs_val = state.define_or_find_global lhs
+          case @value
+          when "!="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs_val, rhs
+          when "=="
+            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs_val, rhs
+            # INCOMPLETE no string concatenation implementation in LLVM yet
+          end
+        elsif rhs.is_a?(Int32)
+          # INCOMPLETE no string repetition implementation in LLVM yet
+        else
+          raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (RHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
+        end
+      else
+        raise EmeraldValueResolutionException.new "Undefined operation #{@value} for lhs type (RHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
       end
     elsif lhs.is_a?(Int32) && rhs.is_a?(Int32) # Integer and integer
       case @value
