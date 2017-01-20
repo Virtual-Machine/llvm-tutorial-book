@@ -2,44 +2,10 @@ require "spec"
 require "../emerald/emerald"
 
 describe "Float processing" do
-  input = "
-puts 3.4 + 2.5
+  system "./emeraldc test_inputs/input3.cr -e > test_outputs/output3"
+  contents = File.read("test_outputs/output3")
 
-puts 3.4 + 2.5 * 2
-
-puts 7.5 < 9.5
-
-puts 2.5 + 2 - 1.5 - 1
-
-puts 5 / 2 * 4 - 3 + 4
-
-puts 7.5 < 8
-
-puts 8.0 == 8
-
-puts 8 != 8.0
-"
-
-  program = EmeraldProgram.new input
-  program.compile
-
-  # This needs to be fixed as instructions are no longer generated
-  # it "should resolve eight puts calls with desired output" do
-  #   program.state.instructions[0].class.should eq CallInstruction
-  #   program.state.instructions[0].as(CallInstruction).params[0].should eq LLVM.string("5.9")
-  #   program.state.instructions[1].class.should eq CallInstruction
-  #   program.state.instructions[1].as(CallInstruction).params[0].should eq LLVM.string("8.4")
-  #   program.state.instructions[2].class.should eq CallInstruction
-  #   program.state.instructions[2].as(CallInstruction).params[0].should eq LLVM.string("true")
-  #   program.state.instructions[3].class.should eq CallInstruction
-  #   program.state.instructions[3].as(CallInstruction).params[0].should eq LLVM.string("2.0")
-  #   program.state.instructions[4].class.should eq CallInstruction
-  #   program.state.instructions[4].as(CallInstruction).params[0].should eq LLVM.string("9")
-  #   program.state.instructions[5].class.should eq CallInstruction
-  #   program.state.instructions[5].as(CallInstruction).params[0].should eq LLVM.string("true")
-  #   program.state.instructions[6].class.should eq CallInstruction
-  #   program.state.instructions[6].as(CallInstruction).params[0].should eq LLVM.string("true")
-  #   program.state.instructions[7].class.should eq CallInstruction
-  #   program.state.instructions[7].as(CallInstruction).params[0].should eq LLVM.string("false")
-  # end
+  it "should evaluate input3 as expected" do
+    contents.should eq "5.9\n8.4\ntrue\n2.0\n9\ntrue\ntrue\nfalse\n"
+  end
 end

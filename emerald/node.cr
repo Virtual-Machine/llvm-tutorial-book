@@ -126,9 +126,13 @@ class CallExpressionNode < Node
         when LLVM::Int8.pointer
           state.builder.call state.mod.functions["puts:str"], test, @value.as(String)
         end
+      else
+        # FIX this could be more efficient
+        str_value = state.builder.global_string_pointer(test.to_s)
+        state.builder.call state.mod.functions["puts:str"], str_value, @value.as(String)
       end
     else
-      # This needs fixing
+      # FIX this needs to be corrected
       # if @params.size == 0
       #   state.builder.call @func, @name
       # elsif @params.size == 1
@@ -458,7 +462,7 @@ class ReturnNode < Node
     @resolved_value = @children[0].resolved_value
     if @resolved_value.is_a? Int32
       state.builder.position_at_end state.active_block
-      # tmp hack
+      # FIX tmp hack
       return_type = "Int32"
       case return_type
       when "Void"
