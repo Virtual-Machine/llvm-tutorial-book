@@ -38,6 +38,7 @@ class EmeraldProgram
     state.add_function "main", func
     state.add_function "puts", mod.functions.add "puts", [LLVM::VoidPointer], LLVM::Int32
     state.active_block = main
+    state.add_block "main_body", main
   end
 
   def initialize(@options : Hash(String, (String | Bool)), @test_mode : Bool = false)
@@ -55,6 +56,7 @@ class EmeraldProgram
     state.add_function "main", func
     state.add_function "puts", mod.functions.add "puts", [LLVM::VoidPointer], LLVM::Int32
     state.active_block = main
+    state.add_block "main_body", main
   end
 
   def lex : Nil
