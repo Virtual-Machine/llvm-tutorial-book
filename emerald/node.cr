@@ -168,27 +168,57 @@ class BinaryOperatorNode < Node
     lhs = @children[0].resolved_value
     rhs = @children[1].resolved_value
 
-    # FIX first three if/elsif nodes here need to be fleshed out for more operations
+    # FIX many assumptions here that need to be rectified, and actions defined for different types
     if lhs.is_a?(LLVM::Value) && rhs.is_a?(LLVM::Value)
       case lhs.type
       when LLVM::Int32
         case @value
+        when "*"
+          @resolved_value = state.builder.mul lhs, rhs
+        when "/"
+          @resolved_value = state.builder.sdiv lhs, rhs
         when "-"
           @resolved_value = state.builder.sub lhs, rhs
         when "+"
           @resolved_value = state.builder.add lhs, rhs
         when "<"
           @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, rhs
+        when ">"
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, rhs
+        when "!="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs
+        when "=="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs
+        when "<="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, rhs
+        when ">="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, rhs
         end
       end
     elsif lhs.is_a?(LLVM::Value)
       case lhs.type
       when LLVM::Int32
         case @value
+        when "*"
+          @resolved_value = state.builder.mul lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+        when "/"
+          @resolved_value = state.builder.sdiv lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
         when "+"
           @resolved_value = state.builder.add lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
         when "-"
           @resolved_value = state.builder.sub lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+        when "<"
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+        when ">"
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+        when "!="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+        when "=="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+        when "<="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+        when ">="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
         end
       end
     elsif rhs.is_a?(LLVM::Value)
@@ -196,6 +226,24 @@ class BinaryOperatorNode < Node
         case @value
         when "*"
           @resolved_value = state.builder.mul LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
+        when "/"
+          @resolved_value = state.builder.sdiv LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
+        when "+"
+          @resolved_value = state.builder.add LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
+        when "-"
+          @resolved_value = state.builder.sub LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
+        when "<"
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
+        when ">"
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
+        when "!="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
+        when "=="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
+        when "<="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
+        when ">="
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
         end
       end
     elsif lhs.is_a?(Int32) && rhs.is_a?(Int32) # Integer and integer
