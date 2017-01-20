@@ -111,7 +111,7 @@ class CallExpressionNode < Node
 
   def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
-    state.add_instruction CallInstruction.new state.active_block, state.functions[@value], [LLVM.string(@resolved_value.to_s)], "call_expression", @line, @position
+    state.add_instruction CallInstruction.new state, state.active_block, state.functions[@value], [LLVM.string(@resolved_value.to_s)], "call_expression", @line, @position
   end
 end
 
@@ -376,9 +376,9 @@ class IfExpressionNode < Node
     end
 
     if @children[2]?
-      state.add_instruction ComparisonInstruction.new entry_block, comp_val, if_block, else_block, @line, @position
+      state.add_instruction ComparisonInstruction.new state, entry_block, comp_val, if_block, else_block, @line, @position
     else
-      state.add_instruction ComparisonInstruction.new entry_block, comp_val, if_block, exit_block, @line, @position
+      state.add_instruction ComparisonInstruction.new state, entry_block, comp_val, if_block, exit_block, @line, @position
     end
   end
 end
@@ -408,7 +408,7 @@ class BasicBlockNode < Node
         scope = child.as(IfExpressionNode).exit_block
       end
     end
-    state.add_instruction JumpInstruction.new scope, parent.as(IfExpressionNode).exit_block, @line, @position
+    state.add_instruction JumpInstruction.new state, scope, parent.as(IfExpressionNode).exit_block, @line, @position
   end
 end
 
@@ -432,7 +432,7 @@ class ReturnNode < Node
   def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
     if @resolved_value.is_a? Int32
-      state.add_instruction ReturnInstruction.new state.active_block, @resolved_value, "Int32", "return", @line, @position
+      state.add_instruction ReturnInstruction.new state, state.active_block, @resolved_value, "Int32", "return", @line, @position
     end
   end
 end

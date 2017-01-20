@@ -116,12 +116,12 @@ class EmeraldProgram
     builder.position_at_end main
     # If last instruction is not a return instruction, add ret i32 0 to close main
     if state.instructions.size == 0 || state.instructions[-1].class != ReturnInstruction
-      state.add_instruction ReturnInstruction.new state.active_block, 0, "Int32", "return", @input_code.split("\n").size, 1
+      state.add_instruction ReturnInstruction.new state, state.active_block, 0, "Int32", "return", @input_code.split("\n").size, 1
     end
     puts options["color"] ? "\033[032mINSTRUCTIONS\033[039m" : "INSTRUCTIONS" if options["printInstructions"]
     state.instructions.each do |instruction|
       puts instruction.to_s if options["printInstructions"]
-      instruction.build_instruction builder, state
+      instruction.build_instruction builder
     end
     puts if options["printInstructions"]
   end
