@@ -11,3 +11,4 @@ spec/output.s
 spec/output
 emeraldc
 test_outputs/*
+std-lib.s
