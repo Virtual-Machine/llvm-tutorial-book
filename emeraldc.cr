@@ -77,7 +77,8 @@ else
   program.compile
   if full || execute
     system "llc output.ll"
-    system "clang output.s -o output"
+    system "llc std-lib.ll"
+    system "clang output.s std-lib.s -o output"
     if execute
       system "./output"
     end
