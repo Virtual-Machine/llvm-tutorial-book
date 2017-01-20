@@ -32,13 +32,13 @@ class ProgramState
     @blocks[name] = block
   end
 
-  def get_block_name(block : LLVM::BasicBlock) : String
+  def get_block_name(block : LLVM::BasicBlock) : String?
     @blocks.each do |name, t_block|
       if block == t_block
         return name
       end
     end
-    return "main_body"
+    return nil
   end
 
   def add_function(name : String, func : LLVM::Function)
