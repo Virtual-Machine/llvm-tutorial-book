@@ -13,10 +13,11 @@ If anyone notices anything out of date or that is not factually correct, I welco
 ```bash
 #quick start
 crystal build emeraldc.cr #generates emerald compiler emeraldc
+llc std-lib.ll            #generates std-lib.s ready for linking with output.s
 # By default emeraldc targets test_file.cr
 ./emeraldc -h #show emeraldc help
 ./emeraldc -l -a -r -i -v #compile test_file.cr with all debug info
-./emeraldc -d #same as -t -a -r -i -v
+./emeraldc -d #same as -l -a -r -i -v
 ./emeraldc file_of_your_choice.cr #choose file to compile
 ./emeraldc -q #no generated output.ll
 ./emeraldc -f #full compilation to output binary
