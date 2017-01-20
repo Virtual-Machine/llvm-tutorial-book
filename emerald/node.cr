@@ -131,14 +131,30 @@ class CallExpressionNode < Node
         state.builder.call state.mod.functions["puts:str"], str_pointer, @value.as(String)
       end
     else
-      # FIX this needs to be corrected
-      # if @params.size == 0
-      #   state.builder.call @func, @name
-      # elsif @params.size == 1
-      #   state.builder.call @func, @params[0], @name
-      # else
-      #   state.builder.call @func, @params, @name
-      # end
+      # FIX this needs to be corrected,
+      # this will require adding a new node type to accomodate multiple parameters
+      # - ie a ParamArgsNode, with appropriate lexing and code generation
+
+      # Temporary hack, assume one parameter by way of resolved value
+      # This needs to be augmented to accept multiple values
+      if test.is_a?(LLVM::Value)
+        state.builder.call state.mod.functions[@value.as(String)], [test], @value.as(String)
+      elsif test.is_a?(Bool)
+        if test == true
+          state.builder.call state.mod.functions[@value.as(String)], [LLVM.int(LLVM::Int1, 1)], @value.as(String)
+        else
+          state.builder.call state.mod.functions[@value.as(String)], [LLVM.int(LLVM::Int1, 0)], @value.as(String)
+        end
+      elsif test.is_a?(Int32)
+        state.builder.call state.mod.functions[@value.as(String)], [LLVM.int(LLVM::Int32, test)], @value.as(String)
+      elsif test.is_a?(Float64)
+        state.builder.call state.mod.functions[@value.as(String)], [LLVM.double(test)], @value.as(String)
+      elsif test.is_a?(String)
+        str_pointer = state.define_or_find_global test
+        state.builder.call state.mod.functions[@value.as(String)], [str_pointer], @value.as(String)
+      elsif test.nil?
+        state.builder.call state.mod.functions[@value.as(String)], @value.as(String)
+      end
     end
   end
 end
