@@ -127,9 +127,8 @@ class CallExpressionNode < Node
           state.builder.call state.mod.functions["puts:str"], test, @value.as(String)
         end
       else
-        # FIX this could be more efficient
-        str_value = state.builder.global_string_pointer(test.to_s)
-        state.builder.call state.mod.functions["puts:str"], str_value, @value.as(String)
+        str_pointer = state.define_or_find_global test.to_s
+        state.builder.call state.mod.functions["puts:str"], str_pointer, @value.as(String)
       end
     else
       # FIX this needs to be corrected
@@ -538,15 +537,26 @@ class ReturnNode < Node
 
   def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
-    if @resolved_value.is_a? Int32
+    test = @resolved_value
+    if test.is_a? Int32
       state.builder.position_at_end state.active_block
-      # FIX tmp hack
-      return_type = "Int32"
-      case return_type
-      when "Void"
+      if test.is_a?(LLVM::Value)
+        state.builder.ret test
+      elsif test.is_a?(Bool)
+        if test == true
+          state.builder.ret LLVM.int(LLVM::Int1, 1)
+        else
+          state.builder.ret LLVM.int(LLVM::Int1, 0)
+        end
+      elsif test.is_a?(String)
+        str_pointer = state.define_or_find_global test
+        state.builder.ret str_pointer
+      elsif test.is_a?(Int32)
+        state.builder.ret LLVM.int(LLVM::Int32, test)
+      elsif test.is_a?(Float64)
+        state.builder.ret LLVM.double(test)
+      elsif test.nil?
         state.builder.ret
-      when "Int32"
-        state.builder.ret LLVM.int(LLVM::Int32, @resolved_value.as(Int32))
       end
     end
   end

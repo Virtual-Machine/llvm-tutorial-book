@@ -57,6 +57,15 @@ class ProgramState
     return nil
   end
 
+  def define_or_find_global(name : String) : LLVM::Value
+    if has_global?(name)
+      return @globals[name]
+    else
+      @globals[name] = builder.global_string_pointer name
+      return @globals[name]
+    end
+  end
+
   def add_global(name : String, value : LLVM::Value)
     @globals[name] = value
   end

@@ -30,10 +30,8 @@ llc std-lib.ll            #generates std-lib.s ready for linking with output.s
 ###Todo
 
 ☐ Fix
- - When literal is converted to string, global string pointer should only be generated if said string global doesn't already exist, otherwise, it should reuse the pointer in node.cr
  - Function calls that are not "puts" calls needs to be corrected in node.cr
  - Remove many incorrect assumptions and flesh out calls for all major value types from binary value resolutions in node.cr
- - Remove temporary hack in return value builder calls, replace with corrected logic
 
 ☐ Refactor code
 
