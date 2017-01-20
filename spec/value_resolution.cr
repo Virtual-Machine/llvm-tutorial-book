@@ -2,51 +2,19 @@ require "spec"
 require "../emerald/emerald"
 
 describe "Generator" do
-  # These need fixing as binary operators can not resolve LLVM::Value yet
-  #   describe "value resolution" do
-  #     input = "
-  # var_106 = (2 + 2) * 3 + 2 * (5 + (6 * 7))
-  # puts var_106 - 3 * (var_106 + 3)"
+  system "./emeraldc test_inputs/input5.cr -e > test_outputs/output5"
+  contents = File.read("test_outputs/output5")
 
-  #     program = EmeraldProgram.new input
-  #     program.compile
+  it "should resolve final output as -221" do
+    contents.should eq "-221\n"
+  end
 
-  #     first_expression = program.ast[0].children[0]
-  #     second_expression = program.ast[0].children[1]
+  system "./emeraldc test_inputs/input6.cr -e > test_outputs/output6"
+  contents = File.read("test_outputs/output6")
 
-  #     it "resolves value of first expression as var_106 = 106" do
-  #       first_expression.class.should eq VariableDeclarationNode
-  #       first_expression.value.should eq "var_106"
-  #       first_expression.resolved_value.should eq 106
-  #     end
-
-  #     it "resolves value of second expression as puts -221" do
-  #       second_expression.class.should eq CallExpressionNode
-  #       second_expression.value.should eq "puts"
-  #       second_expression.resolved_value.should eq -221
-  #     end
-  #   end
-
-  #   describe "value resolution_2" do
-  #     input = "
-  # var_neg_1138 = (2 + 2) * (3 + 2 * (2 - 5)) + 2 - 8 * 3 * (5 + (6 * 7))
-  # puts var_neg_1138 + 8 * 2 < var_neg_1138 - 8 * 2
-  # "
-
-  #     program2 = EmeraldProgram.new input
-  #     program2.compile
-
-  #     first_expression = program2.ast[0].children[0]
-  #     second_expression = program2.ast[0].children[1]
-
-  #     it "resolves value of first expression as -1138" do
-  #       first_expression.resolved_value.should eq -1138
-  #     end
-
-  #     it "resolves value of second expression as false" do
-  #       second_expression.resolved_value.should eq false
-  #     end
-  #   end
+  it "should resolve final output as -1138, false" do
+    contents.should eq "-1138\nfalse\n"
+  end
 
   describe "value resolution_3" do
     input = "

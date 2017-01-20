@@ -165,10 +165,40 @@ class BinaryOperatorNode < Node
   end
 
   def resolve_value(state : ProgramState)
-    # Currently only binary integer expressions are functional
     lhs = @children[0].resolved_value
     rhs = @children[1].resolved_value
-    if lhs.is_a?(Int32) && rhs.is_a?(Int32) # Integer and integer
+
+    # FIX first three if/elsif nodes here need to be fleshed out for more operations
+    if lhs.is_a?(LLVM::Value) && rhs.is_a?(LLVM::Value)
+      case lhs.type
+      when LLVM::Int32
+        case @value
+        when "-"
+          @resolved_value = state.builder.sub lhs, rhs
+        when "+"
+          @resolved_value = state.builder.add lhs, rhs
+        when "<"
+          @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, rhs
+        end
+      end
+    elsif lhs.is_a?(LLVM::Value)
+      case lhs.type
+      when LLVM::Int32
+        case @value
+        when "+"
+          @resolved_value = state.builder.add lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+        when "-"
+          @resolved_value = state.builder.sub lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+        end
+      end
+    elsif rhs.is_a?(LLVM::Value)
+      if lhs.is_a?(Int32)
+        case @value
+        when "*"
+          @resolved_value = state.builder.mul LLVM.int(LLVM::Int32, lhs.as(Int32)), rhs
+        end
+      end
+    elsif lhs.is_a?(Int32) && rhs.is_a?(Int32) # Integer and integer
       case @value
       when "+"
         @resolved_value = lhs + rhs
