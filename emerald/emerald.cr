@@ -6,7 +6,7 @@ require "./lexer"
 require "./verifier"
 require "./parser"
 require "./state"
-require "./instruction"
+require "./close_statements"
 
 require "llvm"
 
@@ -29,16 +29,11 @@ class EmeraldProgram
     @ast = [] of Node
     @output = ""
     @verifier = Verifier.new
-    @state = ProgramState.new
     @mod = LLVM::Module.new("Emerald")
     @func = mod.functions.add "main", ([] of LLVM::Type), LLVM::Int32
-    func.linkage = LLVM::Linkage::External
     @main = func.basic_blocks.append "main_body"
     @builder = LLVM::Builder.new
-    state.add_function "main", func
-    state.add_function "puts", mod.functions.add "puts", [LLVM::VoidPointer], LLVM::Int32
-    state.active_block = main
-    state.add_block "main_body", main
+    @state = ProgramState.new builder, mod, main
   end
 
   def initialize(@options : Hash(String, (String | Bool)), @test_mode : Bool = false)
@@ -47,16 +42,11 @@ class EmeraldProgram
     @ast = [] of Node
     @output = ""
     @verifier = Verifier.new
-    @state = ProgramState.new
     @mod = LLVM::Module.new("Emerald")
     @func = mod.functions.add "main", ([] of LLVM::Type), LLVM::Int32
-    func.linkage = LLVM::Linkage::External
     @main = func.basic_blocks.append "main_body"
     @builder = LLVM::Builder.new
-    state.add_function "main", func
-    state.add_function "puts", mod.functions.add "puts", [LLVM::VoidPointer], LLVM::Int32
-    state.active_block = main
-    state.add_block "main_body", main
+    @state = ProgramState.new builder, mod, main
   end
 
   def lex : Nil
@@ -93,9 +83,10 @@ class EmeraldProgram
       puts options["color"] ? "\033[032mAST / RESOLUTIONS\033[039m" : "AST / RESOLUTIONS"
     end
 
-    # Walk nodes to resolve values and generate state
+    # Walk nodes to resolve values and generate llvm ir
     begin
       @ast[0].walk state
+      state.close_blocks
     rescue ex : EmeraldSyntaxException
       ex.full_error @input_code, @options["color"].as(Bool), @test_mode
     end
@@ -104,28 +95,8 @@ class EmeraldProgram
       puts
     end
 
-    # Use state instructions to generate LLVM IR
-    begin
-      build_instructions
-    rescue ex : EmeraldSyntaxException
-      ex.full_error @input_code, @options["color"].as(Bool), @test_mode
-    end
     # Output LLVM IR to output.ll
     output
-  end
-
-  def build_instructions : Nil
-    builder.position_at_end main
-    # If last instruction is not a return instruction, add ret i32 0 to close main
-    if state.instructions.size == 0 || state.instructions[-1].class != ReturnInstruction
-      state.add_instruction ReturnInstruction.new state, state.active_block, 0, "Int32", "return", @input_code.split("\n").size, 1
-    end
-    puts options["color"] ? "\033[032mINSTRUCTIONS\033[039m" : "INSTRUCTIONS" if options["printInstructions"]
-    state.instructions.each do |instruction|
-      puts instruction.to_s if options["printInstructions"]
-      instruction.build_instruction builder
-    end
-    puts if options["printInstructions"]
   end
 
   def output : String

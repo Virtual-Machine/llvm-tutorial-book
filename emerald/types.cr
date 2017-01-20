@@ -1,4 +1,4 @@
-alias ValueType = String | Int32 | Float64 | Symbol | Bool | Nil
+alias ValueType = String | Int32 | Float64 | Symbol | Bool | Nil | LLVM::Value
 alias AST = Array(Node)
 alias State = Hash(String, ValueType)
 

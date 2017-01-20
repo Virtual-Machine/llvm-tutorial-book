@@ -4,7 +4,7 @@ class Node
   property! parent
 
   @value : ValueType
-  @resolved_value : ValueType
+  @resolved_value : ValueType | LLVM::Value
   @parent : Node?
 
   def initialize(@line : Int32, @position : Int32)
@@ -111,18 +111,32 @@ class CallExpressionNode < Node
 
   def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
-    state.add_instruction CallInstruction.new state, state.active_block, state.functions[@value], [LLVM.string(@resolved_value.to_s)], "call_expression", @line, @position
-  end
-end
 
-class VariableDeclarationNode < Node
-  def initialize(@value : String, @line : Int32, @position : Int32)
-    @children = [] of Node
-  end
-
-  def resolve_value(state : ProgramState)
-    @resolved_value = @children[0].resolved_value
-    state.add_variable @value.as(String), @resolved_value
+    test = @resolved_value
+    if @value.as(String) == "puts"
+      if test.is_a?(LLVM::Value)
+        state.builder.position_at_end state.active_block
+        case test.type
+        when LLVM::Int32
+          state.builder.call state.mod.functions["puts:int"], test, @value.as(String)
+        when LLVM::Double
+          state.builder.call state.mod.functions["puts:float"], test, @value.as(String)
+        when LLVM::Int1
+          state.builder.call state.mod.functions["puts:bool"], test, @value.as(String)
+        when LLVM::Int8.pointer
+          state.builder.call state.mod.functions["puts:str"], test, @value.as(String)
+        end
+      end
+    else
+      # This needs fixing
+      # if @params.size == 0
+      #   state.builder.call @func, @name
+      # elsif @params.size == 1
+      #   state.builder.call @func, @params[0], @name
+      # else
+      #   state.builder.call @func, @params, @name
+      # end
+    end
   end
 end
 
@@ -323,16 +337,6 @@ class BooleanLiteralNode < Node
   end
 end
 
-class DeclarationReferenceNode < Node
-  def initialize(@value : String, @line : Int32, @position : Int32)
-    @children = [] of Node
-  end
-
-  def resolve_value(state : ProgramState)
-    @resolved_value = state.reference_variable @value.as(String), @line, @position
-  end
-end
-
 class IfExpressionNode < Node
   property! exit_block, if_block, else_block, entry_block
   @entry_block : LLVM::BasicBlock?
@@ -347,7 +351,7 @@ class IfExpressionNode < Node
 
   def pre_walk(state : ProgramState)
     block_name = "eblock#{state.blocks.size + 1}"
-    exit_block = state.functions["main"].basic_blocks.append block_name
+    exit_block = state.mod.functions["main"].basic_blocks.append block_name
     state.add_block block_name, exit_block
     @entry_block = state.active_block
     @exit_block = exit_block
@@ -376,9 +380,9 @@ class IfExpressionNode < Node
     end
 
     if @children[2]?
-      state.add_instruction ComparisonInstruction.new state, entry_block, comp_val, if_block, else_block, @line, @position
+      state.close_statements.push ConditionalStatement.new entry_block, comp_val, if_block, else_block
     else
-      state.add_instruction ComparisonInstruction.new state, entry_block, comp_val, if_block, exit_block, @line, @position
+      state.close_statements.push ConditionalStatement.new entry_block, comp_val, if_block, exit_block
     end
   end
 end
@@ -394,7 +398,7 @@ class BasicBlockNode < Node
 
   def pre_walk(state : ProgramState)
     block_name = "block#{state.blocks.size + 1}"
-    self_block = state.functions["main"].basic_blocks.append block_name
+    self_block = state.mod.functions["main"].basic_blocks.append block_name
     state.add_block block_name, self_block
     state.active_block = self_block
     @block = self_block
@@ -408,7 +412,7 @@ class BasicBlockNode < Node
         scope = child.as(IfExpressionNode).exit_block
       end
     end
-    state.add_instruction JumpInstruction.new state, scope, parent.as(IfExpressionNode).exit_block, @line, @position
+    state.close_statements.push JumpStatement.new scope, parent.as(IfExpressionNode).exit_block
   end
 end
 
@@ -423,6 +427,27 @@ class ExpressionNode < Node
   end
 end
 
+class VariableDeclarationNode < Node
+  def initialize(@value : String, @line : Int32, @position : Int32)
+    @children = [] of Node
+  end
+
+  def resolve_value(state : ProgramState)
+    @resolved_value = @children[0].resolved_value
+    state.add_variable state.active_function, @value.as(String), @resolved_value
+  end
+end
+
+class DeclarationReferenceNode < Node
+  def initialize(@value : String, @line : Int32, @position : Int32)
+    @children = [] of Node
+  end
+
+  def resolve_value(state : ProgramState)
+    @resolved_value = state.reference_variable state.active_function, @value.as(String), @line, @position
+  end
+end
+
 class ReturnNode < Node
   def initialize(@line : Int32, @position : Int32)
     @value = nil
@@ -432,7 +457,15 @@ class ReturnNode < Node
   def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
     if @resolved_value.is_a? Int32
-      state.add_instruction ReturnInstruction.new state, state.active_block, @resolved_value, "Int32", "return", @line, @position
+      state.builder.position_at_end state.active_block
+      # tmp hack
+      return_type = "Int32"
+      case return_type
+      when "Void"
+        state.builder.ret
+      when "Int32"
+        state.builder.ret LLVM.int(LLVM::Int32, @resolved_value.as(Int32))
+      end
     end
   end
 end
