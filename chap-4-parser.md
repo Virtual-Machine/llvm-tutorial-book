@@ -11,9 +11,7 @@ BinaryExpressionNode -> 2 + 2
     RHS              -> 2
 ```
 
-In order to create our AST we are going to need a class for each node type so as to allow each node to have instance variables that reflect the required child nodes for each node type that LLVM understands and that we wish to port into our language. Currently our language is still pretty simple, so we will only require a few node types to get a functional AST. As we require more functionality in our language, we will simply just have to add new node types with instance variables reflecting the call signature of the related IR builder calls.
-
-Our simple language currently only requires expression nodes, binary operator nodes, function calls, variable declarations and literals for our primitive types. We will implement the puts command as a language built-in and all our code will be treated as though its being called from the main function and therefore appended to the end of the main function's BasicBlock as we go.
+In order to create our AST we are going to need a class for each node type so as to allow each node to have instance variables that reflect the required child nodes for each node type that LLVM understands and that we wish to port into our language. Initially we only need a few node types, and all our code will be treated as though its being called from the main function and therefore appended to the end of the main function's BasicBlock as we go. Once we are ready to add control flow, loops, and functions we will need to keep track of the blocks in our program and append to the correct one during code generation. Finally one more consideration we need is that we will implement the puts command as a language built-in which will require some special parsing and code generation logic to accomodate its features.
 
 Our parser will work by inspecting the current token in the array. The parser will be aware of each node type and how it relates to other node types in sequence. Each line will be treated as an expression, of which itself may consist of multiple other expressions. The parser will determine which tokens should be expected following a given token, if those tokens are not found, an error will be generated to help the user determine where a syntax error is occuring. Otherwise the parser will continue to take the tokens and generate the required node structure to form the final AST. We should be able to easily inspect our AST at the end of this stage to visually debug and ensure our code-generation calls are getting the correct information.
 
@@ -37,7 +35,7 @@ Expressions Node : [four = 2 + 2, puts four, puts 10 < 6, puts 11 != 10]
 |-----> Number Literal : 2
 [1]
 |-> Call Expression Node : puts four
-|---> Variable Lookup Expression : four
+|---> Declaration Reference Expression : four
 [2]
 |-> Call Expression Node : puts 10 < 6
 |---> Binary Expression Node : 10 < 6
