@@ -210,6 +210,30 @@ class BinaryOperatorNode < Node
           when ">="
             @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, rhs
           end
+        elsif rhs.type == LLVM::Double
+          lhs_val = state.builder.si2fp lhs, LLVM::Double
+          case @value
+          when "*"
+            @resolved_value = state.builder.fmul lhs_val, rhs
+          when "/"
+            @resolved_value = state.builder.fdiv lhs_val, rhs
+          when "-"
+            @resolved_value = state.builder.fsub lhs_val, rhs
+          when "+"
+            @resolved_value = state.builder.fadd lhs_val, rhs
+          when "<"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULT, lhs_val, rhs
+          when ">"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGT, lhs_val, rhs
+          when "!="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UNE, lhs_val, rhs
+          when "=="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UEQ, lhs_val, rhs
+          when "<="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULE, lhs_val, rhs
+          when ">="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGE, lhs_val, rhs
+          end
         else
           raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (BOTH = LLVM::Value) #{lhs} #{rhs}", @line, @position
         end
@@ -242,25 +266,49 @@ class BinaryOperatorNode < Node
         if rhs.type == LLVM::Double
           case @value
           when "*"
-            @resolved_value = state.builder.mul lhs, rhs
+            @resolved_value = state.builder.fmul lhs, rhs
           when "/"
-            @resolved_value = state.builder.sdiv lhs, rhs
+            @resolved_value = state.builder.fdiv lhs, rhs
           when "-"
-            @resolved_value = state.builder.sub lhs, rhs
+            @resolved_value = state.builder.fsub lhs, rhs
           when "+"
-            @resolved_value = state.builder.add lhs, rhs
+            @resolved_value = state.builder.fadd lhs, rhs
           when "<"
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULT, lhs, rhs
           when ">"
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGT, lhs, rhs
           when "!="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UNE, lhs, rhs
           when "=="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UEQ, lhs, rhs
           when "<="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULE, lhs, rhs
           when ">="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGE, lhs, rhs
+          end
+        elsif rhs.type == LLVM::Int32
+          rhs_val = state.builder.si2fp rhs, LLVM::Double
+          case @value
+          when "*"
+            @resolved_value = state.builder.fmul lhs, rhs_val
+          when "/"
+            @resolved_value = state.builder.fdiv lhs, rhs_val
+          when "-"
+            @resolved_value = state.builder.fsub lhs, rhs_val
+          when "+"
+            @resolved_value = state.builder.fadd lhs, rhs_val
+          when "<"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULT, lhs, rhs_val
+          when ">"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGT, lhs, rhs_val
+          when "!="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UNE, lhs, rhs_val
+          when "=="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UEQ, lhs, rhs_val
+          when "<="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULE, lhs, rhs_val
+          when ">="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGE, lhs, rhs_val
           end
         else
           raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (BOTH = LLVM::Value) #{lhs} #{rhs}", @line, @position
@@ -293,6 +341,31 @@ class BinaryOperatorNode < Node
             @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
           when ">="
             @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, LLVM.int(LLVM::Int32, rhs.as(Int32))
+          end
+        elsif rhs.is_a?(Float64)
+          lhs_val = lhs_val = state.builder.si2fp lhs, LLVM::Double
+          rhs_val = LLVM.double(rhs)
+          case @value
+          when "*"
+            @resolved_value = state.builder.fmul lhs_val, rhs_val
+          when "/"
+            @resolved_value = state.builder.fdiv lhs_val, rhs_val
+          when "+"
+            @resolved_value = state.builder.fadd lhs_val, rhs_val
+          when "-"
+            @resolved_value = state.builder.fsub lhs_val, rhs_val
+          when "<"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULT, lhs_val, rhs_val
+          when ">"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGT, lhs_val, rhs_val
+          when "!="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UNE, lhs_val, rhs_val
+          when "=="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UEQ, lhs_val, rhs_val
+          when "<="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULE, lhs_val, rhs_val
+          when ">="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGE, lhs_val, rhs_val
           end
         else
           raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (LHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
@@ -333,25 +406,49 @@ class BinaryOperatorNode < Node
           rhs_val = LLVM.double(rhs)
           case @value
           when "*"
-            @resolved_value = state.builder.mul lhs, rhs_val
+            @resolved_value = state.builder.fmul lhs, rhs_val
           when "/"
-            @resolved_value = state.builder.sdiv lhs, rhs_val
+            @resolved_value = state.builder.fdiv lhs, rhs_val
           when "-"
-            @resolved_value = state.builder.sub lhs, rhs_val
+            @resolved_value = state.builder.fsub lhs, rhs_val
           when "+"
-            @resolved_value = state.builder.add lhs, rhs_val
+            @resolved_value = state.builder.fadd lhs, rhs_val
           when "<"
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, rhs_val
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULT, lhs, rhs_val
           when ">"
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, rhs_val
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGT, lhs, rhs_val
           when "!="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs_val
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UNE, lhs, rhs_val
           when "=="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs_val
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UEQ, lhs, rhs_val
           when "<="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, rhs_val
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULE, lhs, rhs_val
           when ">="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, rhs_val
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGE, lhs, rhs_val
+          end
+        elsif rhs.is_a?(Int32)
+          rhs_val = LLVM.double(rhs.to_f)
+          case @value
+          when "*"
+            @resolved_value = state.builder.fmul lhs, rhs_val
+          when "/"
+            @resolved_value = state.builder.fdiv lhs, rhs_val
+          when "-"
+            @resolved_value = state.builder.fsub lhs, rhs_val
+          when "+"
+            @resolved_value = state.builder.fadd lhs, rhs_val
+          when "<"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULT, lhs, rhs_val
+          when ">"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGT, lhs, rhs_val
+          when "!="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UNE, lhs, rhs_val
+          when "=="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UEQ, lhs, rhs_val
+          when "<="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULE, lhs, rhs_val
+          when ">="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGE, lhs, rhs_val
           end
         else
           raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (LHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
@@ -385,6 +482,30 @@ class BinaryOperatorNode < Node
           when ">="
             @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs_val, rhs
           end
+        elsif rhs.type == LLVM::Double
+          lhs_val = LLVM.double(lhs.to_f)
+          case @value
+          when "*"
+            @resolved_value = state.builder.fmul lhs_val, rhs
+          when "/"
+            @resolved_value = state.builder.fdiv lhs_val, rhs
+          when "+"
+            @resolved_value = state.builder.fadd lhs_val, rhs
+          when "-"
+            @resolved_value = state.builder.fsub lhs_val, rhs
+          when "<"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULT, lhs_val, rhs
+          when ">"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGT, lhs_val, rhs
+          when "!="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UNE, lhs_val, rhs
+          when "=="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UEQ, lhs_val, rhs
+          when "<="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULE, lhs_val, rhs
+          when ">="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGE, lhs_val, rhs
+          end
         else
           raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (RHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
         end
@@ -409,25 +530,50 @@ class BinaryOperatorNode < Node
           lhs_val = LLVM.double(lhs)
           case @value
           when "*"
-            @resolved_value = state.builder.mul lhs_val, rhs
+            @resolved_value = state.builder.fmul lhs_val, rhs
           when "/"
-            @resolved_value = state.builder.sdiv lhs_val, rhs
+            @resolved_value = state.builder.fdiv lhs_val, rhs
           when "-"
-            @resolved_value = state.builder.sub lhs_val, rhs
+            @resolved_value = state.builder.fsub lhs_val, rhs
           when "+"
-            @resolved_value = state.builder.add lhs_val, rhs
+            @resolved_value = state.builder.fadd lhs_val, rhs
           when "<"
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs_val, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULT, lhs_val, rhs
           when ">"
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs_val, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGT, lhs_val, rhs
           when "!="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs_val, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UNE, lhs_val, rhs
           when "=="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs_val, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UEQ, lhs_val, rhs
           when "<="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs_val, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULE, lhs_val, rhs
           when ">="
-            @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs_val, rhs
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGE, lhs_val, rhs
+          end
+        elsif rhs.type == LLVM::Int32
+          lhs_val = LLVM.double(lhs)
+          rhs_val = state.builder.si2fp rhs, LLVM::Double
+          case @value
+          when "*"
+            @resolved_value = state.builder.fmul lhs_val, rhs_val
+          when "/"
+            @resolved_value = state.builder.fdiv lhs_val, rhs_val
+          when "-"
+            @resolved_value = state.builder.fsub lhs_val, rhs_val
+          when "+"
+            @resolved_value = state.builder.fadd lhs_val, rhs_val
+          when "<"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULT, lhs_val, rhs_val
+          when ">"
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGT, lhs_val, rhs_val
+          when "!="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UNE, lhs_val, rhs_val
+          when "=="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UEQ, lhs_val, rhs_val
+          when "<="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::ULE, lhs_val, rhs_val
+          when ">="
+            @resolved_value = state.builder.fcmp LLVM::RealPredicate::UGE, lhs_val, rhs_val
           end
         else
           raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (RHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
