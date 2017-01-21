@@ -44,3 +44,10 @@ puts str_var == "String"
 puts str_var != "String"
 puts str_var == str_var
 puts str_var != str_var
+
+puts bool_var == true
+puts bool_var != false
+puts true == bool_var
+puts false != bool_var
+puts bool_var == bool_var
+puts bool_var != bool_var
