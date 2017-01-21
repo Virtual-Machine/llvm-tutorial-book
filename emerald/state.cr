@@ -95,7 +95,7 @@ class ProgramState
           builder.store LLVM.double(value), ptr
           @variables[func][name] = ptr
         elsif value.is_a?(String)
-          ptr = builder.global_string_pointer value, name
+          ptr = define_or_find_global value
           @variables[func][name] = ptr
         end
       end
