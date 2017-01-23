@@ -65,6 +65,7 @@ puts 10 < 6 + 1 * 2
 ./emeraldc demo_file.cr -d
 ```
 
-output
+output:
+
 ![Output](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/demo_output.png)
 
