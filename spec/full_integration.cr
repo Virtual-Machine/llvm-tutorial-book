@@ -6,6 +6,6 @@ describe "Generator" do
   contents = File.read("test_outputs/output8")
 
   it "should resolve final output as expected" do
-    contents.should eq "196.800000\n"
+    contents.should eq "196.8\n"
   end
 end
