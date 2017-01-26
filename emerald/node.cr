@@ -113,9 +113,9 @@ class CallExpressionNode < Node
     @resolved_value = @children[0].resolved_value
 
     test = @resolved_value
+    state.builder.position_at_end state.active_block
     if @value.as(String) == "puts"
       if test.is_a?(LLVM::Value)
-        state.builder.position_at_end state.active_block
         case test.type
         when LLVM::Int32
           state.builder.call state.mod.functions["puts:int"], test, @value.as(String)

@@ -97,6 +97,10 @@ class ProgramState
         elsif value.is_a?(String)
           ptr = define_or_find_global value
           @variables[func][name] = ptr
+        else
+          if value.is_a?(LLVM::Value)
+            @variables[func][name] = value
+          end
         end
       end
     else
@@ -114,6 +118,8 @@ class ProgramState
       builder.position_at_end active_block
       if @variables[func][name].type == LLVM::Int8.pointer
         # return builder.gep @variables[func][name], LLVM.int(LLVM::Int32, 0), LLVM.int(LLVM::Int32, 0)
+        return @variables[func][name]
+      elsif @variables[func][name].type == LLVM::Double
         return @variables[func][name]
       else
         return builder.load @variables[func][name]
