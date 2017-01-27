@@ -107,6 +107,31 @@ class ProgramState
           @variables[func][name] = value
         end
       end
+    else
+      if value.is_a?(Int32)
+        ptr = @variables[func][name]
+        builder.store LLVM.int(LLVM::Int32, value), ptr
+        @variables[func][name] = ptr
+      elsif value.is_a?(Bool)
+        ptr = @variables[func][name]
+        if value
+          builder.store LLVM.int(LLVM::Int1, 1), ptr
+        else
+          builder.store LLVM.int(LLVM::Int1, 0), ptr
+        end
+        @variables[func][name] = ptr
+      elsif value.is_a?(Float64)
+        ptr = @variables[func][name]
+        builder.store LLVM.double(value), ptr
+        @variables[func][name] = ptr
+      elsif value.is_a?(String)
+        ptr = define_or_find_global value
+        @variables[func][name] = ptr
+      else
+        if value.is_a?(LLVM::Value)
+          @variables[func][name] = value
+        end
+      end
     end
   end
 
