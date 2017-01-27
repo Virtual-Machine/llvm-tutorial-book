@@ -13,8 +13,10 @@ class Lexer
     @current = ' '
     @next = ' '
     @max = @content.size - 1
-    @keywords = [:puts, :return, :true, :false, :if, :else, :end]
+    @keywords = [:puts, :return, :true, :false, :if, :else, :end, :def]
+    @types = [:Int32, :Float64, :String, :Bool]
     @tokens = [] of Token
+    @functions = [] of String
   end
 
   def next_line : Nil
@@ -54,7 +56,11 @@ class Lexer
   def lex_current_char : Nil
     set_current_and_next
     if (@current == '(' || @current == ')') && @context != Context::Comment
+      close_token
       lex_parens
+    elsif @current == ',' && @context != Context::Comment
+      close_token
+      lex_comma
     else
       lex_by_context
     end
@@ -82,9 +88,12 @@ class Lexer
     if @current == '('
       @tokens << Token.new TokenType::ParenOpen, "(", @line, @position
     elsif @current == ')'
-      close_token
       @tokens << Token.new TokenType::ParenClose, ")", @line, @position
     end
+  end
+
+  def lex_comma : Nil
+    @tokens << Token.new TokenType::Comma, ",", @line, @position
   end
 
   def lex_by_context : Nil
@@ -93,7 +102,7 @@ class Lexer
       lex_top_level
     when Context::Comment
       lex_comment
-    when Context::Identifier
+    when Context::Identifier, Context::Def
       lex_identifier
     when Context::String
       lex_string
@@ -115,6 +124,17 @@ class Lexer
   def lex_identifier : Nil
     if !@current.ascii_whitespace?
       @current_token += @current
+    else
+      close_identifier_token
+    end
+  end
+
+  def lex_function_definition : Nil
+    if @current != ',' && !@current.ascii_whitespace?
+      @current_token += @current
+    elsif @current == ','
+      close_identifier_token
+      generate_token TokenType::Comma, ","
     else
       close_identifier_token
     end
@@ -178,7 +198,7 @@ class Lexer
       case @context
       when Context::Number
         close_number_token
-      when Context::Identifier
+      when Context::Identifier, Context::Def
         close_identifier_token
       when Context::Operator
         generate_token TokenType::Operator, @current_token.strip
@@ -206,13 +226,29 @@ class Lexer
             generate_token TokenType::Bool, true
           elsif keyword == :false
             generate_token TokenType::Bool, false
+          elsif keyword == :def
+            generate_token TokenType::Keyword, keyword
+            @context = Context::Def
           else
             generate_token TokenType::Keyword, keyword
           end
         end
       end
+    elsif @types.any? { |word| word.to_s == identifier }
+      @types.each do |type_val|
+        if type_val.to_s == identifier
+          generate_token TokenType::Type, type_val
+        end
+      end
     else
-      generate_token TokenType::Identifier, identifier
+      if @context == Context::Def
+        generate_token TokenType::FuncDef, identifier
+        @functions.push identifier
+      elsif @functions.includes? identifier
+        generate_token TokenType::FuncCall, identifier
+      else
+        generate_token TokenType::Identifier, identifier
+      end
     end
   end
 

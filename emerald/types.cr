@@ -9,6 +9,7 @@ enum Context
   Identifier
   Number
   Operator
+  Def
 end
 
 enum TokenType
@@ -24,4 +25,8 @@ enum TokenType
   Delimiter
   ParenOpen
   ParenClose
+  Comma
+  FuncDef
+  FuncCall
+  Type
 end

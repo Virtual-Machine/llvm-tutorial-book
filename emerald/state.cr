@@ -1,9 +1,10 @@
 class ProgramState
   getter variables, globals, builder, mod, blocks, close_statements
-  property! active_block, active_function, active_block_name, active_function_name
+  property! active_block, active_function, active_block_name, active_function_name, saved_block
   property printAST, printResolutions
 
   @active_block : LLVM::BasicBlock?
+  @saved_block : LLVM::BasicBlock?
   @active_function : LLVM::Function?
 
   def initialize(@builder : LLVM::Builder, @mod : LLVM::Module, @block : LLVM::BasicBlock)
@@ -16,6 +17,7 @@ class ProgramState
     @active_function_name = "main"
     @active_block = block
     @active_block_name = "main_body"
+    @saved_block = nil
     add_block("main_body", block)
     active_function.linkage = LLVM::Linkage::External
     mod.functions.add "puts:int", [LLVM::Int32], LLVM::Int32
@@ -75,51 +77,44 @@ class ProgramState
   end
 
   def add_variable(func : LLVM::Function, name : String, value : ValueType)
-    builder.position_at_end blocks["main_body"]
+    builder.position_at_end active_block
     if @variables[func]?
-      if !@variables[func].has_key? name
-        if value.is_a?(Int32)
-          ptr = builder.alloca LLVM::Int32, name
-          builder.store LLVM.int(LLVM::Int32, value), ptr
-          @variables[func][name] = ptr
-        elsif value.is_a?(Bool)
-          ptr = builder.alloca LLVM::Int1, name
-          if value
-            builder.store LLVM.int(LLVM::Int1, 1), ptr
-          else
-            builder.store LLVM.int(LLVM::Int1, 0), ptr
-          end
-          @variables[func][name] = ptr
-        elsif value.is_a?(Float64)
-          ptr = builder.alloca LLVM::Double, name
-          builder.store LLVM.double(value), ptr
-          @variables[func][name] = ptr
-        elsif value.is_a?(String)
-          ptr = define_or_find_global value
-          @variables[func][name] = ptr
-        else
-          if value.is_a?(LLVM::Value)
-            @variables[func][name] = value
-          end
-        end
-      end
     else
       @variables[func] = {} of String => LLVM::Value
+    end
+    if !@variables[func].has_key? name
       if value.is_a?(Int32)
         ptr = builder.alloca LLVM::Int32, name
         builder.store LLVM.int(LLVM::Int32, value), ptr
         @variables[func][name] = ptr
+      elsif value.is_a?(Bool)
+        ptr = builder.alloca LLVM::Int1, name
+        if value
+          builder.store LLVM.int(LLVM::Int1, 1), ptr
+        else
+          builder.store LLVM.int(LLVM::Int1, 0), ptr
+        end
+        @variables[func][name] = ptr
+      elsif value.is_a?(Float64)
+        ptr = builder.alloca LLVM::Double, name
+        builder.store LLVM.double(value), ptr
+        @variables[func][name] = ptr
+      elsif value.is_a?(String)
+        ptr = define_or_find_global value
+        @variables[func][name] = ptr
+      else
+        if value.is_a?(LLVM::Value)
+          @variables[func][name] = value
+        end
       end
     end
   end
 
   def reference_variable(func : LLVM::Function, name : String, line : Int32, column : Int32) : LLVM::Value
     if variable_exists? func, name
+      type_val = variables[func][name].type
       builder.position_at_end active_block
-      if @variables[func][name].type == LLVM::Int8.pointer
-        # return builder.gep @variables[func][name], LLVM.int(LLVM::Int32, 0), LLVM.int(LLVM::Int32, 0)
-        return @variables[func][name]
-      elsif @variables[func][name].type == LLVM::Double
+      if type_val == LLVM::Int8.pointer || type_val == LLVM::Int1 || type_val == LLVM::Int32 || type_val == LLVM::Double
         return @variables[func][name]
       else
         return builder.load @variables[func][name]

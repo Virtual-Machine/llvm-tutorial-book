@@ -60,6 +60,8 @@ class Parser
     when TokenType::Keyword
       if @current_token.value == :puts
         parse_builtin_puts
+      elsif @current_token.value == :def
+        parse_function_definition
       elsif @current_token.value == :return
         parse_return
       elsif @current_token.value == :if
@@ -69,6 +71,10 @@ class Parser
       elsif @current_token.value == :end
         parse_end
       end
+    when TokenType::FuncCall
+      parse_function_call
+    when TokenType::Comma
+      parse_comma
     when TokenType::Comment
     when TokenType::Delimiter
       if @paren_nest == 0
@@ -193,6 +199,40 @@ class Parser
   def parse_return
     node = ReturnNode.new @current_token.line, @current_token.column
     add_and_activate node
+    add_expression_node
+  end
+
+  def parse_function_definition
+    @tokens.shift # Eat def keyword
+    line = @tokens[0].line
+    column = @tokens[0].column
+    name = @tokens[0].value.as(String) # get name
+    params = {} of String => Symbol
+    @tokens.shift # Eat name
+    until @tokens[0].typeT == TokenType::ParenClose
+      @tokens.shift # Eat parenthesis or comma
+      params[@tokens[0].value.as(String)] = @tokens[1].value.as(Symbol)
+      @tokens.shift # Eat param name
+      @tokens.shift # Eat param type
+    end
+    @tokens.shift # Eat parenthesis
+    return_type = @tokens[0].value.as(Symbol)
+    @tokens.shift # Eat return type
+    node = FunctionDeclarationNode.new name, params, return_type, line, column
+    add_and_activate node
+    body = BasicBlockNode.new @tokens[1].line, @tokens[1].column
+    add_and_activate body
+    @context.push body
+  end
+
+  def parse_function_call
+    node = CallExpressionNode.new @current_token.value.as(String), @current_token.line, @current_token.column
+    add_and_activate node
+    add_expression_node
+  end
+
+  def parse_comma
+    @active_node = @active_node.get_first_expression_node.parent
     add_expression_node
   end
 end

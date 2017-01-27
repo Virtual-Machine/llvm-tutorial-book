@@ -90,6 +90,26 @@ class Node
 
   def resolve_value(state : ProgramState)
   end
+
+  def crystal_to_llvm(state : ProgramState, value : ValueType) : LLVM::Value
+    if value.is_a?(Bool)
+      if value == true
+        return LLVM.int(LLVM::Int1, 1)
+      else
+        return LLVM.int(LLVM::Int1, 0)
+      end
+    elsif value.is_a?(Int32)
+      return LLVM.int(LLVM::Int32, value)
+    elsif value.is_a?(Float64)
+      return LLVM.double(value)
+    elsif value.is_a?(String)
+      return state.define_or_find_global value
+    elsif value.is_a?(LLVM::Value)
+      return value
+    else
+      raise "Unknown value type in crystal_to_llvm function"
+    end
+  end
 end
 
 class RootNode < Node
@@ -110,11 +130,10 @@ class CallExpressionNode < Node
   end
 
   def resolve_value(state : ProgramState)
-    @resolved_value = @children[0].resolved_value
-
-    test = @resolved_value
     state.builder.position_at_end state.active_block
     if @value.as(String) == "puts"
+      @resolved_value = @children[0].resolved_value
+      test = @resolved_value
       if test.is_a?(LLVM::Value)
         case test.type
         when LLVM::Int32
@@ -131,29 +150,15 @@ class CallExpressionNode < Node
         state.builder.call state.mod.functions["puts:str"], str_pointer, @value.as(String)
       end
     else
-      # FIX this needs to be corrected,
-      # this will require adding a new node type to accomodate multiple parameters
-      # - ie a ParamArgsNode, with appropriate lexing and code generation
-
-      # Temporary hack, assume one parameter by way of resolved value
-      # This needs to be augmented to accept multiple values
-      if test.is_a?(LLVM::Value)
-        state.builder.call state.mod.functions[@value.as(String)], [test], @value.as(String)
-      elsif test.is_a?(Bool)
-        if test == true
-          state.builder.call state.mod.functions[@value.as(String)], [LLVM.int(LLVM::Int1, 1)], @value.as(String)
-        else
-          state.builder.call state.mod.functions[@value.as(String)], [LLVM.int(LLVM::Int1, 0)], @value.as(String)
+      num_params = @children.size
+      if num_params == 0
+        @resolved_value = state.builder.call state.mod.functions[@value.as(String)], @value.as(String)
+      else
+        params = [] of LLVM::Value
+        @children.each do |child|
+          params.push crystal_to_llvm state, child.resolved_value
         end
-      elsif test.is_a?(Int32)
-        state.builder.call state.mod.functions[@value.as(String)], [LLVM.int(LLVM::Int32, test)], @value.as(String)
-      elsif test.is_a?(Float64)
-        state.builder.call state.mod.functions[@value.as(String)], [LLVM.double(test)], @value.as(String)
-      elsif test.is_a?(String)
-        str_pointer = state.define_or_find_global test
-        state.builder.call state.mod.functions[@value.as(String)], [str_pointer], @value.as(String)
-      elsif test.nil?
-        state.builder.call state.mod.functions[@value.as(String)], @value.as(String)
+        @resolved_value = state.builder.call state.mod.functions[@value.as(String)], params, @value.as(String)
       end
     end
   end
@@ -830,7 +835,7 @@ class BasicBlockNode < Node
 
   def pre_walk(state : ProgramState)
     block_name = "block#{state.blocks.size + 1}"
-    self_block = state.mod.functions["main"].basic_blocks.append block_name
+    self_block = state.active_function.basic_blocks.append block_name
     state.add_block block_name, self_block
     state.active_block = self_block
     @block = self_block
@@ -838,13 +843,15 @@ class BasicBlockNode < Node
 
   def resolve_value(state : ProgramState)
     @resolved_value = @children[-1].resolved_value
-    scope = block
-    @children.each do |child|
-      if child.class == IfExpressionNode
-        scope = child.as(IfExpressionNode).exit_block
+    if parent.is_a?(IfExpressionNode)
+      scope = block
+      @children.each do |child|
+        if child.class == IfExpressionNode
+          scope = child.as(IfExpressionNode).exit_block
+        end
       end
+      state.close_statements.push JumpStatement.new scope, parent.as(IfExpressionNode).exit_block  
     end
-    state.close_statements.push JumpStatement.new scope, parent.as(IfExpressionNode).exit_block
   end
 end
 
@@ -883,6 +890,57 @@ class DeclarationReferenceNode < Node
   end
 end
 
+class FunctionDeclarationNode < Node
+  def initialize(@name : String, @params : Hash(String, Symbol), @return_type : Symbol, @line : Int32, @position : Int32)
+    @value = nil
+    @children = [] of Node
+  end
+
+  def pre_walk(state : ProgramState)
+    state.saved_block = state.active_block
+    params = [] of LLVM::Type
+    param_names = [] of String
+    @params.each do |name, type_val|
+      params.push symbol_to_llvm type_val
+      param_names.push name
+    end
+    return_sig = symbol_to_llvm @return_type
+    func = state.mod.functions.add @name, params, return_sig
+    state.active_function = func
+    array = func.params.to_a
+    array.each_with_index do |param, i|
+      state.add_variable func, param_names[i], param 
+    end
+  end
+
+  def resolve_value(state : ProgramState)
+    state.active_function = state.mod.functions["main"]
+    state.active_block = state.saved_block
+  end
+
+  def symbol_to_llvm(symbol : Symbol) : LLVM::Type
+    case symbol
+    when :Int32
+      return LLVM::Int32
+    when :Float64
+      return LLVM::Double
+    when :Bool
+      return LLVM::Int1
+    when :String
+      return LLVM::Int8.pointer
+    else
+      raise "Undefined case in symbol_to_llvm"
+    end
+  end
+end
+
+class TypeCastNode < Node
+  def initialize(@resolved_value : LLVM::Type, @line : Int32, @position : Int32)
+    @value = nil
+    @children = [] of Node
+  end
+end
+
 class ReturnNode < Node
   def initialize(@line : Int32, @position : Int32)
     @value = nil
@@ -892,26 +950,24 @@ class ReturnNode < Node
   def resolve_value(state : ProgramState)
     @resolved_value = @children[0].resolved_value
     test = @resolved_value
-    if test.is_a? Int32
-      state.builder.position_at_end state.active_block
-      if test.is_a?(LLVM::Value)
-        state.builder.ret test
-      elsif test.is_a?(Bool)
-        if test == true
-          state.builder.ret LLVM.int(LLVM::Int1, 1)
-        else
-          state.builder.ret LLVM.int(LLVM::Int1, 0)
-        end
-      elsif test.is_a?(String)
-        str_pointer = state.define_or_find_global test
-        state.builder.ret str_pointer
-      elsif test.is_a?(Int32)
-        state.builder.ret LLVM.int(LLVM::Int32, test)
-      elsif test.is_a?(Float64)
-        state.builder.ret LLVM.double(test)
-      elsif test.nil?
-        state.builder.ret
+    state.builder.position_at_end state.active_block
+    if test.is_a?(LLVM::Value)
+      state.builder.ret test
+    elsif test.is_a?(Bool)
+      if test == true
+        state.builder.ret LLVM.int(LLVM::Int1, 1)
+      else
+        state.builder.ret LLVM.int(LLVM::Int1, 0)
       end
+    elsif test.is_a?(String)
+      str_pointer = state.define_or_find_global test
+      state.builder.ret str_pointer
+    elsif test.is_a?(Int32)
+      state.builder.ret LLVM.int(LLVM::Int32, test)
+    elsif test.is_a?(Float64)
+      state.builder.ret LLVM.double(test)
+    elsif test.nil?
+      state.builder.ret
     end
   end
 end
