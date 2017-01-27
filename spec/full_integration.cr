@@ -1,7 +1,7 @@
 require "spec"
 require "../emerald/emerald"
 
-describe "Generator" do
+describe "Integration" do
   system "./emeraldc test_inputs/input8.cr -e > test_outputs/output8"
   contents = File.read("test_outputs/output8")
 
