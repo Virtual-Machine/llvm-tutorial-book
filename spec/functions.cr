@@ -6,6 +6,6 @@ describe "Functions" do
   contents = File.read("test_outputs/output9")
 
   it "should resolve final output as expected" do
-    contents.should eq "9\n0\n"
+    contents.should eq "9\n2\nhello world\nhello hello hello hello hello hello hello hello hello \n"
   end
 end
