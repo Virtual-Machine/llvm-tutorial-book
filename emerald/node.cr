@@ -275,7 +275,8 @@ class BinaryOperatorNode < Node
             @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs
           when "=="
             @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs
-            # INCOMPLETE no string concatenation implementation in LLVM yet
+          when "+"
+            @resolved_value = state.builder.call state.mod.functions["concatenate:str"], [lhs, rhs], "str_cat"
           end
         elsif rhs.type == LLVM::Int32
           # INCOMPLETE no string repetition implementation in LLVM yet

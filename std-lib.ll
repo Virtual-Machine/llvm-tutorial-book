@@ -38,6 +38,20 @@ false:
 	ret i32 %call_return1
 }
 
+define i8* @"concatenate:str"(i8* %str1, i8* %str2){
+	%str1_length = call i64 @strlen(i8* %str1)
+	%new_length = add i64 %str1_length, 1
+	%new_string = call i8* @malloc(i64 %new_length)
+	%obj_size = call i64 @llvm.objectsize.i64.p0i8(i8* %new_string, i1 false)
+	%ret1 = call i8* @__strncat_chk(i8* %new_string, i8* %str1, i64 %new_length, i64 %obj_size)
+	%str2_length = call i64 @strlen(i8* %str2)
+	%final_length = add i64 %new_length, %str2_length
+	%final_string = call i8* @realloc(i8* %new_string, i64 %final_length)	
+	%obj_size2 = call i64 @llvm.objectsize.i64.p0i8(i8* %final_string, i1 false)
+	%ret2 = call i8* @__strncat_chk(i8* %final_string, i8* %str2, i64 %final_length, i64 %obj_size2)
+	ret i8* %final_string
+}
+
 declare i32 @printf(i8*, ...)
 declare i64 @strlen(i8*)
 declare i8* @__strncat_chk(i8*, i8*, i64, i64)

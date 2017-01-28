@@ -25,6 +25,7 @@ class ProgramState
     mod.functions.add "puts:bool", [LLVM::Int1], LLVM::Int32
     mod.functions.add "puts:float", [LLVM::Double], LLVM::Int32
     mod.functions.add "puts:str", [LLVM::VoidPointer], LLVM::Int32
+    mod.functions.add "concatenate:str", [LLVM::VoidPointer, LLVM::VoidPointer], LLVM::VoidPointer
     mod.functions.add "strlen", [LLVM::VoidPointer], LLVM::Int64
     mod.functions.add "__strncat_chk", [LLVM::VoidPointer, LLVM::VoidPointer, LLVM::Int64, LLVM::Int64], LLVM::VoidPointer
     mod.functions.add "llvm.objectsize.i64.p0i8", [LLVM::VoidPointer, LLVM::Int1], LLVM::Int64
