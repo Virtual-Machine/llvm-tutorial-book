@@ -279,7 +279,9 @@ class BinaryOperatorNode < Node
             @resolved_value = state.builder.call state.mod.functions["concatenate:str"], [lhs, rhs], "str_cat"
           end
         elsif rhs.type == LLVM::Int32
-          # INCOMPLETE no string repetition implementation in LLVM yet
+          if @value == "*"
+            @resolved_value = state.builder.call state.mod.functions["repetition:str"], [lhs, rhs], "str_rep"
+          end
         else
           raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (BOTH = LLVM::Value) #{lhs} #{rhs}", @line, @position
         end

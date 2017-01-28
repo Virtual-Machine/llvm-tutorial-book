@@ -52,6 +52,33 @@ define i8* @"concatenate:str"(i8* %str1, i8* %str2){
 	ret i8* %final_string
 }
 
+define i8* @"repetition:str"(i8* %str, i32 %rep){
+header:
+	%rep64 = zext i32 %rep to i64
+	%rep1 = alloca i64
+	store i64 %rep64, i64* %rep1
+	%str_length = call i64 @strlen(i8* %str)
+	%new_length = mul i64 %str_length, %rep64
+	%final_length = add i64 %str_length, 1
+	%final_string = call i8* @malloc(i64 %final_length)
+	br label %loop_body
+
+loop_body:
+	%obj_size = call i64 @llvm.objectsize.i64.p0i8(i8* %final_string, i1 false)
+	%ret1 = call i8* @__strncat_chk(i8* %final_string, i8* %str, i64 %final_length, i64 %obj_size)
+	br label %check_loop
+
+check_loop:
+	%rep2 = load i64, i64* %rep1
+	%rep3 = sub i64 %rep2, 1
+	store i64 %rep3, i64* %rep1
+	%is_zero = icmp eq i64 %rep3, 0
+	br i1 %is_zero, label %loop_footer, label %loop_body
+
+loop_footer:
+	ret i8* %final_string
+}
+
 declare i32 @printf(i8*, ...)
 declare i64 @strlen(i8*)
 declare i8* @__strncat_chk(i8*, i8*, i64, i64)
