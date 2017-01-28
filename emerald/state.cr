@@ -21,9 +21,16 @@ class ProgramState
     add_block("main_body", block)
     active_function.linkage = LLVM::Linkage::External
     mod.functions.add "puts:int", [LLVM::Int32], LLVM::Int32
+    mod.functions.add "puts:int64", [LLVM::Int64], LLVM::Int64
     mod.functions.add "puts:bool", [LLVM::Int1], LLVM::Int32
     mod.functions.add "puts:float", [LLVM::Double], LLVM::Int32
     mod.functions.add "puts:str", [LLVM::VoidPointer], LLVM::Int32
+    mod.functions.add "strlen", [LLVM::VoidPointer], LLVM::Int64
+    mod.functions.add "__strncat_chk", [LLVM::VoidPointer, LLVM::VoidPointer, LLVM::Int64, LLVM::Int64], LLVM::VoidPointer
+    mod.functions.add "llvm.objectsize.i64.p0i8", [LLVM::VoidPointer, LLVM::Int1], LLVM::Int64
+    mod.functions.add "malloc", [LLVM::Int64], LLVM::VoidPointer
+    mod.functions.add "realloc", [LLVM::VoidPointer, LLVM::Int64], LLVM::VoidPointer
+    mod.functions.add "free", [LLVM::VoidPointer], LLVM::Void
     builder.position_at_end block
     @close_statements = [] of CloseStatement
   end

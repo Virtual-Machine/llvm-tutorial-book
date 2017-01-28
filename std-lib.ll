@@ -21,6 +21,11 @@ define i32 @"puts:int"(i32 %num){
 	ret i32 %call_return
 }
 
+define i32 @"puts:int64"(i64 %num){
+	%call_return = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.puts_int, i32 0, i32 0), i64 %num)
+	ret i32 %call_return
+}
+
 define i32 @"puts:bool"(i1 %bool){
 entry:
 	br i1 %bool, label %true, label %false
@@ -34,3 +39,9 @@ false:
 }
 
 declare i32 @printf(i8*, ...)
+declare i64 @strlen(i8*)
+declare i8* @__strncat_chk(i8*, i8*, i64, i64)
+declare i64 @llvm.objectsize.i64.p0i8(i8*, i1)
+declare i8* @malloc(i64)
+declare i8* @realloc(i8*, i64)
+declare void @free(i8*)

@@ -56,6 +56,19 @@ class Node
     end
   end
 
+  def get_first_parens_node : Node
+    active_parent = self.parent
+    while true
+      # if active parent is an expression, we are done
+      if active_parent.class == ExpressionNode && active_parent.as(ExpressionNode).parens == true
+        return active_parent
+      else
+        # Otherwise we need to keep looking upwards
+        active_parent = active_parent.parent
+      end
+    end
+  end
+
   def depth : Int32
     count = 0
     active_node = self
@@ -136,6 +149,8 @@ class CallExpressionNode < Node
       test = @resolved_value
       if test.is_a?(LLVM::Value)
         case test.type
+        when LLVM::Int64
+          state.builder.call state.mod.functions["puts:int64"], test, @value.as(String)
         when LLVM::Int32
           state.builder.call state.mod.functions["puts:int"], test, @value.as(String)
         when LLVM::Double
@@ -856,7 +871,9 @@ class BasicBlockNode < Node
 end
 
 class ExpressionNode < Node
-  def initialize(@line : Int32, @position : Int32)
+  getter parens
+
+  def initialize(@parens : Bool, @line : Int32, @position : Int32)
     @value = nil
     @children = [] of Node
   end
@@ -922,6 +939,8 @@ class FunctionDeclarationNode < Node
     case symbol
     when :Int32
       return LLVM::Int32
+    when :Int64
+      return LLVM::Int64
     when :Float64
       return LLVM::Double
     when :Bool

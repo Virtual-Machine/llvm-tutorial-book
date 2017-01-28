@@ -14,9 +14,9 @@ class Lexer
     @next = ' '
     @max = @content.size - 1
     @keywords = [:puts, :return, :true, :false, :if, :else, :end, :def]
-    @types = [:Int32, :Float64, :String, :Bool]
+    @types = [:Int32, :Float64, :String, :Bool, :Int64]
     @tokens = [] of Token
-    @functions = [] of String
+    @functions = ["strlen"] of String
   end
 
   def next_line : Nil

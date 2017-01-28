@@ -100,8 +100,8 @@ class Parser
     @active_node = node
   end
 
-  def add_expression_node : Nil
-    node = ExpressionNode.new @current_token.line, @current_token.column
+  def add_expression_node(parens : Bool = false) : Nil
+    node = ExpressionNode.new parens, @current_token.line, @current_token.column
     add_and_activate node
   end
 
@@ -148,7 +148,7 @@ class Parser
 
   def parse_paren_open
     @paren_nest += 1
-    add_expression_node
+    add_expression_node true
   end
 
   def parse_paren_close
@@ -156,7 +156,7 @@ class Parser
     if @paren_nest < 0
       raise EmeraldParsingException.new "Closing parenthesis without corresponding opening parenthesis in expression", @tokens[0].line, @tokens[0].column
     end
-    @active_node = @active_node.get_first_expression_node
+    @active_node = @active_node.get_first_parens_node
   end
 
   def parse_variable_declaration
