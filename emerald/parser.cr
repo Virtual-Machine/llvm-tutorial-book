@@ -203,21 +203,41 @@ class Parser
   end
 
   def parse_function_definition : Nil
-    @tokens.shift # Eat def keyword
+    @tokens.shift
     line = @tokens[0].line
     column = @tokens[0].column
-    name = @tokens[0].value.as(String) # get name
+    name = @tokens[0].value.as(String)
     params = {} of String => Symbol
-    @tokens.shift # Eat name
-    until @tokens[0].typeT == TokenType::ParenClose
-      @tokens.shift # Eat parenthesis or comma
-      params[@tokens[0].value.as(String)] = @tokens[1].value.as(Symbol)
-      @tokens.shift # Eat param name
-      @tokens.shift # Eat param type
+    @tokens.shift
+    if @tokens[0].typeT == TokenType::ParenOpen
+      if @tokens[1].typeT == TokenType::ParenClose
+        # Jump over empty parens
+        @tokens.shift
+        @tokens.shift
+      else
+        # Parse identifier / type pairs
+        until @tokens[0].typeT == TokenType::ParenClose
+          @tokens.shift
+          if @tokens[0].typeT == TokenType::Identifier && @tokens[1].typeT == TokenType::Type
+            params[@tokens[0].value.as(String)] = @tokens[1].value.as(Symbol)
+          else
+            raise EmeraldParsingException.new "Function #{name} has an invalid declaration.\nWhen declaring parameters, you must provide an identifier and type and seperate with commas\nExample: def add_xy(x Int32, y Int32) Int32", @tokens[0].line, @tokens[0].column
+          end
+          @tokens.shift
+          @tokens.shift
+        end
+        @tokens.shift
+      end
+    elsif @tokens[0].typeT == TokenType::Type
+      # No parens
+    else
+      raise EmeraldParsingException.new "Function #{name} has an invalid declaration.\nOnly an opening parenthesis or a type can follow the name of a function.", @tokens[0].line, @tokens[0].column
     end
-    @tokens.shift # Eat parenthesis
+    if @tokens[0].typeT != TokenType::Type
+      raise EmeraldParsingException.new "Function #{name} has an invalid declaration.\nNo return type is present.", @tokens[0].line, @tokens[0].column
+    end
     return_type = @tokens[0].value.as(Symbol)
-    @tokens.shift # Eat return type
+    @tokens.shift
     node = FunctionDeclarationNode.new name, params, return_type, line, column
     add_and_activate node
     body = BasicBlockNode.new @tokens[1].line, @tokens[1].column
