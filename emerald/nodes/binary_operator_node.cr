@@ -235,10 +235,14 @@ class BinaryOperatorNode < Node
             @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs_val
           when "=="
             @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, rhs_val
-            # INCOMPLETE no string concatenation implementation in LLVM yet
+          when "+"
+            @resolved_value = state.builder.call state.mod.functions["concatenate:str"], [lhs, rhs_val], "str_cat"
           end
         elsif rhs.is_a?(Int32)
-          # INCOMPLETE no string repetition implementation in LLVM yet
+          if @value == "*"
+            rhs_val = LLVM.int(LLVM::Int32, rhs)
+            @resolved_value = state.builder.call state.mod.functions["repetition:str"], [lhs, rhs_val], "str_rep"
+          end
         else
           raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (LHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
         end
@@ -427,10 +431,14 @@ class BinaryOperatorNode < Node
             @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs_val, rhs
           when "=="
             @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs_val, rhs
-            # INCOMPLETE no string concatenation implementation in LLVM yet
+          when "+"
+            @resolved_value = state.builder.call state.mod.functions["concatenate:str"], [lhs_val, rhs], "str_cat"
           end
-        elsif rhs.is_a?(Int32)
-          # INCOMPLETE no string repetition implementation in LLVM yet
+        elsif rhs.type == LLVM::Int32
+          if @value == "*"
+            lhs_val = state.define_or_find_global lhs
+            @resolved_value = state.builder.call state.mod.functions["repetition:str"], [lhs_val, rhs], "str_rep"
+          end
         else
           raise EmeraldValueResolutionException.new "Undefined operation #{@value} for rhs type (RHS = LLVM::Value) #{lhs} #{rhs}", @line, @position
         end
