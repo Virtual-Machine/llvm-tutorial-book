@@ -18,6 +18,46 @@ class BinaryOperatorNode < Node
     end
   end
 
+  # resolve value valid possibilities
+  # Note we may need to add in LLVM::Int64 due to its presence in the standard lib.
+  # This could also be solved by using wrappers around functions to truncate int64 to int32
+
+  # Both sides are LLVM land values -> resolve_binary_llvm_values
+  # LLVM::Int32 and LLVM::Int32
+  # LLVM::Int32 and LLVM::Double
+  # LLVM::Double and LLVM::Int32
+  # LLVM::Double and LLVM::Double
+  # LLVM::Int8.pointer and LLVM::Int8.pointer
+  # LLVM::Int8.pointer and LLVM::Int32
+  # LLVM::Int1 and LLVM::Int1
+
+  # Left side is LLVM land value -> resolve_binary_left_llvm
+  # LLVM::Int32 and Int32
+  # LLVM::Int32 and Float64
+  # LLVM::Double and Int32
+  # LLVM::Double and Float64
+  # LLVM::Int8.pointer and String
+  # LLVM::Int8.pointer and Int32
+  # LLVM::Int1 and Bool
+
+  # Right side is LLVM land value -> resolve_binary_right_llvm
+  # Int32 and LLVM::Int32
+  # Int32 and LLVM::Double
+  # Float64 and LLVM::Int32
+  # Float64 and LLVM::Double
+  # String and LLVM::Int8.pointer
+  # String and LLVM::Int32
+  # Bool and LLVM::Int1
+
+  # Both sides are compiler known values
+  # Int32 and Int32
+  # Int32 and Float64
+  # Float64 and Int32
+  # Float64 and Float64
+  # String and String
+  # String and Int32
+  # Bool and Bool
+
   def resolve_value(state : ProgramState) : Nil
     lhs = @children[0].resolved_value
     rhs = @children[1].resolved_value
