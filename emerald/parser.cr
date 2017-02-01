@@ -35,7 +35,7 @@ class Parser
     @ast
   end
 
-  def parse_token
+  def parse_token : Nil
     case @current_token.typeT
     when TokenType::Int
       parse_int
@@ -105,7 +105,7 @@ class Parser
     add_and_activate node
   end
 
-  def parse_int
+  def parse_int : Nil
     if @active_node == @ast[0]
       add_expression_node
     end
@@ -113,7 +113,7 @@ class Parser
     add_and_activate node
   end
 
-  def parse_string
+  def parse_string : Nil
     if @active_node == @ast[0]
       add_expression_node
     end
@@ -121,7 +121,7 @@ class Parser
     add_and_activate node
   end
 
-  def parse_float
+  def parse_float : Nil
     if @active_node == @ast[0]
       add_expression_node
     end
@@ -129,7 +129,7 @@ class Parser
     add_and_activate node
   end
 
-  def parse_bool
+  def parse_bool : Nil
     if @active_node == @ast[0]
       add_expression_node
     end
@@ -137,7 +137,7 @@ class Parser
     add_and_activate node
   end
 
-  def parse_operator
+  def parse_operator : Nil
     if @active_node == @ast[0]
       raise EmeraldParsingException.new "#{@current_token.typeT} is not currently supported at the top level", @current_token.line, @current_token.column
     end
@@ -146,12 +146,12 @@ class Parser
     @active_node = node
   end
 
-  def parse_paren_open
+  def parse_paren_open : Nil
     @paren_nest += 1
     add_expression_node true
   end
 
-  def parse_paren_close
+  def parse_paren_close : Nil
     @paren_nest -= 1
     if @paren_nest < 0
       raise EmeraldParsingException.new "Closing parenthesis without corresponding opening parenthesis in expression", @tokens[0].line, @tokens[0].column
@@ -159,7 +159,7 @@ class Parser
     @active_node = @active_node.get_first_parens_node
   end
 
-  def parse_variable_declaration
+  def parse_variable_declaration : Nil
     identifier = @current_token.value
     node = VariableDeclarationNode.new identifier.as(String), @current_token.line, @current_token.column
     add_and_activate node
@@ -167,42 +167,42 @@ class Parser
     @tokens.shift
   end
 
-  def parse_declaration_reference
+  def parse_declaration_reference : Nil
     node = DeclarationReferenceNode.new @current_token.value.as(String), @current_token.line, @current_token.column
     add_and_activate node
   end
 
-  def parse_builtin_puts
+  def parse_builtin_puts : Nil
     node = CallExpressionNode.new "puts", @current_token.line, @current_token.column
     add_and_activate node
     add_expression_node
   end
 
-  def parse_if
+  def parse_if : Nil
     node = IfExpressionNode.new @current_token.line, @current_token.column
     add_and_activate node
     @context.push node
     add_expression_node
   end
 
-  def parse_else
+  def parse_else : Nil
     @active_node = @active_node.parent.not_nil!
     node = BasicBlockNode.new @current_token.line, @current_token.column
     add_and_activate node
   end
 
-  def parse_end
+  def parse_end : Nil
     @context.pop
     @active_node = active_context
   end
 
-  def parse_return
+  def parse_return : Nil
     node = ReturnNode.new @current_token.line, @current_token.column
     add_and_activate node
     add_expression_node
   end
 
-  def parse_function_definition
+  def parse_function_definition : Nil
     @tokens.shift # Eat def keyword
     line = @tokens[0].line
     column = @tokens[0].column
@@ -225,13 +225,13 @@ class Parser
     @context.push body
   end
 
-  def parse_function_call
+  def parse_function_call : Nil
     node = CallExpressionNode.new @current_token.value.as(String), @current_token.line, @current_token.column
     add_and_activate node
     add_expression_node
   end
 
-  def parse_comma
+  def parse_comma : Nil
     @active_node = @active_node.get_first_expression_node.parent
     add_expression_node
   end

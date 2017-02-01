@@ -37,7 +37,7 @@ class ProgramState
     @close_statements = [] of CloseStatement
   end
 
-  def close_blocks
+  def close_blocks : Nil
     @close_statements.each do |statement|
       statement.close builder
     end
@@ -77,7 +77,7 @@ class ProgramState
     end
   end
 
-  def add_global(name : String, value : LLVM::Value)
+  def add_global(name : String, value : LLVM::Value) : Nil
     @globals[name] = value
   end
 
@@ -85,7 +85,7 @@ class ProgramState
     @globals[name]? ? true : false
   end
 
-  def add_variable(func : LLVM::Function, name : String, value : ValueType)
+  def add_variable(func : LLVM::Function, name : String, value : ValueType) : Nil
     builder.position_at_end active_block
     if @variables[func]?
     else

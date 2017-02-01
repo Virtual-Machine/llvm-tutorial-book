@@ -7,7 +7,7 @@ class Token
                  @column : Int32)
   end
 
-  def to_s
+  def to_s : String
     "<#{@line}:#{@column}>\t- #{self.typeT}   \t- #{self.value}"
   end
 end

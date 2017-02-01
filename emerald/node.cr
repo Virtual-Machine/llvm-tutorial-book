@@ -13,16 +13,16 @@ class Node
     @resolved_value = nil
   end
 
-  def add_child(node : Node)
+  def add_child(node : Node) : Nil
     @children.push node
     node.parent = self
   end
 
-  def delete_child(node : Node)
+  def delete_child(node : Node) : Nil
     @children.delete node
   end
 
-  def promote(node : Node)
+  def promote(node : Node) : Nil
     insertion_point = get_binary_insertion_point node
 
     root_node = insertion_point.parent
@@ -82,7 +82,7 @@ class Node
     end
   end
 
-  def walk(state : ProgramState)
+  def walk(state : ProgramState) : Nil
     # Print AST in walk order with depth
     puts "#{"\t" * depth}#{self.class} #{self.value}" if state.printAST
     @children.each do |child|
@@ -92,16 +92,16 @@ class Node
     end
   end
 
-  def pre_walk(state : ProgramState)
+  def pre_walk(state : ProgramState) : Nil
   end
 
-  def post_walk(state : ProgramState)
+  def post_walk(state : ProgramState) : Nil
     resolve_value state
     # Print AST resolutions
     puts "#{"\t" * depth}#{self.class} resolved #{@resolved_value}" if state.printResolutions
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
   end
 
   def crystal_to_llvm(state : ProgramState, value : ValueType) : LLVM::Value
@@ -132,7 +132,7 @@ class RootNode < Node
     @parent = nil
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     @resolved_value = @children[-1].resolved_value
   end
 end
@@ -142,7 +142,7 @@ class CallExpressionNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     state.builder.position_at_end state.active_block
     if @value.as(String) == "puts"
       @resolved_value = @children[0].resolved_value
@@ -199,11 +199,10 @@ class BinaryOperatorNode < Node
     end
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     lhs = @children[0].resolved_value
     rhs = @children[1].resolved_value
 
-    # FIX many assumptions here that need to be rectified, and actions defined for different types
     if lhs.is_a?(LLVM::Value) && rhs.is_a?(LLVM::Value)
       case lhs.type
       when LLVM::Int32
@@ -757,7 +756,7 @@ class IntegerLiteralNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     @resolved_value = value
   end
 end
@@ -767,7 +766,7 @@ class StringLiteralNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     @resolved_value = value
   end
 end
@@ -777,7 +776,7 @@ class FloatLiteralNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     @resolved_value = value
   end
 end
@@ -787,7 +786,7 @@ class BooleanLiteralNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     @resolved_value = value
   end
 end
@@ -804,7 +803,7 @@ class IfExpressionNode < Node
     @children = [] of Node
   end
 
-  def pre_walk(state : ProgramState)
+  def pre_walk(state : ProgramState) : Nil
     block_name = "eblock#{state.blocks.size + 1}"
     exit_block = state.mod.functions["main"].basic_blocks.append block_name
     state.add_block block_name, exit_block
@@ -812,7 +811,7 @@ class IfExpressionNode < Node
     @exit_block = exit_block
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     state.active_block = @exit_block
     @if_block = @children[1].as(BasicBlockNode).block
     if @children[2]?
@@ -851,7 +850,7 @@ class BasicBlockNode < Node
     @children = [] of Node
   end
 
-  def pre_walk(state : ProgramState)
+  def pre_walk(state : ProgramState) : Nil
     block_name = "block#{state.blocks.size + 1}"
     self_block = state.active_function.basic_blocks.append block_name
     state.add_block block_name, self_block
@@ -859,7 +858,7 @@ class BasicBlockNode < Node
     @block = self_block
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     @resolved_value = @children[-1].resolved_value
     if parent.is_a?(IfExpressionNode)
       scope = block
@@ -868,7 +867,7 @@ class BasicBlockNode < Node
           scope = child.as(IfExpressionNode).exit_block
         end
       end
-      state.close_statements.push JumpStatement.new scope, parent.as(IfExpressionNode).exit_block  
+      state.close_statements.push JumpStatement.new scope, parent.as(IfExpressionNode).exit_block
     end
   end
 end
@@ -881,7 +880,7 @@ class ExpressionNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     @resolved_value = @children[0].resolved_value
   end
 end
@@ -891,7 +890,7 @@ class VariableDeclarationNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     @resolved_value = @children[0].resolved_value
     state.add_variable state.active_function, @value.as(String), @resolved_value
     if @resolved_value.is_a?(String)
@@ -905,7 +904,7 @@ class DeclarationReferenceNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     @resolved_value = state.reference_variable state.active_function, @value.as(String), @line, @position
   end
 end
@@ -916,7 +915,7 @@ class FunctionDeclarationNode < Node
     @children = [] of Node
   end
 
-  def pre_walk(state : ProgramState)
+  def pre_walk(state : ProgramState) : Nil
     state.saved_block = state.active_block
     params = [] of LLVM::Type
     param_names = [] of String
@@ -929,11 +928,11 @@ class FunctionDeclarationNode < Node
     state.active_function = func
     array = func.params.to_a
     array.each_with_index do |param, i|
-      state.add_variable func, param_names[i], param 
+      state.add_variable func, param_names[i], param
     end
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     state.active_function = state.mod.functions["main"]
     state.active_block = state.saved_block
   end
@@ -969,7 +968,7 @@ class ReturnNode < Node
     @children = [] of Node
   end
 
-  def resolve_value(state : ProgramState)
+  def resolve_value(state : ProgramState) : Nil
     @resolved_value = @children[0].resolved_value
     test = @resolved_value
     state.builder.position_at_end state.active_block
