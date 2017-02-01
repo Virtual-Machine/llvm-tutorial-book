@@ -45,27 +45,8 @@ class ProgramState
     builder.ret LLVM.int(LLVM::Int32, 0)
   end
 
-  def set_active_function(name : String) : Nil
-    @active_function = mod.functions[name]
-    @active_function_name = name
-  end
-
-  def set_active_block(name : String) : Nil
-    @active_block = @blocks[name]
-    @active_block_name = name
-  end
-
   def add_block(name : String, block : LLVM::BasicBlock)
     @blocks[name] = block
-  end
-
-  def get_block_name(block : LLVM::BasicBlock) : String?
-    @blocks.each do |name, t_block|
-      if block == t_block
-        return name
-      end
-    end
-    return nil
   end
 
   def define_or_find_global(name : String) : LLVM::Value
@@ -75,10 +56,6 @@ class ProgramState
       @globals[name] = builder.global_string_pointer name
       return @globals[name]
     end
-  end
-
-  def add_global(name : String, value : LLVM::Value) : Nil
-    @globals[name] = value
   end
 
   def has_global?(name : String) : Bool
