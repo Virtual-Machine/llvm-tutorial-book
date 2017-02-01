@@ -2,13 +2,16 @@
 
 This is the main repository for my LLVM tutorial.
 
-**WARNING** This project is still in the early phase. The lexer, parser and code generator are functional, though subject to refactoring and possible bugs. Until this warning is removed, source code is subject to change. Chapter texts remain incomplete, yet useful at the moment. Compiler meets basic example requirements, but there are many more additions planned.
+**WARNING** This project is still in the early phase. The lexer, parser and code generator are functional, though subject to refactoring and possible bugs. Until this warning is removed, source code is subject to change. Chapter texts remain incomplete, yet useful at the moment. Compiler meets basic example requirements and beyond, but there are more additions planned.
 
 The project intention is to create a user friendly introduction to llvm, compilers, and programming language creation in general.
 
 Through the chapters of this tutorial we will create a working compiler for a toy language. Initially we will keep the syntax very simple to get to a working product quickly and then iteratively build on new functionality and syntax to gradually make the toy language more expressive and powerful.
 
 If anyone notices anything out of date or that is not factually correct, I welcome the knowledge. I am hoping to learn a lot from writing this.
+
+I am also concurrently maintaining a repository of example ir demos that is useful for exploring how llvm ir works to corresponding code samples. 
+[Example LLVM IR](https://github.com/Virtual-Machine/ir-examples)
 
 ```bash
 #quick start
@@ -29,14 +32,9 @@ llc std-lib.ll            #generates std-lib.s ready for linking with output.s
 
 ###Todo
 
-☐ Fix
- - Function calls that are not "puts" calls needs to be corrected in node.cr
- - Remove many incorrect assumptions and flesh out calls for all major value types from binary value resolutions in node.cr
-
 ☐ Refactor code
 
 ☐ Implement
- - Function Declarations
  - Loops
 
 ☐ Integrate code into chapter texts
@@ -45,7 +43,6 @@ llc std-lib.ll            #generates std-lib.s ready for linking with output.s
  - Chapter 5
 
 ☐ Add diagrams for program behaviour
- - lexer detail
  - parser detail
  - walk detail
  - resolve_value detail
