@@ -37,7 +37,11 @@ Basic Architecture
 
 Advanced Architecture
 
-Chapter 7 - TBD
+Chapter 7 - Implementing If/Else -- Not Started
+
+Chapter 8 - Implementing Function Declarations -- Not Started
+
+Chapter 9 - Implementing Loops -- Not Started
 
 
 ### Diagrams

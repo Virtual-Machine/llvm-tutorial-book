@@ -34,15 +34,29 @@ llc std-lib.ll            #generates std-lib.s ready for linking with output.s
 
 ☐ Refactor code
 
-☐ Use refactored code to produce compiler versions corresponding to chapter texts
-
 ☐ Implement
  - Loops
+
+☐ Write text for chapters
+ - Chapter 7
+ - Chapter 8
+ - Chapter 9
 
 ☐ Integrate code into chapter texts
  - Chapter 3
  - Chapter 4
  - Chapter 5
+ - Chapter 7
+ - Chapter 8
+ - Chapter 9
+
+ ☐ Use refactored code to produce compiler versions corresponding to chapter texts
+  - Chapter 3
+  - Chapter 4
+  - Chapter 5
+  - Chapter 7
+  - Chapter 8
+  - Chapter 9
 
 ☐ Add diagrams for program behaviour
  - walk detail
