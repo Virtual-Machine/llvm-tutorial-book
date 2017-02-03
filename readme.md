@@ -50,7 +50,7 @@ llc std-lib.ll            #generates std-lib.s ready for linking with output.s
  - Chapter 8
  - Chapter 9
 
- ☐ Use refactored code to produce compiler versions corresponding to chapter texts
+☐ Use refactored code to produce compiler versions corresponding to chapter texts
   - Chapter 3
   - Chapter 4
   - Chapter 5
