@@ -34,6 +34,8 @@ llc std-lib.ll            #generates std-lib.s ready for linking with output.s
 
 ☐ Refactor code
 
+☐ Use refactored code to produce compiler versions corresponding to chapter texts
+
 ☐ Implement
  - Loops
 
@@ -43,7 +45,6 @@ llc std-lib.ll            #generates std-lib.s ready for linking with output.s
  - Chapter 5
 
 ☐ Add diagrams for program behaviour
- - parser detail
  - walk detail
  - resolve_value detail
  - ir generation detail
