@@ -20,6 +20,12 @@ class ProgramState
     @saved_block = nil
     add_block("main_body", block)
     active_function.linkage = LLVM::Linkage::External
+    declare_standard_functions
+    builder.position_at_end block
+    @close_statements = [] of CloseStatement
+  end
+
+  def declare_standard_functions : Nil
     mod.functions.add "puts:int", [LLVM::Int32], LLVM::Int32
     mod.functions.add "puts:int64", [LLVM::Int64], LLVM::Int64
     mod.functions.add "puts:bool", [LLVM::Int1], LLVM::Int32
@@ -33,8 +39,6 @@ class ProgramState
     mod.functions.add "malloc", [LLVM::Int64], LLVM::VoidPointer
     mod.functions.add "realloc", [LLVM::VoidPointer, LLVM::Int64], LLVM::VoidPointer
     mod.functions.add "free", [LLVM::VoidPointer], LLVM::Void
-    builder.position_at_end block
-    @close_statements = [] of CloseStatement
   end
 
   def close_blocks : Nil
