@@ -36,8 +36,10 @@ class IfExpressionNode < Node
     comp_val = @children[0].resolved_value
     if comp_val == true
       comp_val = LLVM.int(LLVM::Int1, 1)
-    else
+    elsif comp_val == false
       comp_val = LLVM.int(LLVM::Int1, 0)
+    else
+      comp_val = comp_val.as(LLVM::Value)
     end
 
     if @children[2]?
