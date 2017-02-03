@@ -27,7 +27,7 @@ puts four
 puts 10 < 6
 puts 11 != 10"
 
-    program = EmeraldProgram.new input
+    program = EmeraldProgram.new_from_input input
     program.compile
 
     it "should output exact LLVM IR for basic example input" do

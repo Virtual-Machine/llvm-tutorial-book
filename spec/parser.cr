@@ -10,7 +10,7 @@ puts four
 puts 10 < 6
 puts 11 != 10"
 
-		program = EmeraldProgram.new input
+		program = EmeraldProgram.new_from_input input
 		program.lex
 		program.parse
 

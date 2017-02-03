@@ -73,7 +73,7 @@ elsif test_runner
   system "crystal spec spec/*"
 else
   # Compilation
-  program = EmeraldProgram.new options
+  program = EmeraldProgram.new_from_options options
   program.compile
   if full || execute
     system "llc output.ll"

@@ -24,7 +24,7 @@ puts (4 +
 2)
 "
 
-    program3 = EmeraldProgram.new input
+    program3 = EmeraldProgram.new_from_input input
     program3.compile
 
     first_expression = program3.ast[0].children[0]

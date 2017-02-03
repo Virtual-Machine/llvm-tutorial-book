@@ -15,8 +15,8 @@ class EmeraldProgram
   getter input_code, token_array, ast, output, delimiters, state, mod, builder, options, verifier, main : LLVM::BasicBlock
   getter! lexer, parser, func : LLVM::Function
 
-  def initialize(@input_code : String, @test_mode : Bool = false)
-    @options = {
+  def self.new_from_input(input : String, test_mode : Bool = false)
+    options = {
       "color"             => true,
       "supress"           => false,
       "printTokens"       => false,
@@ -26,19 +26,15 @@ class EmeraldProgram
       "printOutput"       => false,
       "filename"          => "",
     }
-    @token_array = [] of Token
-    @ast = [] of Node
-    @output = ""
-    @verifier = Verifier.new
-    @mod = LLVM::Module.new("Emerald")
-    @func = mod.functions.add "main", ([] of LLVM::Type), LLVM::Int32
-    @main = func.basic_blocks.append "main_body"
-    @builder = LLVM::Builder.new
-    @state = ProgramState.new builder, mod, main
+    self.new input, options, test_mode
   end
 
-  def initialize(@options : Hash(String, (String | Bool)), @test_mode : Bool = false)
-    @input_code = File.read(@options["filename"].as(String))
+  def self.new_from_options(options : Hash(String, (String | Bool)), test_mode : Bool = false)
+    input = File.read(options["filename"].as(String))
+    self.new input, options, test_mode
+  end
+
+  def initialize(@input_code : String, @options : Hash(String, (String | Bool)), @test_mode : Bool = false)
     @token_array = [] of Token
     @ast = [] of Node
     @output = ""
@@ -128,6 +124,6 @@ end
 # puts 11 != 10
 # "
 
-# program = EmeraldProgram.new input
+# program = EmeraldProgram.new_from_input input
 # program.compile
 # puts program.output

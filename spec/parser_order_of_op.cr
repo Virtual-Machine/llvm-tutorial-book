@@ -5,7 +5,7 @@ describe "Parser_2" do
   describe "parse_order_of_operations" do
     input = "4 * 3 + 2"
 
-    program2 = EmeraldProgram.new input
+    program2 = EmeraldProgram.new_from_input input
     program2.lex
     program2.parse
 
@@ -25,7 +25,7 @@ describe "Parser_2" do
 
     input = "4 * ((3 + 2) + 1) + 5"
 
-    program3 = EmeraldProgram.new input
+    program3 = EmeraldProgram.new_from_input input
     program3.lex
     program3.parse
 
