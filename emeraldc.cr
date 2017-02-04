@@ -76,11 +76,23 @@ else
   program = EmeraldProgram.new_from_options options
   program.compile
   if full || execute
-    system "llc output.ll"
-    system "llc std-lib.ll"
-    system "clang output.s std-lib.s -o output"
-    if execute
-      system "./output"
+    llc_main = system "llc output.ll"
+    if llc_main
+      llc_stdlib = system "llc std-lib.ll"
+      if llc_stdlib
+        clang_link = system "clang output.s std-lib.s -o output"
+        if clang_link
+          if execute
+            system "./output"
+          end
+        else
+          puts "clang is unable to link output.s std-lib.s into executable"
+        end
+      else
+        puts "llc is unable to compile generated std-lib.ll"
+      end
+    else
+      puts "llc is unable to compile generated output.ll"
     end
   end
 end
