@@ -77,12 +77,18 @@ else
   # Compilation
   program = EmeraldProgram.new_from_options options
   program.compile
+
+  opt_string = ""
+  if options["optimize"]
+    opt_string = "-opt"
+  end
+
   if full || execute
     llc_main = system "llc output.ll"
     if llc_main
-      llc_stdlib = system "llc std-lib.ll"
+      llc_stdlib = system "llc std-lib#{opt_string}.ll"
       if llc_stdlib
-        clang_link = system "clang output.s std-lib.s -o output"
+        clang_link = system "clang output.s std-lib#{opt_string}.s -o output"
         if clang_link
           if execute
             system "./output"
