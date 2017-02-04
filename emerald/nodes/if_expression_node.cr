@@ -12,7 +12,7 @@ class IfExpressionNode < Node
 
   def pre_walk(state : ProgramState) : Nil
     block_name = "eblock#{state.blocks.size + 1}"
-    exit_block = state.mod.functions["main"].basic_blocks.append block_name
+    exit_block = state.mod.functions[state.active_function_name].basic_blocks.append block_name
     state.add_block block_name, exit_block
     @entry_block = state.active_block
     @exit_block = exit_block

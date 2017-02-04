@@ -15,6 +15,7 @@ class FunctionDeclarationNode < Node
     return_sig = symbol_to_llvm @return_type
     func = state.mod.functions.add @name, params, return_sig
     state.active_function = func
+    state.active_function_name = @name
     array = func.params.to_a
     array.each_with_index do |param, i|
       state.add_variable func, param_names[i], param
