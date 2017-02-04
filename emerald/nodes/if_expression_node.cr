@@ -20,6 +20,12 @@ class IfExpressionNode < Node
 
   def resolve_value(state : ProgramState) : Nil
     state.active_block = @exit_block
+    # If/else where both if and else blocks end in return nodes...
+    if @children[2]? && @children[1].children[-1].is_a?(ReturnNode) && @children[2].children[-1].is_a?(ReturnNode)
+      state.builder.position_at_end exit_block
+      # ...then the exit block is unreachable
+      state.builder.unreachable
+    end
     @if_block = @children[1].as(BasicBlockNode).block
     if @children[2]?
       @else_block = @children[2].as(BasicBlockNode).block
