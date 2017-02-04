@@ -24,6 +24,7 @@ class EmeraldProgram
       "printResolutions"  => false,
       "printInstructions" => false,
       "printOutput"       => false,
+      "optimize"          => false,
       "filename"          => "",
     }
     self.new input, options, test_mode
@@ -90,6 +91,23 @@ class EmeraldProgram
 
     if state.printAST || state.printResolutions
       puts
+    end
+
+    # Run standard optimizations on module if enabled
+    if @options["optimize"]
+      fun_pass_manager = mod.new_function_pass_manager
+      pass_manager_builder = begin
+        registry = LLVM::PassRegistry.instance
+        registry.initialize_all
+
+        builder = LLVM::PassManagerBuilder.new
+        builder.opt_level = 3
+        builder.size_level = 0
+        builder.use_inliner_with_threshold = 275
+        builder
+      end
+      pass_manager_builder.populate fun_pass_manager
+      fun_pass_manager.run mod
     end
 
     # Output LLVM IR to output.ll

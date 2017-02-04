@@ -15,6 +15,7 @@ options = {
   "printResolutions"  => false,
   "printInstructions" => false,
   "printOutput"       => false,
+  "optimize"          => false,
   "filename"          => "test_file.cr",
 }
 
@@ -36,6 +37,7 @@ OptionParser.parse! do |parser|
 
   # Full Build
   parser.on("-f", "--full", "Fully compile to runnable binary") { full = true }
+  parser.on("-o", "--optimize", "Optimize output using level 3 optimizations") { options["optimize"] = true }
   parser.on("-e", "--execute", "Fully compile and execute runnable binary") { execute = true }
 
   # Output
