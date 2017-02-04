@@ -24,7 +24,9 @@ class BasicBlockNode < Node
           scope = child.as(IfExpressionNode).exit_block
         end
       end
-      state.close_statements.push JumpStatement.new scope, parent.as(IfExpressionNode).exit_block
+      if !@children[-1].is_a?(ReturnNode)
+        state.close_statements.push JumpStatement.new scope, parent.as(IfExpressionNode).exit_block
+      end
     end
   end
 end
