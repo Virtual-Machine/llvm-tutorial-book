@@ -229,6 +229,7 @@ class Lexer
           elsif keyword == :def
             generate_token TokenType::Keyword, keyword
             @context = Context::Def
+            set_position
           else
             generate_token TokenType::Keyword, keyword
           end
