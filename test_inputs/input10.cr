@@ -13,6 +13,8 @@ end
 puts example 3
 puts example 7
 puts example_2 3, 4
+puts example_2 (example 1), (example 9)
+puts example_2 ((example 1) + 1), 2 
 
 # These currently fail 
 # during parsing 
