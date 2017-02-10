@@ -66,6 +66,17 @@ class Node
         # Otherwise we need to keep looking upwards
         active_parent = active_parent.parent
       end
+      if active_parent.class == RootNode
+        begin
+          raise "Do not wrap function parameters in parenthesis for function calls,\nthis is temporarily unsupported."
+        rescue ex : Exception
+          puts ex
+          puts
+          puts "instead of:\t example_func(2, 1, (4 + 2), 3)"
+          puts "do this:\t example_func 2, 1, (4 + 2), 3"
+          puts
+        end
+      end
     end
   end
 
