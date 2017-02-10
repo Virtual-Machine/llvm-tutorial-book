@@ -12,6 +12,7 @@ end
 
 puts example 3
 puts example 7
+puts example_2 3, 4
 
 # These currently fail 
 # during parsing 
