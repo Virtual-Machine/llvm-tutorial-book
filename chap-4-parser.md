@@ -1,6 +1,6 @@
 #Chapter 4 Parser
 
-This step is going to be the most complicated, but if you can get through and understand this, then the rest is going to be a piece of cake. We currently are able to use our Lexer to get an array of Tokens. We now wish to parse the tokens into an AST (Abstract Syntax Tree). It gets this name due to the tree like structure it produces when fully parsed. Every literal, expression, block, return, if, while, def, etc... is going to have its own node. Each of these nodes will reference other nodes to indicate how they are related to one another. 
+This step is going to be the most complicated, but if you can get through and understand this, then the rest is going to be a piece of cake. We currently are able to use our Lexer to get an array of Tokens. We now wish to parse the tokens into an AST (Abstract Syntax Tree). It gets this name due to the tree-like structure it produces when fully parsed. Every literal, expression, block, return, if, while, def, (any syntactic component of the language) is going to have its own node. Each of these nodes will reference other nodes to indicate how they are related to one another. 
 
 For instance, the binary operation 2 + 2 could be looked at as a binary expression node, with an operator node represented by the plus symbol, and a left hand side and right hand side expressions that are each in this case simply a number literal of 2. In this example the binary operator expression node would be considered the root, while the remaining nodes are its children. This tree like structure is very important as it makes our code-generation stage much more simple. In order to translate the AST into LLVM IR we simply will walk the AST, inspecting nodes as we go, and calling the LLVM IR Builder api with references to the respective child nodes.
 
@@ -11,9 +11,9 @@ BinaryExpressionNode -> 2 + 2
     RHS              -> 2
 ```
 
-In order to create our AST we are going to need a class for each node type so as to allow each node to have instance variables that reflect the required child nodes for each node type that LLVM understands and that we wish to port into our language. Initially we only need a few node types, and all our code will be treated as though its being called from the main function and therefore appended to the end of the main function's BasicBlock as we go. Once we are ready to add control flow, loops, and functions we will need to keep track of the blocks in our program and append to the correct one during code generation. Finally one more consideration we need is that we will implement the puts command as a language built-in which will require some special parsing and code generation logic to accomodate its features.
+In order to create our AST we are going to need a class for each node type so as to allow each node to have instance variables that reflect the required child nodes for each node type that LLVM understands and that we wish to port into our language. Initially we only need a few node types, and all our code will be treated as though its being called from the main function and therefore appended to the end of the main function's BasicBlock as we go. Once we are ready to add control flow, loops, and functions we will need to keep track of the blocks in our program and append to the correct one during code generation. Finally we will implement the puts command as a language built-in which will require some special parsing and code generation logic to accommodate its features. A language built-in means that rather than forcing a user to implement a function and compile it each time with their own code, the language will have the function signature and implementation pre-compiled in the standard library so that every program linked against the standard library will have the same desired implementation of said function.
 
-Our parser will work by inspecting the current token in the array. The parser will be aware of each node type and how it relates to other node types in sequence. Each line will be treated as an expression, of which itself may consist of multiple other expressions. The parser will determine which tokens should be expected following a given token, if those tokens are not found, an error will be generated to help the user determine where a syntax error is occuring. Otherwise the parser will continue to take the tokens and generate the required node structure to form the final AST. We should be able to easily inspect our AST at the end of this stage to visually debug and ensure our code-generation calls are getting the correct information.
+Our parser will work by inspecting the current token in the array. The parser will be aware of each node type and how it relates to other node types in sequence. Each line will be treated as an expression, of which itself may consist of multiple other expressions. The parser will determine which tokens should be expected following a given token, if those tokens are not found, an error will be generated to help the user determine where a syntax error is occurring. Otherwise the parser will continue to take the tokens and generate the required node structure to form the final AST. We should be able to easily inspect our AST at the end of this stage to visually debug and ensure our code-generation calls are getting the correct information.
 
 If we use our initial example code from chapter 0.
 
@@ -89,7 +89,7 @@ If we scrape out some of the extraneous information we can see Clang's AST for t
 
 ```
 
-Our parser is going to parse binary operations by taking a somewhat novel yet simple approach. In basic terms, when our parser reaches an expression, it will append the number literal nodes and make it the active node in anticipation of an impending binary node, if a binary node is reached, it then seeks the suitable insertion point in the AST and then promotes itself to that node, assuming that nodes children, and itself becoming the new active node in the parse tree.
+Our parser is going to parse binary operations by taking a somewhat novel yet simple approach. In basic terms, when our parser reaches an expression, it will append the number literal nodes and make it the active node in anticipation of an impending binary node. If a binary node is reached, it then seeks the suitable insertion point in the AST and then promotes itself to that node, assuming that nodes children, itself becoming the new active node in the parse tree.
 
 If you are like me the above words might sound pretty confusing so a picture is worth a 1000 words:
 
@@ -159,7 +159,7 @@ Root
 
 Here are some sketches of this process to help you visualize.
 
-Blue means this node is new this step, red means its both new and the currently active node.
+Blue means this node is new this step, red means it is both new and currently active.
 
 In this example we are using the expression:
 
@@ -211,11 +211,11 @@ The above approach allows us to parse each token in sequence and handle parenthe
 The algorithm can be simply stated as follows:
 
 ```
-Whenever a opening parenthesis is encounted, 
+Whenever a opening parenthesis is encountered, 
   the active node appends an expression node 
   which then becomes the new active node
 
-Whenever a closing parenthesis is encounted, 
+Whenever a closing parenthesis is encountered, 
   the active node is recursively changed to its own parent node 
   until the active node is an expression node.
 
