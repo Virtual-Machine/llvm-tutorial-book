@@ -1,26 +1,26 @@
 #Chapter 2 LLVM Basics
 
-This chapter is a crash course in LLVM's most basic concepts and terminologies. This is by no means complete, but it will be enough to give you a decent idea of how LLVM works and how you will be using its api.
+This chapter is a crash course in LLVM's most basic concepts and terminologies. This is by no means complete, but it will be enough to give you a decent idea of how LLVM works and how you will be using its API.
 
-First and foremost, we will be putting some blinders on and using LLVM in a very simplistic way. Despite the fact that LLVM exposes a very detailed modular api with lots of control at all stages of code compilation, we are going to take a very lazy, and in some cases perhaps even naive approach, to working with it. That is ok for now because A) its more rewarding to get to a working stage quickly, and B) LLVM has lots of tooling that will make our naive code run plenty efficiently for the time being. Once we understand the basics, then we can begin to add more advanced techniques to our approach.
+First and foremost, we will be putting some blinders on and using LLVM in a very simplistic way. Despite the fact that LLVM exposes a very detailed modular API with lots of control at all stages of code compilation, we are going to take a very lazy, and in some cases perhaps even naive approach, to working with it. The benefits of this approach are: A) its more rewarding to get to a working stage quickly, and B) LLVM has lots of tooling that will make our naive code run plenty efficiently for the time being. Once we understand the basics, then we can begin to add more advanced techniques to our approach.
 
-So what do I mean by us taking a lazy approach? What I mean is we are going to let the LLVM ir builder api do the heavy lifting for us and we are not going to spend much, if any, time tinkering with the generated ir other than applying the standard optimizations LLVM offers. This means if our lexer and parser can generate an AST of nodes that the LLVM ir builder api understands, we are essentially done. The only remaining work will be to call the builder api wth the correct references to each of our nodes.
+So what do I mean by us taking a lazy approach? What I mean is we are going to let the LLVM ir builder API do the heavy lifting for us and we are not going to spend much, if any, time tinkering with the generated ir other than applying the standard optimizations LLVM offers. This means if our lexer and parser can generate an AST of nodes that the LLVM ir builder API understands, we are essentially done. The only remaining work will be to call the builder API with the correct references to each of our nodes.
 
-So what do I mean by us taking a naive approach? Full disclaimer, I am very much still a student of compilers and LLVM, I am probably doing many things that a compiler/LLVM expert would consider naive or ignorant. Also in the interest of enlightening people without adding unnecessary confusion I will be trying to keep things extremely simplistic. This means I will try to avoid using lots of indirection, complex abstractions, inheritance, and implicit behaviour in the compiler even if the end result is more verbose code. The code may not follow all the best practices but it will be easy to read and understand.
+So what do I mean by us taking a naive approach? Full disclaimer, I am very much still a student of compilers and LLVM, I am probably doing many things that a compiler/LLVM expert would consider naive or ignorant. Also in the interest of enlightening people without adding unnecessary confusion I will try to keep things extremely simplistic. This means I will try to avoid using  indirection, complex abstractions, inheritance, and implicit behaviour in the compiler even if the end result is more verbose code. The code may not follow all the best practices but it will be easy to read and understand.
 
 ### General LLVM Information
 
 Here are some gross simplications that should help you get started with LLVM. Fill your knowledge in with more details as it becomes necessary.
 
-1. The main unit of grouping in LLVM is the module. You can have several modules in a program, and each module will contain functions, global variables and an externalized interface. In our simplistic, naive approach we will never use more than one module but know that it is possible.
-2. Everything inside a module is a llvm Value descendent. These include but are not limited to functions, blocks, expressions, instructions, etc... A nice way to visually think of this is: **Module** can have **Functions** which have one or more **BasicBlock** which is made up of **Instructions**. Values are a way for each component to reference each other and is the basis for compile time mathematic calculations.
-3. BasicBlocks are an important concept. BasicBlocks are the cornerstone of the ir builder API and for good reason. A BasicBlock is simply a list of instructions in which the only way they can be executed is from first to last in order with no control flow. Think of a function body with no logic statements or gotos and you are likely looking at a BasicBlock.
+1. The main unit of grouping in LLVM is the module. You can have several modules in a program, and each module will contain functions, global variables and an externalized interface. In our simplistic, naive approach we will never use more than one module but note that it is possible.
+2. Everything inside a module is an LLVM Value descendent. These include but are not limited to functions, blocks, expressions, instructions, etc. A nice way to visually think of this is: **Module** can have **Functions** which have one or more **BasicBlock** which consist of **Instructions**. Values are a way for each component to reference each other and is the basis for compile time mathematic calculations.
+3. BasicBlocks are an important concept. BasicBlocks are the cornerstone of the ir builder API and for good reason. A BasicBlock is simply a list of instructions in which the only way they can be executed is from first to last in order with no control flow. Think of a function body with no logic statements or jumps and you are likely looking at a BasicBlock.
 4. A function is basically a block of code that accepts a given list of typed parameters and returns a typed value. LLVM views it the same way. We will be initially running all our code inside a main function that we will initialize by giving it a C main interface. A simplified C main function takes no parameters and returns an integer. Therefore in LLVM we say that it will take an empty array of LLVM type values, and return a LLVM 32 bit integer.
-5. LLVM type values are exactly what they sound like, it is LLVMs internal representation of type as related to an LLVM Value object. This is the system where by your code can be statically typed and compiled to object code callable from C. By giving our main function a C interface using LLVM types, and by flagging our main function as a LLVM::Linkage::External we have allowed linkers to identify our object code's main function as if it were compiled from C.
-6. The LLVM builder api has the notion of position. A given builder has to be directed where it will be appending new instructions. In the case of our initial simplified approach we will be appending all our instructions to the BasicBlock of the main function. As you can imagine this sets up the primary means of constructing function bodies across multiple functions in a module. To add control flow, loops, and more functions we need to track the basic blocks of our module and append the instructions into the correct blocks.
-7. Finally once you are finished compiling the instructions into your module, you will want to dump the output to LLVM IR ll files. The resultant [name_of_file].ll can now be treated like any LLVM IR as if it were just compiled straight from C. This includes all the optimizations and plugins available in the LLVM architecture. It is also ready to be compiled to object code and linked with any other object code compiled from other sources. The file.ll theoretically can be compiled to any target architecture so long as the LLVM IR is not doing anything machine specific.
+5. LLVM type values are exactly what they sound like; it is LLVMs internal representation of type as related to an LLVM Value object. This is the system in which your code can be statically typed and compiled to object code callable from C. By giving our main function a C interface using LLVM types, and by flagging our main function as a LLVM::Linkage::External we have allowed linkers to identify our object code's main function as if it were compiled from C.
+6. The LLVM builder API has the notion of position. A given builder has to be directed where it will be appending new instructions. In the case of our initial simplified approach we will be appending all our instructions to the BasicBlock of the main function. As you can imagine this sets up the primary means of constructing function bodies across multiple functions in a module. To add control flow, loops, and more functions we need to track the basic blocks of our module and append the instructions into the correct blocks.
+7. Finally once you are finished compiling the instructions into your module, you will want to dump the output to LLVM IR ll files. The resultant [name_of_file].ll can now be treated like any LLVM IR as if it were just compiled straight from C. This includes all the optimizations and plug-ins available in the LLVM architecture. It is also ready to be compiled to object code and linked with any other object code compiled from other sources. The file.ll theoretically can be compiled to any target architecture so long as the LLVM IR is not doing anything machine specific.
 8. Because our example is compiling instructions into a main function, if we execute the compiled and linked version of our output (aka the machine binary), it should immediately invoke the main function and we should see the results of our instructions.
-9. LLVM is a low level machine, therefore it doesn't have high level types by default. There is however nothing stopping you from adding your own types as aliases or struct combinations of low level builtin types. In our toy example we will not make much use of this power but know that it exists and can be used to create more powerful containers for values, for example like Crystal's or C++'s string type. In our example we will simply treat strings like C strings, terminated by a null byte, which LLVM treats as an i8* (8 bit integer pointer). This means that all string values in our program will be global string values, passed by pointer.
+9. LLVM is a low level machine, therefore it doesn't have high level types by default. However, there is nothing stopping you from adding your own types as aliases or structured combinations of low level built-in types. In our toy example we will not make much use of this power but know that it exists and can be used to create more powerful containers for values, for example like Crystal's or C++'s string type. In our example we will simply treat strings like C strings, terminated by a null byte, which LLVM treats as an i8* (8 bit integer pointer). This means that all string values in our program will be global string values, passed by pointer.
 
 
 ### LLVM IR instructions
@@ -79,7 +79,7 @@ To get you started quickly here is a quick glossary of some LLVM ir instructions
 
 ### Crystal LLVM Builder API Bindings
 
-We are using Crystal's builder API bindings to LLVM and as such we also need to have an idea of how to use the builder API to assemble modules. Below is a generic program class that demonstrates how to use the builder api in a simplistic way. Once you grasp this, you should be able to see how you can direct the builder api into different blocks and functions throughout your module as needed.
+We are using Crystal's builder API bindings to LLVM and as such we also need to have an idea of how to use the builder API to assemble modules. Below is a generic program class that demonstrates how to use the builder API in a simplistic way. Once you grasp this, you should be able to see how you can direct the builder API into different blocks and functions throughout your module as needed.
 
 ```crystal
 require "llvm"
@@ -108,14 +108,14 @@ class Program
     # declare external function puts
     mod.functions.add "puts", [LLVM::VoidPointer], LLVM::Int32
     
-    # initialize Crystal's builder api
+    # initialize Crystal's builder API
     @builder = LLVM::Builder.new
   end
 
   def code_generate
     # Before calling builder, you must position it into the active basic block of your program
     builder.position_at_end main
-    # While walking the AST nodes you can call builder api to generate instructions into the basic block...
+    # While walking the AST nodes you can call builder API to generate instructions into the basic block...
     str_ptr = builder.global_string_pointer "Johnny", "str"
     builder.call mod.functions["puts"], str_ptr, "str_call"
     num_val = builder.load mod.globals["number"]
@@ -132,7 +132,7 @@ program.code_generate
 
 ```
 
-It is the relationship between your AST nodes and your code generation functions that the final module will get built. Therefore you should spend time walking the nodes of your AST and thinking about what builder api calls you will need to accomplish the functionality you desire in LLVM IR.
+It is the relationship between your AST nodes and your code generation functions that the final module will get built. Therefore you should spend time walking the nodes of your AST and thinking about what builder API calls you will need to accomplish the functionality you desire in LLVM IR.
 
 ### Builder API Usage
 
