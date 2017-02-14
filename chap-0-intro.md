@@ -39,7 +39,7 @@ Advanced Architecture
 
 [Chapter 7 - Implementing If/Else](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-7-if-else.md) -- Incomplete
 
-Chapter 8 - Implementing Function Declarations -- Not Started
+[Chapter 8 - Implementing Function Declarations](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-8-function-declarations.md) -- Incomplete
 
 Chapter 9 - Implementing Loops -- Not Started
 
