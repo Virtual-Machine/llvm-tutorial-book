@@ -32,7 +32,14 @@ class CallExpressionNode < Node
       else
         params = [] of LLVM::Value
         @children.each do |child|
-          params.push crystal_to_llvm state, child.resolved_value
+          current_value = child.resolved_value
+          if current_value.is_a?(Array(LLVM::Value))
+            current_value.each do |value|
+              params.push value
+            end
+          else
+            params.push crystal_to_llvm state, child.resolved_value
+          end
         end
         @resolved_value = state.builder.call state.mod.functions[@value.as(String)], params, @value.as(String)
       end
