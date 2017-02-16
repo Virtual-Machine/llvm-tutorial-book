@@ -17,15 +17,21 @@ class BasicBlockNode < Node
 
   def resolve_value(state : ProgramState) : Nil
     @resolved_value = @children[-1].resolved_value
-    if parent.is_a?(IfExpressionNode)
+    if parent.is_a?(IfExpressionNode) || parent.is_a?(WhenExpressionNode)
       scope = block
       @children.each do |child|
         if child.class == IfExpressionNode
           scope = child.as(IfExpressionNode).exit_block
+        elsif child.class == WhenExpressionNode
+          scope = child.as(WhenExpressionNode).exit_block
         end
       end
       if !@children[-1].is_a?(ReturnNode)
-        state.close_statements.push JumpStatement.new scope, parent.as(IfExpressionNode).exit_block
+        if parent.is_a?(IfExpressionNode)
+          state.close_statements.push JumpStatement.new scope, parent.as(IfExpressionNode).exit_block
+        elsif parent.is_a?(WhenExpressionNode)
+          state.close_statements.push JumpStatement.new scope, parent.as(WhenExpressionNode).cond_block
+        end
       end
     end
   end

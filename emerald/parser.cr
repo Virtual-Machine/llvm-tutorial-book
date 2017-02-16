@@ -70,6 +70,8 @@ class Parser
         parse_else
       elsif @current_token.value == :end
         parse_end
+      elsif @current_token.value == :while
+        parse_while
       end
     when TokenType::FuncCall
       parse_function_call
@@ -87,6 +89,13 @@ class Parser
             @active_node = @active_node.children[1]
           elsif @active_node.children.size == 3
             @active_node = @active_node.children[2]
+          end
+        elsif @active_node.class == WhenExpressionNode
+          if @active_node.children.size == 1
+            node = BasicBlockNode.new @current_token.line, @current_token.column
+            add_and_activate node
+          else
+            @active_node = @active_node.children[1]
           end
         end
       end
@@ -180,6 +189,13 @@ class Parser
 
   def parse_if : Nil
     node = IfExpressionNode.new @current_token.line, @current_token.column
+    add_and_activate node
+    @context.push node
+    add_expression_node
+  end
+
+  def parse_while : Nil
+    node = WhenExpressionNode.new @current_token.line, @current_token.column
     add_and_activate node
     @context.push node
     add_expression_node
