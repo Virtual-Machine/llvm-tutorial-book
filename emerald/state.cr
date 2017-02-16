@@ -96,7 +96,6 @@ class ProgramState
       elsif value.is_a?(String)
         ptr = define_or_find_global value
         @variables[func][name] = ptr
-        @variable_pointers[func][name] = ptr
       else
         if value.is_a?(LLVM::Value)
           @variables[func][name] = value
