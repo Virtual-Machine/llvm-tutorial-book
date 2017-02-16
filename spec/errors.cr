@@ -91,6 +91,27 @@ describe "Errors" do
       end
     end
 
+    it "should catch invalid function declarations - no parameter type" do
+      expect_raises EmeraldParsingException do
+        program = EmeraldProgram.new_from_input "def add_up(x) Int32\nreturn 0 + x\nend", true
+        program.compile
+      end
+    end
+
+    it "should catch invalid function declarations - no parameter type multiple" do
+      expect_raises EmeraldParsingException do
+        program = EmeraldProgram.new_from_input "def add_up(x, y Int32) Int32\nreturn 0\nend", true
+        program.compile
+      end
+    end
+
+    it "should catch invalid function declarations - no return type" do
+      expect_raises EmeraldParsingException do
+        program = EmeraldProgram.new_from_input "def add_up(x Int32)\nreturn 0 + x\nend", true
+        program.compile
+      end
+    end
+
     # Currently unable to test for EmeraldInstructionException
     # Not sure if there is possible input to generate error as of yet.
   end
