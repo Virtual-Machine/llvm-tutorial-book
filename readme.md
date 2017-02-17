@@ -28,6 +28,7 @@ llc std-lib.ll            #generates std-lib.s ready for linking with output.s
 ./emeraldc -n #no color output
 ./emeraldc -e #execute full compilation binary
 ./emeraldc -t #execute tests in spec/
+./emeraldc -o #optimize llvm ir
 ```
 
 ###Todo
