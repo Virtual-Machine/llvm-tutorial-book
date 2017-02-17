@@ -39,6 +39,8 @@ class FunctionDeclarationNode < Node
       return LLVM::Int1
     when :String
       return LLVM::Int8.pointer
+    when :Nil
+      return LLVM::Void
     else
       raise "Undefined case in symbol_to_llvm"
     end
