@@ -2,15 +2,15 @@ require "spec"
 require "../emerald/emerald"
 
 describe "Generator" do
-  system "./emeraldc test_inputs/input5.cr -e > test_outputs/output5"
-  contents = File.read("test_outputs/output5")
+  system "./emeraldc test_inputs/value_resolution_1.cr -e > test_outputs/value_resolution_1"
+  contents = File.read("test_outputs/value_resolution_1")
 
   it "should resolve final output as -221" do
     contents.should eq "-221\n"
   end
 
-  system "./emeraldc test_inputs/input6.cr -e > test_outputs/output6"
-  contents = File.read("test_outputs/output6")
+  system "./emeraldc test_inputs/value_resolution_2.cr -e > test_outputs/value_resolution_2"
+  contents = File.read("test_outputs/value_resolution_2")
 
   it "should resolve final output as -1138, false" do
     contents.should eq "-1138\nfalse\n"
