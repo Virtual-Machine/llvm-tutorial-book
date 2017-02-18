@@ -1,4 +1,4 @@
-class WhenExpressionNode < Node
+class WhileExpressionNode < Node
   property! exit_block, cond_block, body_block, entry_block
   @entry_block : LLVM::BasicBlock?
   @exit_block : LLVM::BasicBlock?
@@ -42,5 +42,6 @@ class WhenExpressionNode < Node
     end
 
     state.close_statements.push ConditionalStatement.new cond_block, comp_val, body_block, exit_block
+    
   end
 end

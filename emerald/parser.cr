@@ -90,7 +90,7 @@ class Parser
           elsif @active_node.children.size == 3
             @active_node = @active_node.children[2]
           end
-        elsif @active_node.class == WhenExpressionNode
+        elsif @active_node.class == WhileExpressionNode
           if @active_node.children.size == 1
             node = BasicBlockNode.new @current_token.line, @current_token.column
             add_and_activate node
@@ -195,7 +195,7 @@ class Parser
   end
 
   def parse_while : Nil
-    node = WhenExpressionNode.new @current_token.line, @current_token.column
+    node = WhileExpressionNode.new @current_token.line, @current_token.column
     add_and_activate node
     @context.push node
     add_expression_node
