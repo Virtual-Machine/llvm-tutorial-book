@@ -49,15 +49,15 @@ class EmeraldProgram
 
   def lex : Nil
     @lexer = Lexer.new input_code
-    @token_array = lexer.lex
-    if options["printTokens"]
-      puts options["color"] ? "\033[032mTOKENS\033[039m" : "TOKENS"
-      @token_array.each do |token|
-        puts token.to_s
-      end
-      puts
-    end
     begin
+      @token_array = lexer.lex
+      if options["printTokens"]
+        puts options["color"] ? "\033[032mTOKENS\033[039m" : "TOKENS"
+        @token_array.each do |token|
+          puts token.to_s
+        end
+        puts
+      end
       verifier.verify_token_array @token_array
     rescue ex : EmeraldSyntaxException
       ex.full_error @input_code, @options["color"].as(Bool), @test_mode

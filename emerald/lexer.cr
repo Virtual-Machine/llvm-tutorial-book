@@ -174,6 +174,7 @@ class Lexer
     if !@current.ascii_whitespace? && @current != '(' && @current != ')'
       @current_token += @current
     else
+      check_for_unsupported_operators @current_token.strip
       generate_token TokenType::Operator, @current_token.strip
     end
   end
@@ -257,5 +258,18 @@ class Lexer
     @tokens << Token.new typeVal, value, @current_t_line, @current_t_position
     @current_token = ""
     @context = Context::TopLevel
+  end
+
+  def check_for_unsupported_operators(operator : String) : Nil
+    error = false
+    errorString = ""
+    case operator
+    when "+=", "-=", "*=", "/="
+      error = true
+      errorString = "Unsupported operator: #{operator}\nTry: var = var #{operator[0]} val"
+    end
+    if error
+      raise EmeraldLexingException.new errorString, @current_t_line, @current_t_position
+    end
   end
 end

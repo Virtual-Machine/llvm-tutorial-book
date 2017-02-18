@@ -49,9 +49,37 @@ describe "Errors" do
       end
     end
 
+    it "should catch unsupported operators 1" do
+      expect_raises EmeraldLexingException do
+        program = EmeraldProgram.new_from_input "x = 0\nputs x += 1", true
+        program.compile
+      end
+    end
+
+    it "should catch unsupported operators 2" do
+      expect_raises EmeraldLexingException do
+        program = EmeraldProgram.new_from_input "x = 0\nputs x -= 1", true
+        program.compile
+      end
+    end
+
+    it "should catch unsupported operators 3" do
+      expect_raises EmeraldLexingException do
+        program = EmeraldProgram.new_from_input "x = 0\nputs x *= 1", true
+        program.compile
+      end
+    end
+
+    it "should catch unsupported operators 4" do
+      expect_raises EmeraldLexingException do
+        program = EmeraldProgram.new_from_input "x = 0\nputs x /= 1", true
+        program.compile
+      end
+    end
+
     it "should catch value resolution errors for undefined operators on known type combinations" do
       expect_raises EmeraldValueResolutionException do
-        program = EmeraldProgram.new_from_input "puts 1 += 1", true
+        program = EmeraldProgram.new_from_input "puts 1 & 1", true
         program.compile
       end
     end

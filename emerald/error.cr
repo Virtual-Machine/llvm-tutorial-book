@@ -33,13 +33,13 @@ class EmeraldSyntaxException < Exception
       if self.line == lines.size
         print_post_line = false
       end
-      puts "Line #{self.line - 1} : #{lines[self.line - 2]}" if print_pre_line
+      puts "Line #{self.line - 1} : #{lines[self.line - 2].strip}" if print_pre_line
       if color
-        puts "\033[031mLine #{self.line} :\033[039m #{lines[self.line - 1]}"
+        puts "\033[031mLine #{self.line} :\033[039m #{lines[self.line - 1].strip}"
       else
-        puts "Line #{self.line} : #{lines[self.line - 1]}"
+        puts "Line #{self.line} : #{lines[self.line - 1].strip}"
       end
-      puts "Line #{self.line + 1} : #{lines[self.line]}" if print_post_line
+      puts "Line #{self.line + 1} : #{lines[self.line].strip}" if print_post_line
       exit 1
     end
   end
@@ -49,6 +49,9 @@ class EmeraldValueResolutionException < EmeraldSyntaxException
 end
 
 class EmeraldTokenVerificationException < EmeraldSyntaxException
+end
+
+class EmeraldLexingException < EmeraldSyntaxException
 end
 
 class EmeraldParsingException < EmeraldSyntaxException
