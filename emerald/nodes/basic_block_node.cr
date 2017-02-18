@@ -22,7 +22,7 @@ class BasicBlockNode < Node
           state.builder.store state.active_function.params[counter], ptr
           state.variable_pointers[state.active_function][var] = ptr
         elsif type_val == :Float64
-          ptr = state.builder.alloca LLVM::Float, var
+          ptr = state.builder.alloca LLVM::Double, var
           state.builder.store state.active_function.params[counter], ptr
           state.variable_pointers[state.active_function][var] = ptr
         elsif type_val == :Bool
