@@ -1,4 +1,6 @@
 class FunctionDeclarationNode < Node
+  getter params
+
   def initialize(@name : String, @params : Hash(String, Symbol), @return_type : Symbol, @line : Int32, @position : Int32)
     @value = nil
     @children = [] of Node
