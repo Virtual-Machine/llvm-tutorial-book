@@ -25,6 +25,14 @@ class FunctionDeclarationNode < Node
   end
 
   def resolve_value(state : ProgramState) : Nil
+    if @children[-1].class != ReturnNode
+      state.builder.position_at_end state.active_block
+      # TODO : implement forced returns from last child for all major types
+      case @return_type
+      when :Nil
+        state.builder.ret
+      end
+    end
     state.active_function = state.mod.functions["main"]
     state.active_block = state.saved_block
   end
