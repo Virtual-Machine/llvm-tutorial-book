@@ -1,5 +1,6 @@
 class IfExpressionNode < Node
-  property! exit_block, if_block, else_block, entry_block
+  property! exit_block, if_block, else_block, entry_block 
+  getter uses_exit
   @entry_block : LLVM::BasicBlock?
   @exit_block : LLVM::BasicBlock?
   @if_block : LLVM::BasicBlock?
@@ -8,6 +9,7 @@ class IfExpressionNode < Node
   def initialize(@line : Int32, @position : Int32)
     @value = nil
     @children = [] of Node
+    @uses_exit = true
   end
 
   def pre_walk(state : ProgramState) : Nil
@@ -25,18 +27,11 @@ class IfExpressionNode < Node
       state.builder.position_at_end exit_block
       # ...then the exit block is unreachable
       state.builder.unreachable
+      @uses_exit = false
     end
     @if_block = @children[1].as(BasicBlockNode).block
     if @children[2]?
       @else_block = @children[2].as(BasicBlockNode).block
-    end
-
-    if @children[0].resolved_value == true
-      @resolved_value = @children[1].resolved_value
-    else
-      if @children[2]?
-        @resolved_value = @children[2].resolved_value
-      end
     end
 
     comp_val = @children[0].resolved_value
