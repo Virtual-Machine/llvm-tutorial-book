@@ -35,12 +35,7 @@ llc std-lib.ll            #generates std-lib.s ready for linking with output.s
 
 ☐ Refactor code
 
-☐ Implement
- - Loops
-
 ☐ Write text for chapters
- - Chapter 7
- - Chapter 8
  - Chapter 9
 
 ☐ Integrate code into chapter texts
