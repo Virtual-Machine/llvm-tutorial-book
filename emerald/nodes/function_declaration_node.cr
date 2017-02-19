@@ -87,10 +87,10 @@ class FunctionDeclarationNode < Node
           if @children[0].children[-1].resolved_value.as(LLVM::Value).type == LLVM::Int8.pointer
             state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
           else
-            raise "#{@name} function requires an explicit or implicit bool return"
+            raise "#{@name} function requires an explicit or implicit string return"
           end
         else
-          raise "#{@name} function requires an explicit or implicit bool return"
+          raise "#{@name} function requires an explicit or implicit string return"
         end
       end
     end
