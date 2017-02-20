@@ -32,3 +32,6 @@ Therefore to implement if else blocks we need functionality to allow us to add b
 One final thing we need to implement is the ability to close our blocks correctly. Due to the order of nodes in our AST, we actually need to keep track of the closing statements of our blocks and only insert them once all other instructions have been inserted into the block. The easiest way to accomplish this is to save all these instructions into an array and inject them after all other instructions have been appended. There are only two types of closing statements, a conditional jump and unconditional jump which will allow our blocks to flow correctly into each other as required.
 
 With all this implemented, our compiler should have no problem parsing nested if else statements, generating all the necessary blocks required, and inserting the instructions into the correct blocks. We still only have one function, but that function can now consist of many interrelated blocks that can flow to one another as required.
+
+Here is a diagram that can be helpful to see how this effectively translates in a real world example:
+![If Else to IR](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/if_else_to_ir.png)
