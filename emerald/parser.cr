@@ -166,6 +166,9 @@ class Parser
       raise EmeraldParsingException.new "Closing parenthesis without corresponding opening parenthesis in expression", @tokens[0].line, @tokens[0].column
     end
     @active_node = @active_node.get_first_parens_node
+    if @active_node.parent.parent.class == CallExpressionNode && @next_token.not_nil!.typeT != TokenType::Comma
+      @active_node = @active_node.parent.parent
+    end
   end
 
   def parse_variable_declaration : Nil
