@@ -74,57 +74,65 @@ class ProgramState
       @variable_pointers[func] = {} of String => LLVM::Value
     end
     if !@variables[func].has_key? name
-      if value.is_a?(Int32)
-        ptr = builder.alloca int32, name
-        builder.store int32.const_int(value), ptr
-        @variables[func][name] = ptr
-        @variable_pointers[func][name] = ptr
-      elsif value.is_a?(Bool)
-        ptr = builder.alloca int1, name
-        if value
-          builder.store int1.const_int(1), ptr
-        else
-          builder.store int1.const_int(0), ptr
-        end
-        @variables[func][name] = ptr
-        @variable_pointers[func][name] = ptr
-      elsif value.is_a?(Float64)
-        ptr = builder.alloca double, name
-        builder.store double.const_double(value), ptr
-        @variables[func][name] = ptr
-        @variable_pointers[func][name] = ptr
-      elsif value.is_a?(String)
-        ptr = define_or_find_global value
-        @variables[func][name] = ptr
-      else
-        if value.is_a?(LLVM::Value)
-          @variables[func][name] = value
-        end
-      end
+      initialize_variable func, name, value
     else
-      if value.is_a?(Int32)
-        ptr = @variables[func][name]
-        builder.store int32.const_int(value), ptr
-        @variables[func][name] = ptr
-      elsif value.is_a?(Bool)
-        ptr = @variables[func][name]
-        if value
-          builder.store int1.const_int(1), ptr
-        else
-          builder.store int1.const_int(0), ptr
-        end
-        @variables[func][name] = ptr
-      elsif value.is_a?(Float64)
-        ptr = @variables[func][name]
-        builder.store double.const_double(value), ptr
-        @variables[func][name] = ptr
-      elsif value.is_a?(String)
-        ptr = define_or_find_global value
-        @variables[func][name] = ptr
+      update_variable func, name, value
+    end
+  end
+
+  def initialize_variable(func : LLVM::Function, name : String, value : ValueType) : Nil
+    if value.is_a?(Int32)
+      ptr = builder.alloca int32, name
+      builder.store int32.const_int(value), ptr
+      @variables[func][name] = ptr
+      @variable_pointers[func][name] = ptr
+    elsif value.is_a?(Bool)
+      ptr = builder.alloca int1, name
+      if value
+        builder.store int1.const_int(1), ptr
       else
-        if value.is_a?(LLVM::Value)
-          @variables[func][name] = value
-        end
+        builder.store int1.const_int(0), ptr
+      end
+      @variables[func][name] = ptr
+      @variable_pointers[func][name] = ptr
+    elsif value.is_a?(Float64)
+      ptr = builder.alloca double, name
+      builder.store double.const_double(value), ptr
+      @variables[func][name] = ptr
+      @variable_pointers[func][name] = ptr
+    elsif value.is_a?(String)
+      ptr = define_or_find_global value
+      @variables[func][name] = ptr
+    else
+      if value.is_a?(LLVM::Value)
+        @variables[func][name] = value
+      end
+    end
+  end
+
+  def update_variable(func : LLVM::Function, name : String, value : ValueType) : Nil
+    if value.is_a?(Int32)
+      ptr = @variables[func][name]
+      builder.store int32.const_int(value), ptr
+      @variables[func][name] = ptr
+    elsif value.is_a?(Bool)
+      ptr = @variables[func][name]
+      if value
+        builder.store int1.const_int(1), ptr
+      else
+        builder.store int1.const_int(0), ptr
+      end
+      @variables[func][name] = ptr
+    elsif value.is_a?(Float64)
+      ptr = @variables[func][name]
+      builder.store double.const_double(value), ptr
+      @variables[func][name] = ptr
+    elsif value.is_a?(String)
+      ptr = define_or_find_global value
+      @variables[func][name] = ptr
+    else
+      if value.is_a?(LLVM::Value)
+        @variables[func][name] = value
       end
     end
   end
