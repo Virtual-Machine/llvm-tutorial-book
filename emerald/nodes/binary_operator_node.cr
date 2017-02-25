@@ -378,11 +378,7 @@ class BinaryOperatorNode < Node
   end
 
   def resolve_binary_int1_bool(state : ProgramState, lhs, rhs) : Nil
-    if rhs == true
-      rhs_val = state.gen_int1(1)
-    else
-      rhs_val = state.gen_int1(0)
-    end
+    rhs_val = rhs ? state.gen_int1(1) : state.gen_int1(0)
     case @value
     when "!="
       @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, rhs_val
@@ -515,11 +511,7 @@ class BinaryOperatorNode < Node
   end
 
   def resolve_binary_bool_int1(state : ProgramState, lhs, rhs) : Nil
-    if lhs == true
-      lhs_val = state.gen_int1(1)
-    else
-      lhs_val = state.gen_int1(0)
-    end
+    lhs_val = lhs ? state.gen_int1(1) : state.gen_int1(0)
     case @value
     when "!="
       @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs_val, rhs

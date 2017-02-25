@@ -105,11 +105,7 @@ class ProgramState
 
   def store_int1(func : LLVM::Function, name : String, value : ValueType, allocate : Bool) : Nil
     ptr = allocate ? (builder.alloca int1, name) : (@variables[func][name])
-    if value
-      builder.store gen_int1(1), ptr
-    else
-      builder.store gen_int1(0), ptr
-    end
+    value ? builder.store gen_int1(1), ptr : builder.store gen_int1(0), ptr
     @variables[func][name] = ptr
     @variable_pointers[func][name] = ptr if allocate
   end

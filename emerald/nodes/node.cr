@@ -110,11 +110,7 @@ class Node
 
   def crystal_to_llvm(state : ProgramState, value : ValueType) : LLVM::Value
     if value.is_a?(Bool)
-      if value == true
-        return state.gen_int1(1)
-      else
-        return state.gen_int1(0)
-      end
+      value ? return state.gen_int1(1) : return state.gen_int1(0)
     elsif value.is_a?(Int32)
       return state.gen_int32(value)
     elsif value.is_a?(Float64)

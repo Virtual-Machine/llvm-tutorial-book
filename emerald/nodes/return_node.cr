@@ -11,11 +11,7 @@ class ReturnNode < Node
     if test.is_a?(LLVM::Value)
       state.builder.ret test
     elsif test.is_a?(Bool)
-      if test == true
-        state.builder.ret state.gen_int1(1)
-      else
-        state.builder.ret state.gen_int1(0)
-      end
+      test ? state.builder.ret state.gen_int1(1) : state.builder.ret state.gen_int1(0)
     elsif test.is_a?(String)
       str_pointer = state.define_or_find_global test
       state.builder.ret str_pointer

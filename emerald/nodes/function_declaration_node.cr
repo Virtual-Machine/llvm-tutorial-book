@@ -68,11 +68,7 @@ class FunctionDeclarationNode < Node
           end
         when :Bool
           if @children[0].children[-1].resolved_value.is_a?(Bool)
-            if @children[0].children[-1].resolved_value.as(Bool) == true
-              state.builder.ret state.gen_int1(1)
-            else
-              state.builder.ret state.gen_int1(0)
-            end
+            @children[0].children[-1].resolved_value.as(Bool) ? state.builder.ret state.gen_int1(1) : state.builder.ret state.gen_int1(0)
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
             if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.int1
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
