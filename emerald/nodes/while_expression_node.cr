@@ -34,9 +34,9 @@ class WhileExpressionNode < Node
 
     comp_val = @children[0].resolved_value
     if comp_val == true
-      comp_val = LLVM.int(LLVM::Int1, 1)
+      comp_val = state.ctx.int1.const_int(1)
     elsif comp_val == false
-      comp_val = LLVM.int(LLVM::Int1, 0)
+      comp_val = state.ctx.int1.const_int(0)
     else
       comp_val = comp_val.as(LLVM::Value)
     end

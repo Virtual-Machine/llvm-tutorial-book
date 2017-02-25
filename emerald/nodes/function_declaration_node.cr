@@ -11,10 +11,10 @@ class FunctionDeclarationNode < Node
     params = [] of LLVM::Type
     param_names = [] of String
     @params.each do |name, type_val|
-      params.push symbol_to_llvm type_val
+      params.push state.symbol_to_llvm type_val
       param_names.push name
     end
-    return_sig = symbol_to_llvm @return_type
+    return_sig = state.symbol_to_llvm @return_type
     func = state.mod.functions.add @name, params, return_sig
     state.active_function = func
     state.active_function_name = @name
@@ -34,9 +34,9 @@ class FunctionDeclarationNode < Node
           state.builder.ret
         when :Int32
           if @children[0].children[-1].resolved_value.is_a?(Int32)
-            state.builder.ret LLVM.int(LLVM::Int32, @children[0].children[-1].resolved_value.as(Int32))
+            state.builder.ret state.ctx.int32.const_int(@children[0].children[-1].resolved_value.as(Int32))
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
-            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == LLVM::Int32
+            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.ctx.int32
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
             else
               raise EmeraldValueResolutionException.new "#{@name} function requires an explicit or implicit integer return", @line, @position
@@ -46,7 +46,7 @@ class FunctionDeclarationNode < Node
           end
         when :Int64
           if @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
-            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == LLVM::Int64
+            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.ctx.int64
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
             else
               raise EmeraldValueResolutionException.new "#{@name} function requires an explicit or implicit integer64 return", @line, @position
@@ -56,9 +56,9 @@ class FunctionDeclarationNode < Node
           end
         when :Float64
           if @children[0].children[-1].resolved_value.is_a?(Float64)
-            state.builder.ret LLVM.double(@children[0].children[-1].resolved_value.as(Float64))
+            state.builder.ret state.ctx.double.const_double(@children[0].children[-1].resolved_value.as(Float64))
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
-            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == LLVM::Double
+            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.ctx.double
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
             else
               raise EmeraldValueResolutionException.new "#{@name} function requires an explicit or implicit float return", @line, @position
@@ -69,12 +69,12 @@ class FunctionDeclarationNode < Node
         when :Bool
           if @children[0].children[-1].resolved_value.is_a?(Bool)
             if @children[0].children[-1].resolved_value.as(Bool) == true
-              state.builder.ret LLVM.int(LLVM::Int1, 1)
+              state.builder.ret state.ctx.int1.const_int(1)
             else
-              state.builder.ret LLVM.int(LLVM::Int1, 0)
+              state.builder.ret state.ctx.int1.const_int(0)
             end
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
-            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == LLVM::Int1
+            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.ctx.int1
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
             else
               raise EmeraldValueResolutionException.new "#{@name} function requires an explicit or implicit bool return", @line, @position
@@ -86,7 +86,7 @@ class FunctionDeclarationNode < Node
           if @children[0].children[-1].resolved_value.is_a?(String)
             state.builder.ret state.define_or_find_global @children[0].children[-1].resolved_value.as(String)
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
-            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == LLVM::Int8.pointer
+            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.ctx.void_pointer
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
             else
               raise EmeraldValueResolutionException.new "#{@name} function requires an explicit or implicit string return", @line, @position
@@ -99,24 +99,5 @@ class FunctionDeclarationNode < Node
     end
     state.active_function = state.mod.functions["main"]
     state.active_block = state.saved_block
-  end
-
-  def symbol_to_llvm(symbol : Symbol) : LLVM::Type
-    case symbol
-    when :Int32
-      return LLVM::Int32
-    when :Int64
-      return LLVM::Int64
-    when :Float64
-      return LLVM::Double
-    when :Bool
-      return LLVM::Int1
-    when :String
-      return LLVM::Int8.pointer
-    when :Nil
-      return LLVM::Void
-    else
-      raise "Undefined case in symbol_to_llvm"
-    end
   end
 end

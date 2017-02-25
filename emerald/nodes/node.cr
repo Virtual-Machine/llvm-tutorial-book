@@ -111,14 +111,14 @@ class Node
   def crystal_to_llvm(state : ProgramState, value : ValueType) : LLVM::Value
     if value.is_a?(Bool)
       if value == true
-        return LLVM.int(LLVM::Int1, 1)
+        return state.ctx.int1.const_int(1)
       else
-        return LLVM.int(LLVM::Int1, 0)
+        return state.ctx.int1.const_int(0)
       end
     elsif value.is_a?(Int32)
-      return LLVM.int(LLVM::Int32, value)
+      return state.ctx.int32.const_int(value)
     elsif value.is_a?(Float64)
-      return LLVM.double(value)
+      return state.ctx.double.const_double(value)
     elsif value.is_a?(String)
       return state.define_or_find_global value
     elsif value.is_a?(LLVM::Value)

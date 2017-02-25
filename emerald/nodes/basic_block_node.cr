@@ -18,15 +18,15 @@ class BasicBlockNode < Node
       parent.as(FunctionDeclarationNode).params.each do |var, type_val|
         state.builder.position_at_end state.active_block
         if type_val == :Int32
-          ptr = state.builder.alloca LLVM::Int32, var
+          ptr = state.builder.alloca state.ctx.int32, var
           state.builder.store state.active_function.params[counter], ptr
           state.variable_pointers[state.active_function][var] = ptr
         elsif type_val == :Float64
-          ptr = state.builder.alloca LLVM::Double, var
+          ptr = state.builder.alloca state.ctx.double, var
           state.builder.store state.active_function.params[counter], ptr
           state.variable_pointers[state.active_function][var] = ptr
         elsif type_val == :Bool
-          ptr = state.builder.alloca LLVM::Int1, var
+          ptr = state.builder.alloca state.ctx.int1, var
           state.builder.store state.active_function.params[counter], ptr
           state.variable_pointers[state.active_function][var] = ptr
         elsif type_val == :String

@@ -12,7 +12,10 @@ require "./close_statements"
 require "llvm"
 
 class EmeraldProgram
-  getter input_code, token_array, ast, output, delimiters, state, mod, builder, options, verifier, main : LLVM::BasicBlock
+  getter mod : LLVM::Module
+  getter builder : LLVM::Builder
+  getter ctx : LLVM::Context
+  getter input_code, token_array, ast, output, delimiters, state, options, verifier, main : LLVM::BasicBlock
   getter! lexer, parser, func : LLVM::Function
 
   def self.new_from_input(input : String, test_mode : Bool = false)
@@ -40,11 +43,12 @@ class EmeraldProgram
     @ast = [] of Node
     @output = ""
     @verifier = Verifier.new
-    @mod = LLVM::Module.new("Emerald")
-    @func = mod.functions.add "main", ([] of LLVM::Type), LLVM::Int32
+    @ctx = LLVM::Context.new
+    @mod = @ctx.new_module("Emerald")
+    @func = mod.functions.add "main", ([] of LLVM::Type), @ctx.int32
     @main = func.basic_blocks.append "main_body"
-    @builder = LLVM::Builder.new
-    @state = ProgramState.new builder, mod, main
+    @builder = @ctx.new_builder
+    @state = ProgramState.new builder, ctx, mod, main
   end
 
   def lex : Nil

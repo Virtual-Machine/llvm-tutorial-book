@@ -1,5 +1,5 @@
 class ProgramState
-  getter variables, variable_pointers, globals, builder, mod, blocks, close_statements
+  getter variables, variable_pointers, globals, builder, mod, blocks, close_statements, ctx
   property! active_block, active_function, active_function_name, saved_block
   property printAST, printResolutions
 
@@ -7,7 +7,7 @@ class ProgramState
   @saved_block : LLVM::BasicBlock?
   @active_function : LLVM::Function?
 
-  def initialize(@builder : LLVM::Builder, @mod : LLVM::Module, @block : LLVM::BasicBlock)
+  def initialize(@builder : LLVM::Builder, @ctx : LLVM::Context, @mod : LLVM::Module, @block : LLVM::BasicBlock)
     @globals = {} of String => LLVM::Value
     @variables = {} of LLVM::Function => Hash(String, LLVM::Value)
     @variable_pointers = {} of LLVM::Function => Hash(String, LLVM::Value)
@@ -26,19 +26,19 @@ class ProgramState
   end
 
   def declare_standard_functions : Nil
-    mod.functions.add "puts:int", [LLVM::Int32], LLVM::Int32
-    mod.functions.add "puts:int64", [LLVM::Int64], LLVM::Int64
-    mod.functions.add "puts:bool", [LLVM::Int1], LLVM::Int32
-    mod.functions.add "puts:float", [LLVM::Double], LLVM::Int32
-    mod.functions.add "puts:str", [LLVM::VoidPointer], LLVM::Int32
-    mod.functions.add "concatenate:str", [LLVM::VoidPointer, LLVM::VoidPointer], LLVM::VoidPointer
-    mod.functions.add "repetition:str", [LLVM::VoidPointer, LLVM::Int32], LLVM::VoidPointer
-    mod.functions.add "strlen", [LLVM::VoidPointer], LLVM::Int64
-    mod.functions.add "__strncat_chk", [LLVM::VoidPointer, LLVM::VoidPointer, LLVM::Int64, LLVM::Int64], LLVM::VoidPointer
-    mod.functions.add "llvm.objectsize.i64.p0i8", [LLVM::VoidPointer, LLVM::Int1], LLVM::Int64
-    mod.functions.add "malloc", [LLVM::Int64], LLVM::VoidPointer
-    mod.functions.add "realloc", [LLVM::VoidPointer, LLVM::Int64], LLVM::VoidPointer
-    mod.functions.add "free", [LLVM::VoidPointer], LLVM::Void
+    mod.functions.add "puts:int", [@ctx.int32], @ctx.int32
+    mod.functions.add "puts:int64", [@ctx.int64], @ctx.int64
+    mod.functions.add "puts:bool", [@ctx.int1], @ctx.int32
+    mod.functions.add "puts:float", [@ctx.double], @ctx.int32
+    mod.functions.add "puts:str", [@ctx.void_pointer], @ctx.int32
+    mod.functions.add "concatenate:str", [@ctx.void_pointer, @ctx.void_pointer], @ctx.void_pointer
+    mod.functions.add "repetition:str", [@ctx.void_pointer, @ctx.int32], @ctx.void_pointer
+    mod.functions.add "strlen", [@ctx.void_pointer], @ctx.int64
+    mod.functions.add "__strncat_chk", [@ctx.void_pointer, @ctx.void_pointer, @ctx.int64, @ctx.int64], @ctx.void_pointer
+    mod.functions.add "llvm.objectsize.i64.p0i8", [@ctx.void_pointer, @ctx.int1], @ctx.int64
+    mod.functions.add "malloc", [@ctx.int64], @ctx.void_pointer
+    mod.functions.add "realloc", [@ctx.void_pointer, @ctx.int64], @ctx.void_pointer
+    mod.functions.add "free", [@ctx.void_pointer], @ctx.void
   end
 
   def close_blocks : Nil
@@ -46,7 +46,7 @@ class ProgramState
       statement.close builder
     end
     builder.position_at_end active_block
-    builder.ret LLVM.int(LLVM::Int32, 0)
+    builder.ret @ctx.int32.const_int(0)
   end
 
   def add_block(name : String, block : LLVM::BasicBlock)
@@ -75,22 +75,22 @@ class ProgramState
     end
     if !@variables[func].has_key? name
       if value.is_a?(Int32)
-        ptr = builder.alloca LLVM::Int32, name
-        builder.store LLVM.int(LLVM::Int32, value), ptr
+        ptr = builder.alloca @ctx.int32, name
+        builder.store @ctx.int32.const_int(value), ptr
         @variables[func][name] = ptr
         @variable_pointers[func][name] = ptr
       elsif value.is_a?(Bool)
-        ptr = builder.alloca LLVM::Int1, name
+        ptr = builder.alloca @ctx.int1, name
         if value
-          builder.store LLVM.int(LLVM::Int1, 1), ptr
+          builder.store @ctx.int1.const_int(1), ptr
         else
-          builder.store LLVM.int(LLVM::Int1, 0), ptr
+          builder.store @ctx.int1.const_int(0), ptr
         end
         @variables[func][name] = ptr
         @variable_pointers[func][name] = ptr
       elsif value.is_a?(Float64)
-        ptr = builder.alloca LLVM::Double, name
-        builder.store LLVM.double(value), ptr
+        ptr = builder.alloca @ctx.double, name
+        builder.store @ctx.double.const_double(value), ptr
         @variables[func][name] = ptr
         @variable_pointers[func][name] = ptr
       elsif value.is_a?(String)
@@ -104,19 +104,19 @@ class ProgramState
     else
       if value.is_a?(Int32)
         ptr = @variables[func][name]
-        builder.store LLVM.int(LLVM::Int32, value), ptr
+        builder.store @ctx.int32.const_int(value), ptr
         @variables[func][name] = ptr
       elsif value.is_a?(Bool)
         ptr = @variables[func][name]
         if value
-          builder.store LLVM.int(LLVM::Int1, 1), ptr
+          builder.store @ctx.int1.const_int(1), ptr
         else
-          builder.store LLVM.int(LLVM::Int1, 0), ptr
+          builder.store @ctx.int1.const_int(0), ptr
         end
         @variables[func][name] = ptr
       elsif value.is_a?(Float64)
         ptr = @variables[func][name]
-        builder.store LLVM.double(value), ptr
+        builder.store @ctx.double.const_double(value), ptr
         @variables[func][name] = ptr
       elsif value.is_a?(String)
         ptr = define_or_find_global value
@@ -136,7 +136,7 @@ class ProgramState
     elsif variable_exists? func, name
       type_val = variables[func][name].type
       builder.position_at_end active_block
-      if type_val == LLVM::Int8.pointer || type_val == LLVM::Int1 || type_val == LLVM::Int32 || type_val == LLVM::Double
+      if type_val == @ctx.void_pointer || type_val == @ctx.int1 || type_val == @ctx.int32 || type_val == @ctx.double
         return @variables[func][name]
       else
         return builder.load @variables[func][name]
@@ -162,5 +162,24 @@ class ProgramState
       end
     end
     return false
+  end
+
+  def symbol_to_llvm(symbol : Symbol) : LLVM::Type
+    case symbol
+    when :Int32
+      return @ctx.int32
+    when :Int64
+      return @ctx.int64
+    when :Float64
+      return @ctx.double
+    when :Bool
+      return @ctx.int1
+    when :String
+      return @ctx.void_pointer
+    when :Nil
+      return @ctx.void
+    else
+      raise "Undefined case in symbol_to_llvm"
+    end
   end
 end
