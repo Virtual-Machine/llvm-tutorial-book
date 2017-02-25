@@ -15,10 +15,10 @@ class ExpressionNode < Node
         cur_child_value = child.resolved_value
         if cur_child_value.is_a?(Array(LLVM::Value))
           cur_child_value.each do |value|
-            params.push crystal_to_llvm state, value
+            params.push state.crystal_to_llvm value
           end
         else
-          params.push crystal_to_llvm state, cur_child_value
+          params.push state.crystal_to_llvm cur_child_value
         end
       end
       @resolved_value = params

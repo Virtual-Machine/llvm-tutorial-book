@@ -107,20 +107,4 @@ class Node
 
   def resolve_value(state : ProgramState) : Nil
   end
-
-  def crystal_to_llvm(state : ProgramState, value : ValueType) : LLVM::Value
-    if value.is_a?(Bool)
-      value ? return state.gen_int1(1) : return state.gen_int1(0)
-    elsif value.is_a?(Int32)
-      return state.gen_int32(value)
-    elsif value.is_a?(Float64)
-      return state.gen_double(value)
-    elsif value.is_a?(String)
-      return state.define_or_find_global value
-    elsif value.is_a?(LLVM::Value)
-      return value
-    else
-      raise "Unknown value type in crystal_to_llvm function"
-    end
-  end
 end

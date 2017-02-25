@@ -42,7 +42,7 @@ class CallExpressionNode < Node
               params.push value
             end
           else
-            params.push crystal_to_llvm state, child.resolved_value
+            params.push state.crystal_to_llvm child.resolved_value
           end
         end
         if state.mod.functions[@value.as(String)].return_type == state.void

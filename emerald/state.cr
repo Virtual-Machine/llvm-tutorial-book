@@ -171,6 +171,22 @@ class ProgramState
     end
   end
 
+  def crystal_to_llvm(value : ValueType) : LLVM::Value
+    if value.is_a?(Bool)
+      value ? return gen_int1(1) : return gen_int1(0)
+    elsif value.is_a?(Int32)
+      return gen_int32(value)
+    elsif value.is_a?(Float64)
+      return gen_double(value)
+    elsif value.is_a?(String)
+      return define_or_find_global value
+    elsif value.is_a?(LLVM::Value)
+      return value
+    else
+      raise "Unknown value type in crystal_to_llvm function"
+    end
+  end
+
   def int32 : LLVM::Type
     return @ctx.int32
   end
