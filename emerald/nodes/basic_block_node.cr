@@ -17,19 +17,19 @@ class BasicBlockNode < Node
       counter = 0
       parent.as(FunctionDeclarationNode).params.each do |var, type_val|
         state.builder.position_at_end state.active_block
-        if type_val == :Int32
-          ptr = state.builder.alloca state.int32, var
+        case type_val
+        when :Int32, :Float64, :Bool
+          ptr : LLVM::Value
+          if type_val == :Int32
+            ptr = state.builder.alloca state.int32, var
+          elsif type_val == :Float64
+            ptr = state.builder.alloca state.double, var
+          else
+            ptr = state.builder.alloca state.int1, var
+          end
           state.builder.store state.active_function.params[counter], ptr
           state.variable_pointers[state.active_function][var] = ptr
-        elsif type_val == :Float64
-          ptr = state.builder.alloca state.double, var
-          state.builder.store state.active_function.params[counter], ptr
-          state.variable_pointers[state.active_function][var] = ptr
-        elsif type_val == :Bool
-          ptr = state.builder.alloca state.int1, var
-          state.builder.store state.active_function.params[counter], ptr
-          state.variable_pointers[state.active_function][var] = ptr
-        elsif type_val == :String
+        when :String
         else
           raise "Unable to alloca function declaration parameter #{var} of type #{type_val}"
         end
