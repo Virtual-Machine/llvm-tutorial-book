@@ -41,16 +41,8 @@ class Verifier
   end
 
   def build_and_raise_verification_error(token, next_token)
-    if token.typeT == TokenType::String
-      token_value = "\"#{token.value}\""
-    else
-      token_value = token.value
-    end
-    if next_token.typeT == TokenType::String
-      next_token_value = "\"#{next_token.value}\""
-    else
-      next_token_value = next_token.value
-    end
+    token_value = token.typeT == TokenType::String ? "\"#{token.value}\"" : token.value
+    next_token_value = next_token.typeT == TokenType::String ? "\"#{next_token.value}\"" : next_token.value
     error_string = "Two tokens   #{token_value}   #{next_token_value}   were detected in sequence, this is not valid Emerald syntax"
     error = EmeraldTokenVerificationException.new error_string, token.line, token.column
     raise error
