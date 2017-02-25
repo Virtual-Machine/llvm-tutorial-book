@@ -99,23 +99,27 @@ class EmeraldProgram
 
     # Run standard optimizations on module if enabled
     if @options["optimize"]
-      fun_pass_manager = mod.new_function_pass_manager
-      pass_manager_builder = begin
-        registry = LLVM::PassRegistry.instance
-        registry.initialize_all
-
-        builder = LLVM::PassManagerBuilder.new
-        builder.opt_level = 3
-        builder.size_level = 0
-        builder.use_inliner_with_threshold = 275
-        builder
-      end
-      pass_manager_builder.populate fun_pass_manager
-      fun_pass_manager.run mod
+      optimize
     end
 
     # Output LLVM IR to output.ll
     output
+  end
+
+  def optimize : Nil
+    fun_pass_manager = mod.new_function_pass_manager
+    pass_manager_builder = begin
+      registry = LLVM::PassRegistry.instance
+      registry.initialize_all
+
+      builder = LLVM::PassManagerBuilder.new
+      builder.opt_level = 3
+      builder.size_level = 0
+      builder.use_inliner_with_threshold = 275
+      builder
+    end
+    pass_manager_builder.populate fun_pass_manager
+    fun_pass_manager.run mod
   end
 
   def output : String
