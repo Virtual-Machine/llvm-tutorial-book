@@ -34,9 +34,9 @@ class FunctionDeclarationNode < Node
           state.builder.ret
         when :Int32
           if @children[0].children[-1].resolved_value.is_a?(Int32)
-            state.builder.ret state.ctx.int32.const_int(@children[0].children[-1].resolved_value.as(Int32))
+            state.builder.ret state.int32.const_int(@children[0].children[-1].resolved_value.as(Int32))
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
-            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.ctx.int32
+            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.int32
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
             else
               raise EmeraldValueResolutionException.new "#{@name} function requires an explicit or implicit integer return", @line, @position
@@ -46,7 +46,7 @@ class FunctionDeclarationNode < Node
           end
         when :Int64
           if @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
-            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.ctx.int64
+            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.int64
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
             else
               raise EmeraldValueResolutionException.new "#{@name} function requires an explicit or implicit integer64 return", @line, @position
@@ -56,9 +56,9 @@ class FunctionDeclarationNode < Node
           end
         when :Float64
           if @children[0].children[-1].resolved_value.is_a?(Float64)
-            state.builder.ret state.ctx.double.const_double(@children[0].children[-1].resolved_value.as(Float64))
+            state.builder.ret state.double.const_double(@children[0].children[-1].resolved_value.as(Float64))
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
-            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.ctx.double
+            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.double
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
             else
               raise EmeraldValueResolutionException.new "#{@name} function requires an explicit or implicit float return", @line, @position
@@ -69,12 +69,12 @@ class FunctionDeclarationNode < Node
         when :Bool
           if @children[0].children[-1].resolved_value.is_a?(Bool)
             if @children[0].children[-1].resolved_value.as(Bool) == true
-              state.builder.ret state.ctx.int1.const_int(1)
+              state.builder.ret state.int1.const_int(1)
             else
-              state.builder.ret state.ctx.int1.const_int(0)
+              state.builder.ret state.int1.const_int(0)
             end
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
-            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.ctx.int1
+            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.int1
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
             else
               raise EmeraldValueResolutionException.new "#{@name} function requires an explicit or implicit bool return", @line, @position
@@ -86,7 +86,7 @@ class FunctionDeclarationNode < Node
           if @children[0].children[-1].resolved_value.is_a?(String)
             state.builder.ret state.define_or_find_global @children[0].children[-1].resolved_value.as(String)
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
-            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.ctx.void_pointer
+            if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.void_pointer
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
             else
               raise EmeraldValueResolutionException.new "#{@name} function requires an explicit or implicit string return", @line, @position

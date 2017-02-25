@@ -10,15 +10,15 @@ class CallExpressionNode < Node
       test = @resolved_value
       if test.is_a?(LLVM::Value)
         case test.type
-        when state.ctx.int64
+        when state.int64
           state.builder.call state.mod.functions["puts:int64"], test, @value.as(String)
-        when state.ctx.int32
+        when state.int32
           state.builder.call state.mod.functions["puts:int"], test, @value.as(String)
-        when state.ctx.double
+        when state.double
           state.builder.call state.mod.functions["puts:float"], test, @value.as(String)
-        when state.ctx.int1
+        when state.int1
           state.builder.call state.mod.functions["puts:bool"], test, @value.as(String)
-        when state.ctx.void_pointer
+        when state.void_pointer
           state.builder.call state.mod.functions["puts:str"], test, @value.as(String)
         end
       else
@@ -28,7 +28,7 @@ class CallExpressionNode < Node
     else
       num_params = @children.size
       if num_params == 0
-        if state.mod.functions[@value.as(String)].return_type == state.ctx.void
+        if state.mod.functions[@value.as(String)].return_type == state.void
           @resolved_value = state.builder.call state.mod.functions[@value.as(String)]
         else
           @resolved_value = state.builder.call state.mod.functions[@value.as(String)], @value.as(String)
@@ -45,7 +45,7 @@ class CallExpressionNode < Node
             params.push crystal_to_llvm state, child.resolved_value
           end
         end
-        if state.mod.functions[@value.as(String)].return_type == state.ctx.void
+        if state.mod.functions[@value.as(String)].return_type == state.void
           @resolved_value = state.builder.call state.mod.functions[@value.as(String)], params
         else
           @resolved_value = state.builder.call state.mod.functions[@value.as(String)], params, @value.as(String)

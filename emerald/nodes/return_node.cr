@@ -12,17 +12,17 @@ class ReturnNode < Node
       state.builder.ret test
     elsif test.is_a?(Bool)
       if test == true
-        state.builder.ret state.ctx.int1.const_int(1)
+        state.builder.ret state.int1.const_int(1)
       else
-        state.builder.ret state.ctx.int1.const_int(0)
+        state.builder.ret state.int1.const_int(0)
       end
     elsif test.is_a?(String)
       str_pointer = state.define_or_find_global test
       state.builder.ret str_pointer
     elsif test.is_a?(Int32)
-      state.builder.ret state.ctx.int32.const_int(test)
+      state.builder.ret state.int32.const_int(test)
     elsif test.is_a?(Float64)
-      state.builder.ret state.ctx.double.const_double(test)
+      state.builder.ret state.double.const_double(test)
     elsif test.nil?
       state.builder.ret
     end
