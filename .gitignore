@@ -13,3 +13,4 @@ emeraldc
 test_outputs/*
 std-lib.s
 std-lib-opt.s
+diagrams/psd/*
