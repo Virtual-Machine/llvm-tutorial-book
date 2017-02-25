@@ -34,7 +34,7 @@ class FunctionDeclarationNode < Node
           state.builder.ret
         when :Int32
           if @children[0].children[-1].resolved_value.is_a?(Int32)
-            state.builder.ret state.int32.const_int(@children[0].children[-1].resolved_value.as(Int32))
+            state.builder.ret state.gen_int32(@children[0].children[-1].resolved_value.as(Int32))
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
             if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.int32
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
@@ -56,7 +56,7 @@ class FunctionDeclarationNode < Node
           end
         when :Float64
           if @children[0].children[-1].resolved_value.is_a?(Float64)
-            state.builder.ret state.double.const_double(@children[0].children[-1].resolved_value.as(Float64))
+            state.builder.ret state.gen_double(@children[0].children[-1].resolved_value.as(Float64))
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
             if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.double
               state.builder.ret @children[0].children[-1].resolved_value.as(LLVM::Value)
@@ -69,9 +69,9 @@ class FunctionDeclarationNode < Node
         when :Bool
           if @children[0].children[-1].resolved_value.is_a?(Bool)
             if @children[0].children[-1].resolved_value.as(Bool) == true
-              state.builder.ret state.int1.const_int(1)
+              state.builder.ret state.gen_int1(1)
             else
-              state.builder.ret state.int1.const_int(0)
+              state.builder.ret state.gen_int1(0)
             end
           elsif @children[0].children[-1].resolved_value.is_a?(LLVM::Value)
             if @children[0].children[-1].resolved_value.as(LLVM::Value).type == state.int1

@@ -328,31 +328,31 @@ class BinaryOperatorNode < Node
   def resolve_binary_int32_int(state : ProgramState, lhs, rhs) : Nil
     case @value
     when "*"
-      @resolved_value = state.builder.mul lhs, state.int32.const_int(rhs.as(Int32))
+      @resolved_value = state.builder.mul lhs, state.gen_int32(rhs.as(Int32))
     when "/"
-      @resolved_value = state.builder.sdiv lhs, state.int32.const_int(rhs.as(Int32))
+      @resolved_value = state.builder.sdiv lhs, state.gen_int32(rhs.as(Int32))
     when "+"
-      @resolved_value = state.builder.add lhs, state.int32.const_int(rhs.as(Int32))
+      @resolved_value = state.builder.add lhs, state.gen_int32(rhs.as(Int32))
     when "-"
-      @resolved_value = state.builder.sub lhs, state.int32.const_int(rhs.as(Int32))
+      @resolved_value = state.builder.sub lhs, state.gen_int32(rhs.as(Int32))
     when "<"
-      @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, state.int32.const_int(rhs.as(Int32))
+      @resolved_value = state.builder.icmp LLVM::IntPredicate::ULT, lhs, state.gen_int32(rhs.as(Int32))
     when ">"
-      @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, state.int32.const_int(rhs.as(Int32))
+      @resolved_value = state.builder.icmp LLVM::IntPredicate::UGT, lhs, state.gen_int32(rhs.as(Int32))
     when "!="
-      @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, state.int32.const_int(rhs.as(Int32))
+      @resolved_value = state.builder.icmp LLVM::IntPredicate::NE, lhs, state.gen_int32(rhs.as(Int32))
     when "=="
-      @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, state.int32.const_int(rhs.as(Int32))
+      @resolved_value = state.builder.icmp LLVM::IntPredicate::EQ, lhs, state.gen_int32(rhs.as(Int32))
     when "<="
-      @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, state.int32.const_int(rhs.as(Int32))
+      @resolved_value = state.builder.icmp LLVM::IntPredicate::ULE, lhs, state.gen_int32(rhs.as(Int32))
     when ">="
-      @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, state.int32.const_int(rhs.as(Int32))
+      @resolved_value = state.builder.icmp LLVM::IntPredicate::UGE, lhs, state.gen_int32(rhs.as(Int32))
     end
   end
 
   def resolve_binary_int32_float(state : ProgramState, lhs, rhs) : Nil
     lhs_val = state.builder.si2fp lhs, state.double
-    rhs_val = state.double.const_double(rhs)
+    rhs_val = state.gen_double(rhs)
     case @value
     when "*"
       @resolved_value = state.builder.fmul lhs_val, rhs_val
@@ -379,9 +379,9 @@ class BinaryOperatorNode < Node
 
   def resolve_binary_int1_bool(state : ProgramState, lhs, rhs) : Nil
     if rhs == true
-      rhs_val = state.int1.const_int(1)
+      rhs_val = state.gen_int1(1)
     else
-      rhs_val = state.int1.const_int(0)
+      rhs_val = state.gen_int1(0)
     end
     case @value
     when "!="
@@ -405,13 +405,13 @@ class BinaryOperatorNode < Node
 
   def resolve_binary_int8pointer_int(state : ProgramState, lhs, rhs) : Nil
     if @value == "*"
-      rhs_val = state.int32.const_int(rhs)
+      rhs_val = state.gen_int32(rhs)
       @resolved_value = state.builder.call state.mod.functions["repetition:str"], [lhs, rhs_val], "str_rep"
     end
   end
 
   def resolve_binary_double_float(state : ProgramState, lhs, rhs) : Nil
-    rhs_val = state.double.const_double(rhs)
+    rhs_val = state.gen_double(rhs)
     case @value
     when "*"
       @resolved_value = state.builder.fmul lhs, rhs_val
@@ -437,7 +437,7 @@ class BinaryOperatorNode < Node
   end
 
   def resolve_binary_double_int(state : ProgramState, lhs, rhs) : Nil
-    rhs_val = state.double.const_double(rhs.to_f)
+    rhs_val = state.gen_double(rhs.to_f)
     case @value
     when "*"
       @resolved_value = state.builder.fmul lhs, rhs_val
@@ -463,7 +463,7 @@ class BinaryOperatorNode < Node
   end
 
   def resolve_binary_int_int32(state : ProgramState, lhs, rhs) : Nil
-    lhs_val = state.int32.const_int(lhs.as(Int32))
+    lhs_val = state.gen_int32(lhs.as(Int32))
     case @value
     when "*"
       @resolved_value = state.builder.mul lhs_val, rhs
@@ -489,7 +489,7 @@ class BinaryOperatorNode < Node
   end
 
   def resolve_binary_int_double(state : ProgramState, lhs, rhs) : Nil
-    lhs_val = state.double.const_double(lhs.to_f)
+    lhs_val = state.gen_double(lhs.to_f)
     case @value
     when "*"
       @resolved_value = state.builder.fmul lhs_val, rhs
@@ -516,9 +516,9 @@ class BinaryOperatorNode < Node
 
   def resolve_binary_bool_int1(state : ProgramState, lhs, rhs) : Nil
     if lhs == true
-      lhs_val = state.int1.const_int(1)
+      lhs_val = state.gen_int1(1)
     else
-      lhs_val = state.int1.const_int(0)
+      lhs_val = state.gen_int1(0)
     end
     case @value
     when "!="
@@ -529,7 +529,7 @@ class BinaryOperatorNode < Node
   end
 
   def resolve_binary_float_double(state : ProgramState, lhs, rhs) : Nil
-    lhs_val = state.double.const_double(lhs)
+    lhs_val = state.gen_double(lhs)
     case @value
     when "*"
       @resolved_value = state.builder.fmul lhs_val, rhs
@@ -555,7 +555,7 @@ class BinaryOperatorNode < Node
   end
 
   def resolve_binary_float_int32(state : ProgramState, lhs, rhs) : Nil
-    lhs_val = state.double.const_double(lhs)
+    lhs_val = state.gen_double(lhs)
     rhs_val = state.builder.si2fp rhs, state.double
     case @value
     when "*"

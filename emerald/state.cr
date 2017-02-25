@@ -46,7 +46,7 @@ class ProgramState
       statement.close builder
     end
     builder.position_at_end active_block
-    builder.ret int32.const_int(0)
+    builder.ret gen_int32(0)
   end
 
   def add_block(name : String, block : LLVM::BasicBlock)
@@ -98,7 +98,7 @@ class ProgramState
 
   def store_int32(func : LLVM::Function, name : String, value : ValueType, allocate : Bool) : Nil
     ptr = allocate ? (builder.alloca int32, name) : (@variables[func][name])
-    builder.store int32.const_int(value), ptr
+    builder.store gen_int32(value), ptr
     @variables[func][name] = ptr
     @variable_pointers[func][name] = ptr if allocate
   end
@@ -106,9 +106,9 @@ class ProgramState
   def store_int1(func : LLVM::Function, name : String, value : ValueType, allocate : Bool) : Nil
     ptr = allocate ? (builder.alloca int1, name) : (@variables[func][name])
     if value
-      builder.store int1.const_int(1), ptr
+      builder.store gen_int1(1), ptr
     else
-      builder.store int1.const_int(0), ptr
+      builder.store gen_int1(0), ptr
     end
     @variables[func][name] = ptr
     @variable_pointers[func][name] = ptr if allocate
@@ -116,7 +116,7 @@ class ProgramState
 
   def store_float64(func : LLVM::Function, name : String, value : ValueType, allocate : Bool) : Nil
     ptr = allocate ? (builder.alloca double, name) : (@variables[func][name])    
-    builder.store double.const_double(value), ptr
+    builder.store gen_double(value), ptr
     @variables[func][name] = ptr
     @variable_pointers[func][name] = ptr if allocate
   end
@@ -197,5 +197,21 @@ class ProgramState
 
   def void : LLVM::Type
     return @ctx.void
+  end
+
+  def gen_int32(value : Int32) : LLVM::Value
+    return @ctx.int32.const_int(value)
+  end
+
+  def gen_int64(value : Int64) : LLVM::Value
+    return @ctx.int64.const_int(value)
+  end
+
+  def gen_int1(value : Int32) : LLVM::Value
+    return @ctx.int1.const_int(value)
+  end
+
+  def gen_double(value : Float64) : LLVM::Value
+    return @ctx.double.const_double(value)
   end
 end
