@@ -4,6 +4,8 @@ sudo: false
 
 addons:
   apt:
+    sources:
+    - llvm-toolchain-precise-3.9
     packages:
     - clang-3.9
     - llvm-3.9
