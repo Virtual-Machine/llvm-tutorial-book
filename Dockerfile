@@ -1,5 +1,8 @@
 FROM crystallang/crystal:0.21.0
 
+RUN apt-get update && \
+    apt-get install -y wget
+
 RUN wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - && \
 	apt-get update && \
 	apt-get install clang-3.9 lldb-3.9
