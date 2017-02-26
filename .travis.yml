@@ -1,10 +1,12 @@
 language: crystal
 
-before_install:
-  - sudo apt-add-repository "deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.9 main"
-  - sudo apt-get -qq update
-  - sudo apt-get install -y clang-3.9
+sudo: false
 
+addons:
+  apt:
+    packages:
+    - clang-3.9
+    - llvm-3.9
 
 script:
   - mkdir test_outputs; crystal build emeraldc.cr; crystal spec
