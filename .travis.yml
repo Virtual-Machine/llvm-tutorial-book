@@ -2,8 +2,3 @@ language: crystal
 
 os:
   - osx
-
-before_install: |
-  brew update
-install: |
-  brew install crystal-lang
