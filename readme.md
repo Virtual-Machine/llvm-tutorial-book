@@ -1,5 +1,7 @@
 # LLVM Frontend Tutorial
 
+![Travis Badge](https://travis-ci.org/Virtual-Machine/llvm-tutorial-book.svg?branch=master)
+
 This is the main repository for my LLVM tutorial.
 
 **WARNING** This project is still in the early phase. The lexer, parser and code generator are functional, though subject to refactoring and possible bugs. Until this warning is removed, source code is subject to change. Chapter texts remain incomplete, yet useful at the moment. Compiler meets basic example requirements and beyond, but there are more additions planned.
