@@ -1,6 +1,7 @@
 language: crystal
 
 before_install:
+  - sudo apt-add-repository "deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.9 main"
   - sudo apt-get -qq update
   - sudo apt-get install -y clang-3.9
 
