@@ -6,8 +6,8 @@ services:
   - docker
 
 before_install:
-  - docker build -t Virtual-Machine/llvm-tutorial-book .
+  - docker build -t virtual-machine/llvm-tutorial-book .
 
 
 script:
-  - docker run Virtual-Machine/llvm-tutorial-book /bin/sh -c "cd /opt/llvm-tutorial; crystal spec"
+  - docker run virtual-machine/llvm-tutorial-book /bin/sh -c "cd /opt/llvm-tutorial; crystal spec"
