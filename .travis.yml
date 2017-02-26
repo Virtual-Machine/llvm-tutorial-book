@@ -1,24 +1,13 @@
-language: crystal
+language: generic
 
-matrix:
-  include:
-    - os: linux
-      d: ldc
-      env: LLVM_VERSION=3.8.0
+sudo: required
 
-cache:
-  directories:
-    - llvm-3.8.0
+services:
+  - docker
 
 before_install:
-  -
-    if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-      if [ -z "$(ls -A llvm-$LLVM_VERSION)" ]; then
-        wget -O llvm-$LLVM_VERSION.tar.xz http://llvm.org/releases/$LLVM_VERSION/clang+llvm-$LLVM_VERSION-x86_64-linux-gnu-ubuntu-14.04.tar.xz;
-        mkdir llvm-$LLVM_VERSION;
-        xzcat llvm-$LLVM_VERSION.tar.xz | tar -xvf - --strip 1 -C llvm-$LLVM_VERSION;
-        sudo apt-get install libstdc++6;
-      fi;
-      llvm-$LLVM_VERSION/bin/llvm-config --version;
-      export LLVM_CONFIG="llvm-$LLVM_VERSION/bin/llvm-config";
-    fi
+  - docker build -t Virtual-Machine/llvm-tutorial-book .
+
+
+script:
+  - docker run Virtual-Machine/llvm-tutorial-book /bin/sh -c "cd /opt/llvm-tutorial; crystal spec"
