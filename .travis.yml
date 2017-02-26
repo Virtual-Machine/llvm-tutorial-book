@@ -12,4 +12,4 @@ install: |
   brew install crystal-lang
 
 script:
-  - echo "Hello"; pwd; crystal spec
+  - mkdir test_outputs; crystal build emeraldc.cr; crystal spec
