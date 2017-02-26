@@ -1,13 +1,9 @@
 language: generic
 
-sudo: required
-
-services:
-  - docker
-
 before_install:
-  - docker build -t virtual-machine/llvm-tutorial-book .
+  - sudo apt-get -qq update
+  - sudo apt-get install -y clang
 
 
 script:
-  - docker run virtual-machine/llvm-tutorial-book /bin/sh -c "cd /opt/llvm-tutorial; mkdir test_outputs; crystal build emeraldc.cr; crystal spec"
+  - mkdir test_outputs; crystal build emeraldc.cr; crystal spec
