@@ -72,7 +72,7 @@ elsif help
 elsif test_runner
   path_to_file = Dir.current + "/spec/output.ll"
   File.delete(path_to_file) if File.exists?(path_to_file)
-  system "crystal spec spec/*"
+  system "crystal spec"
 else
   # Compilation
   program = EmeraldProgram.new_from_options options
