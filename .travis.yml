@@ -10,4 +10,4 @@ before_install:
 
 
 script:
-  - docker run virtual-machine/llvm-tutorial-book /bin/sh -c "cd /opt/llvm-tutorial; mkdir test_outputs; crystal spec"
+  - docker run virtual-machine/llvm-tutorial-book /bin/sh -c "cd /opt/llvm-tutorial; mkdir test_outputs; crystal build emeraldc.cr; crystal spec"
