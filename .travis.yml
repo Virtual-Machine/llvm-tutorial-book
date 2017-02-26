@@ -12,5 +12,4 @@ install: |
   brew install crystal-lang
 
 script:
-  - echo "Hello"; pwd; 
-  crystal spec
+  - echo "Hello"; pwd; crystal spec
