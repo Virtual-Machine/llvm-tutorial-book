@@ -1,4 +1,4 @@
-language: crystal
+language: c
 
 os:
   - osx
@@ -8,3 +8,6 @@ before_install: |
   brew install gnupg gnupg2
 install: |
   brew install crystal-lang
+
+script:
+  - echo "Hello"; pwd; crystal spec
