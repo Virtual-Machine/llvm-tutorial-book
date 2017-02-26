@@ -5,9 +5,12 @@ os:
 
 before_install: |
   brew update
-  brew install gnupg gnupg2
+  brew install gnupg gnupg2 llvm
+  export LLVM_CONFIG=/usr/local/opt/llvm/bin/llvm-config
+  export PATH="/usr/local/opt/llvm/bin:$PATH"
 install: |
   brew install crystal-lang
 
 script:
-  - echo "Hello"; pwd; crystal spec
+  - echo "Hello"; pwd; 
+  crystal spec
