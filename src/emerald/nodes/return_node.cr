@@ -5,6 +5,8 @@ class ReturnNode < Node
   end
 
   def resolve_value(state : ProgramState) : Nil
+    func_decl = get_func_decl
+    expected_ret = func_decl.return_type
     @resolved_value = @children[0].resolved_value
     test = @resolved_value
     state.builder.position_at_end state.active_block
@@ -16,7 +18,13 @@ class ReturnNode < Node
       str_pointer = state.define_or_find_global test
       state.builder.ret str_pointer
     elsif test.is_a?(Int32)
-      state.builder.ret state.gen_int32(test)
+      if expected_ret == :Int32
+        state.builder.ret state.gen_int32(test)
+      elsif expected_ret == :Int64
+        state.builder.ret state.gen_int64(test.to_i64)
+      else
+        raise "Invalid return for expected return type #{expected_ret}"
+      end
     elsif test.is_a?(Float64)
       state.builder.ret state.gen_double(test)
     elsif test.nil?

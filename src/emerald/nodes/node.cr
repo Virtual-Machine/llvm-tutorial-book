@@ -73,6 +73,19 @@ class Node
     end
   end
 
+  def get_func_decl : FunctionDeclarationNode
+    active_parent = self.parent
+    while true
+      if active_parent.is_a?(FunctionDeclarationNode)
+        return active_parent
+      end
+      active_parent = active_parent.parent
+      if active_parent.class == RootNode
+        raise "Return statements must be contained inside a function declaration"
+      end
+    end
+  end
+
   def depth : Int32
     count = 0
     active_node = self

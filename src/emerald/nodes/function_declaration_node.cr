@@ -1,5 +1,5 @@
 class FunctionDeclarationNode < Node
-  getter params
+  getter params, return_type
 
   def initialize(@name : String, @params : Hash(String, Symbol), @return_type : Symbol, @line : Int32, @position : Int32)
     @value = nil
