@@ -25,6 +25,8 @@ class ReturnNode < Node
       else
         raise "Invalid return for expected return type #{expected_ret}"
       end
+    elsif test.is_a?(Int64)
+      state.builder.ret state.gen_int64(test)
     elsif test.is_a?(Float64)
       state.builder.ret state.gen_double(test)
     elsif test.nil?
