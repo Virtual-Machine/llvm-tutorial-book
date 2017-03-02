@@ -3,6 +3,7 @@ source_filename = "std-lib.ll"
 
 @.puts_float = private unnamed_addr constant [7 x i8] c"%.11g\0A\00"
 @.puts_int = private unnamed_addr constant [4 x i8] c"%d\0A\00"
+@.puts_int64 = private unnamed_addr constant [6 x i8] c"%lld\0A\00"
 @.puts_string = private unnamed_addr constant [4 x i8] c"%s\0A\00"
 @.puts_true = private unnamed_addr constant [6 x i8] c"true\0A\00"
 @.puts_false = private unnamed_addr constant [7 x i8] c"false\0A\00"
@@ -27,7 +28,7 @@ define i32 @"puts:int"(i32 %num) local_unnamed_addr #0 {
 
 ; Function Attrs: nounwind
 define i32 @"puts:int64"(i64 %num) local_unnamed_addr #0 {
-  %call_return = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.puts_int, i64 0, i64 0), i64 %num)
+  %call_return = tail call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.puts_int64, i64 0, i64 0), i64 %num)
   ret i32 %call_return
 }
 
