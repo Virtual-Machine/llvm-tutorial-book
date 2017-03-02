@@ -214,7 +214,11 @@ class Lexer
     if number.includes? "."
       generate_token TokenType::Float, number.to_f
     else
-      generate_token TokenType::Int, number.to_i
+      begin
+        generate_token TokenType::Int, number.to_i
+      rescue
+        generate_token TokenType::Int, number.to_i64
+      end
     end
   end
 

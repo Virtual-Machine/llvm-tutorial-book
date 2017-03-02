@@ -118,7 +118,11 @@ class Parser
     if @active_node == @ast[0]
       add_expression_node
     end
-    node = IntegerLiteralNode.new @current_token.value.as(Int32), @current_token.line, @current_token.column
+    if @current_token.value.is_a?(Int64)
+      node = Integer64LiteralNode.new @current_token.value.as(Int64), @current_token.line, @current_token.column
+    else
+      node = IntegerLiteralNode.new @current_token.value.as(Int32), @current_token.line, @current_token.column
+    end
     add_and_activate node
   end
 
