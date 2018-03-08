@@ -1,4 +1,4 @@
-#Chapter 4 Parser
+# Chapter 4 Parser
 
 This step is going to be the most complicated, but if you can get through and understand this, then the rest is going to be a piece of cake. We currently are able to use our Lexer to get an array of Tokens. We now wish to parse the tokens into an AST (Abstract Syntax Tree). It gets this name due to the tree-like structure it produces when fully parsed. Every literal, expression, block, return, if, while, def, (any syntactic component of the language) is going to have its own node. Each of these nodes will reference other nodes to indicate how they are related to one another. 
 

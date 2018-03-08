@@ -1,4 +1,4 @@
-#Chapter 2 LLVM Basics
+# Chapter 2 LLVM Basics
 
 This chapter is a crash course in LLVM's most basic concepts and terminologies. This is by no means complete, but it will be enough to give you a decent idea of how LLVM works and how you will be using its API.
 

@@ -1,4 +1,4 @@
-#Chapter 3 Lexer
+# Chapter 3 Lexer
 
 It is time to begin with the actual design and implementation of our toy compiler. If you made it this far, then you know our first step in building a compiler is to create something known as a Lexer. The Lexer will be a component of our compiler. Its job is to take an array of character data and produce an array of tokens.
 

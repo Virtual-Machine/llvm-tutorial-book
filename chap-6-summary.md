@@ -1,4 +1,4 @@
-#Chapter 6 Summary
+# Chapter 6 Summary
 
 If you made it this far then you can give yourself a big pat on the back. You made it! You have made a fully functioning toy compiler. You have seen the entire process from beginning to end.
 

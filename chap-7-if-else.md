@@ -1,4 +1,4 @@
-#Chapter 7 If / Else
+# Chapter 7 If / Else
 
 Through the first section of the book, we concerned ourselves with only the basics of a toy compiler. At the end of chapter 5 our compiler is able to work with basic expressions in a procedural, line by line fashion. However if we want to add some sections of code that only execute when given conditions are true we need to introduce if else statements.
 

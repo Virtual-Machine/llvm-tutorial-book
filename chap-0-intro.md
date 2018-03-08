@@ -1,4 +1,4 @@
-#Chapter 0 Introduction
+# Chapter 0 Introduction
 
 In this tutorial we will work together to write a compiler for a simple toy programming language. Disclaimer, we make no claims of performance, safety, or functionality. The main objective will be to better understand how the LLVM api works when building a front-end and to better understand how compilers work in general. Maybe you just want to satisfy your curiousity or maybe you genuinely want to build the next great programming language of the future. In either case I hope this tutorial will be of great value to you.
 
@@ -17,7 +17,7 @@ puts 11 != 10
 
 While the above example may look simple, it is going to require us to cover some serious ground in our understanding of the LLVM api.  Already our simple syntax is going to require variables, a "built-in" puts command, and binary operators. We will need to be able to parse the structure of input files, and understand the order of operations and expression context. But do not be discouraged. We are going to tackle this in easily digestable pieces. Once we have a solid foundation, we can gradually extend our language with more powerful features.
 
-###Lookahead
+### Lookahead
 
 Information
 

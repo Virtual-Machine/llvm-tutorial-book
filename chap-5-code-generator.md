@@ -1,4 +1,4 @@
-#Chapter 5 Code Generator
+# Chapter 5 Code Generator
 
 While the parser's job was to convert an array of tokens into a structured AST, the code generator's job is to make the transition from AST to either intermediate or binary code. Code generation is completed by walking along the nodes of the AST and making sense of the structure. This is a recursive process, as the code generator must walk to the terminal nodes before resolving an expression. The final result will be all the parsed expressions into the module which will then be dumped as LLVM IR.
 

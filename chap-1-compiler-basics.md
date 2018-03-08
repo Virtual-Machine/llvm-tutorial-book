@@ -1,10 +1,10 @@
-#Chapter 1 Compiler Basics
+# Chapter 1 Compiler Basics
 
 This chapter serves as a very basic crash course in compilers. This is going to be very explicit and to the point. Please feel free to fill this information in with lots of other sources when you get the chance!
 
 Here are the basics of what you need to know.
 
-###Steps of Standard Compiler Usage
+### Steps of Standard Compiler Usage
 
 1. User has a file with some source code the compiler understands. 
 2. User runs the compiler executable on the source code file.

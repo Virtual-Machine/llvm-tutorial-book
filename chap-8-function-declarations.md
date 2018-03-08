@@ -1,4 +1,4 @@
-#Chapter 8 Function Declarations
+# Chapter 8 Function Declarations
 
 Now that our toy language can use logic to control what portions of code will run based on specified conditions we can write much more interesting programs. But we may find that our code is very long winded and hard to understand when its all crammed into one main function. Many programmers like to refactor blocks of repeated code into their own functions to aid readability. Also due to our example language being statically typed, functions allow the compiler to check the types of parameters and issue helpful errors when a parameter does not match the expected type.
 
