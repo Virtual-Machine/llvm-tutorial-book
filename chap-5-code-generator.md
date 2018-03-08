@@ -133,3 +133,6 @@ One thing you may be aware of if you tried my example without the use of variabl
 In our case, we are not going to directly simplify our AST prior to code generation. We are however going to evaluate all literal nodes that the AST is able to resolve at compile time via a value resolution pass. Where a value resolution can not be completed at compile time, a LLVM value will be resolved instead such that it can be used as a reference in the parent's nodes resolution phase. We can likely still benefit from LLVM optimizations on the outputted IR regardless of our approach. Feel free to experiment with simplifying your AST prior to code generation if you want to take the example compiler further.
 
 One last thing you will need to be aware of. Because our toy example will eventually allow control flow, multiple blocks, and functions, we must use LLVM space to store and load variables' values. LLVM must resolve a variables value to ensure that the proper code blocks either executed or not based on the control flow of the program. We possibly could evaluate the value at compile time in some cases but this would greatly increase the complexity of the compiler. Instead we will play it safe and look up all variables from llvm. 
+
+#### Next
+[Chapter 6 - Summary](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-6-summary.md)

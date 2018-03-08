@@ -11,3 +11,6 @@ The only remaining requirement for our Lexer is for it to inject some whitespace
 Here is a high level view of what the lexer is doing to generate the token array from a given array of characters.
 
 ![Lexer Basic](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/lexer_basic.png)
+
+#### Next
+[Chapter 4 - Parser](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-4-parser.md)

@@ -11,3 +11,6 @@ But beyond the missing functionality there is still much more to know about the 
 Now that you have a basic grasp on compilers, one thing I can not recommend enough, is to study how other compilers implement their functionality. You will be surprised what you can learn by studying the compiler implementation of other languages. A great learning example is the Crystal compiler. The compiler is written in Crystal making it extremely simple to read through and it uses LLVM bindings itself which makes for a helpful study aid.
 
 Along with Crystal, there are many languages written on top of the LLVM architecture, and each is an opportunity to absorb the real world knowledge and experience of a compiler implementation. While we focused on keeping our language simple, these languages will have a much deeper integration with LLVM's functionality. It can often be much more enlightening to see how a compiler implements something rather than trying to read manuals and header files in LLVM itself.
+
+#### Next
+[Chapter 7 - Implementing If/Else](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-7-if-else.md)

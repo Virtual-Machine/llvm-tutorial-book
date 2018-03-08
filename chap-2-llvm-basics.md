@@ -246,3 +246,6 @@ Further Reading and References:
 3. [Create a working compiler with the LLVM framework, Part 1 by Arpen Sen](https://www.ibm.com/developerworks/library/os-createcompilerllvm1/)
 
 4. [My First LLVM Compiler by Wilfred Hughes](http://www.wilfred.me.uk/blog/2015/02/21/my-first-llvm-compiler/)
+
+#### Next
+[Chapter 3 - Lexer](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-3-lexer.md)

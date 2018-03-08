@@ -35,3 +35,6 @@ With all this implemented, our compiler should have no problem parsing nested if
 
 Here is a diagram that can be helpful to see how this effectively translates in a real world example:
 ![If Else to IR](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/if_else_to_ir.png)
+
+#### Next
+[Chapter 8 - Implementing Function Declarations](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-8-function-declarations.md)

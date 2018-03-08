@@ -33,4 +33,5 @@ The second advanced stage is an actual optimization step. Principally, these opt
 
 In our toy example we will be using some AST simplification techniques as required to make use of the builder API, but we will not be spending any time with explicit optimizations. Feel free to use the toy example as a means to experiment with LLVM's optimizations and better understand how they manipulate the code to improve performance. If you compare source code to generated LLVM ir with optimizations, you will notice that the optimizations can be quite effective at turning function bodies into inline values and removing unnecessary calculations from statements.
 
-
+#### Next
+[Chapter 2 - LLVM Basics](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-2-llvm-basics.md)

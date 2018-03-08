@@ -226,3 +226,6 @@ This process provides the boundary for the operator nodes
 Here is a high level view of what the parser is doing to generate the AST from a given array of tokens.
 
 ![Parser Basic](https://raw.githubusercontent.com/Virtual-Machine/llvm-tutorial-book/master/diagrams/img/parser_basic.png)
+
+#### Next
+[Chapter 5 - Code Generator](https://github.com/Virtual-Machine/llvm-tutorial-book/blob/master/chap-5-code-generator.md)
