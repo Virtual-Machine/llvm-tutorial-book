@@ -33,7 +33,7 @@ llc std-lib.ll            #generates std-lib.s ready for linking with output.s
 ./emeraldc -o #optimize llvm ir
 ```
 
-###Todo
+### Todo
 
 ☐ Refactor code
 
@@ -62,7 +62,7 @@ llc std-lib.ll            #generates std-lib.s ready for linking with output.s
  - ir generation detail
 
 
-###Demo With Debug Output
+### Demo With Debug Output
 
 demo_file.cr
 ```crystal
