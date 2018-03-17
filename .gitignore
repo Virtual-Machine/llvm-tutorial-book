@@ -10,6 +10,7 @@ spec/output.ll
 spec/output.s
 spec/output
 emeraldc
+emeraldc.dwarf
 test_outputs/*
 std-lib.s
 std-lib-opt.s
