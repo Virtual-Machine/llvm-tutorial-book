@@ -8,8 +8,8 @@ os:
 before_install: |
   brew update
   brew install gnupg gnupg2 llvm
-  export LLVM_CONFIG=/usr/local/opt/llvm/bin/llvm-config
-  export PATH="/usr/local/opt/llvm/bin:$PATH"
+  export LLVM_CONFIG=/usr/local/Cellar/llvm@5/5.0.1/bin/llvm-config
+  export PATH="/usr/local/Cellar/llvm@5/5.0.1/bin/:$PATH"
 install: |
   brew install crystal-lang
 
