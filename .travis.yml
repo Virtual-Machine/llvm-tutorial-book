@@ -10,3 +10,4 @@ before_install: |
   export PATH="/usr/local/Cellar/llvm@5/5.0.1/bin/:$PATH"
 before_script: |
   mkdir test_outputs
+  crystal build emeraldc.cr
