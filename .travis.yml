@@ -1,4 +1,4 @@
-language: c
+language: crystal
 
 sudo: false
 
@@ -6,12 +6,7 @@ os:
   - osx
 
 before_install: |
-  brew update
-  brew install gnupg gnupg2
   export LLVM_CONFIG=/usr/local/Cellar/llvm@5/5.0.1/bin/llvm-config
   export PATH="/usr/local/Cellar/llvm@5/5.0.1/bin/:$PATH"
-install: |
-  brew install crystal-lang
-
-script:
-  - mkdir test_outputs; crystal build emeraldc.cr; crystal spec
+before_script: |
+  mkdir test_outputs
