@@ -11,6 +11,7 @@ class WhileExpressionNode < Node
   end
 
   def pre_walk(state : ProgramState) : Nil
+    # Setup exit and condition blocks
     block_name = "eblock#{state.blocks.size + 1}"
     exit_block = state.mod.functions[state.active_function_name].basic_blocks.append block_name
     state.add_block block_name, exit_block
@@ -18,6 +19,7 @@ class WhileExpressionNode < Node
     cond_block = state.mod.functions[state.active_function_name].basic_blocks.append cond_name
     state.add_block cond_name, cond_block
 
+    # Setup control flow for blocks
     @entry_block = state.active_block
     state.close_statements.push JumpStatement.new entry_block, cond_block
     @exit_block = exit_block
@@ -42,6 +44,5 @@ class WhileExpressionNode < Node
     end
 
     state.close_statements.push ConditionalStatement.new cond_block, comp_val, body_block, exit_block
-    
   end
 end
