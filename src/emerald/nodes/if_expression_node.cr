@@ -1,5 +1,5 @@
 class IfExpressionNode < Node
-  property! exit_block, if_block, else_block, entry_block 
+  property! exit_block, if_block, else_block, entry_block
   getter uses_exit
   @entry_block : LLVM::BasicBlock?
   @exit_block : LLVM::BasicBlock?
@@ -13,6 +13,7 @@ class IfExpressionNode < Node
   end
 
   def pre_walk(state : ProgramState) : Nil
+    # Setup exit block and mark current active block as entry
     block_name = "eblock#{state.blocks.size + 1}"
     exit_block = state.mod.functions[state.active_function_name].basic_blocks.append block_name
     state.add_block block_name, exit_block
@@ -29,11 +30,8 @@ class IfExpressionNode < Node
       state.builder.unreachable
       @uses_exit = false
     end
-    @if_block = @children[1].as(BasicBlockNode).block
-    if @children[2]?
-      @else_block = @children[2].as(BasicBlockNode).block
-    end
 
+    # Get comparison value
     comp_val = @children[0].resolved_value
     if comp_val == true
       comp_val = state.gen_int1(1)
@@ -43,7 +41,10 @@ class IfExpressionNode < Node
       comp_val = comp_val.as(LLVM::Value)
     end
 
+    @if_block = @children[1].as(BasicBlockNode).block
+
     if @children[2]?
+      @else_block = @children[2].as(BasicBlockNode).block
       state.close_statements.push ConditionalStatement.new entry_block, comp_val, if_block, else_block
     else
       state.close_statements.push ConditionalStatement.new entry_block, comp_val, if_block, exit_block
