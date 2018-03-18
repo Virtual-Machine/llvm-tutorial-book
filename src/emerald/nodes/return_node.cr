@@ -5,9 +5,11 @@ class ReturnNode < Node
   end
 
   def resolve_value(state : ProgramState) : Nil
-    func_decl = get_func_decl
-    expected_ret = func_decl.return_type
     @resolved_value = @children[0].resolved_value
+    generate_return state
+  end
+
+  def generate_return(state : ProgramState) : Nil
     test = @resolved_value
     state.builder.position_at_end state.active_block
     if test.is_a?(LLVM::Value)
@@ -18,6 +20,8 @@ class ReturnNode < Node
       str_pointer = state.define_or_find_global test
       state.builder.ret str_pointer
     elsif test.is_a?(Int32)
+      func_decl = get_func_decl
+      expected_ret = func_decl.return_type
       if expected_ret == :Int32
         state.builder.ret state.gen_int32(test)
       elsif expected_ret == :Int64
