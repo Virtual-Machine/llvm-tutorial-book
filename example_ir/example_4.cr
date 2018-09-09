@@ -41,7 +41,7 @@ class Program
     num_val = builder.load mod.globals["number"]
     builder.ret num_val
 
-    File.open("output.ll", "w") do |file|
+    File.open("example_4.ll", "w") do |file|
       mod.to_s(file)
     end
   end
