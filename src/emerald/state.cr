@@ -111,7 +111,7 @@ class ProgramState
   end
 
   def store_float64(func : LLVM::Function, name : String, value : ValueType, allocate : Bool) : Nil
-    ptr = allocate ? (builder.alloca double, name) : (@variables[func][name])    
+    ptr = allocate ? (builder.alloca double, name) : (@variables[func][name])
     builder.store gen_double(value), ptr
     @variables[func][name] = ptr
     @variable_pointers[func][name] = ptr if allocate

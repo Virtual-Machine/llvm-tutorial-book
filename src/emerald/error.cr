@@ -20,10 +20,10 @@ class EmeraldSyntaxException < Exception
       puts
 
       lines = source.split("\n")
-        
+
       print_pre_line = self.line == 1 ? false : true
       print_post_line = self.line == lines.size ? false : true
-      
+
       puts "Line #{self.line - 1} : #{lines[self.line - 2].strip}" if print_pre_line
       color ? puts "\033[031mLine #{self.line} :\033[039m #{lines[self.line - 1].strip}" : puts "Line #{self.line} : #{lines[self.line - 1].strip}"
       puts "Line #{self.line + 1} : #{lines[self.line].strip}" if print_post_line
