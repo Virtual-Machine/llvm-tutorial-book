@@ -68,7 +68,9 @@ if clean
   File.delete("./output.ll") if File.file?("./output.ll")
   File.delete("./output.s") if File.file?("./output.s")
   File.delete("./output") if File.file?("./output")
-elsif help
+end
+
+if help
 elsif test_runner
   path_to_file = Dir.current + "/spec/output.ll"
   File.delete(path_to_file) if File.exists?(path_to_file)
