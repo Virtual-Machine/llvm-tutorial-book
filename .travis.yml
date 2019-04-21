@@ -6,8 +6,8 @@ os:
   - osx
 
 before_install: |
-  export LLVM_CONFIG=/usr/local/Cellar/llvm/6.0.1/bin/llvm-config
-  export PATH="/usr/local/Cellar/llvm/6.0.1/bin/:$PATH"
+  export LLVM_CONFIG=/usr/local/opt/llvm@6/bin/llvm-config
+  export PATH="/usr/local/opt/llvm@6/bin:$PATH"
 before_script: |
   ls -l /usr/bin | grep llvm-config
   crystal build emeraldc.cr
