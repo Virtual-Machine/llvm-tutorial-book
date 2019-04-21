@@ -601,6 +601,7 @@ class BinaryOperatorNode < Node
     when "*"
       @resolved_value = lhs * rhs
     when "/"
+      # Note Crystal will be changing / to always return a Float in a future version. // now supports integer division as expected
       @resolved_value = lhs // rhs
     when "=="
       @resolved_value = lhs == rhs
