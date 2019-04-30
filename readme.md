@@ -1,6 +1,6 @@
 # LLVM Frontend Tutorial
 
-![Travis Badge](https://travis-ci.org/Virtual-Machine/llvm-tutorial-book.svg?branch=master)
+<a href="https://travis-ci.org/Virtual-Machine/llvm-tutorial-book"><img src="https://travis-ci.org/Virtual-Machine/llvm-tutorial-book.svg?branch=master"></a>
 
 This is the main repository for my LLVM tutorial.
 
